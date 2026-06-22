@@ -1,0 +1,162 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout
+  title="Joyfulness Coöperatie"
+  description="Joyfulness — coöperatie voor de evolutie van leiderschap en organiseren. Binnenkort: een nieuw boek over de innerlijke reis naar het volgende paradigma."
+>
+  <header class="site-header">
+    <img src="/logo.png" alt="Joyfulness logo" class="logo" width="56" height="56" />
+    <div class="wordmark">
+      <span class="name">Joyfulness</span>
+      <span class="kicker">Coöperatie</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>De innerlijke reis naar het volgende paradigma in leiderschap en organiseren.</h1>
+      <p class="lead">
+        Joyfulness is een coöperatie die zich inzet voor de evolutie van leiderschap en
+        organiseren. Wij geloven dat duurzame verandering in organisaties begint met een
+        innerlijke reis: het ontwikkelen van bewustzijn, verbinding en levendigheid bij de
+        mensen die richting geven. Vanuit die overtuiging onderzoeken, begeleiden en
+        inspireren wij leiders en organisaties die toe zijn aan een volgend paradigma.
+      </p>
+    </section>
+
+    <div class="dots" aria-hidden="true">
+      <span style="background: var(--c-red)"></span>
+      <span style="background: var(--c-orange)"></span>
+      <span style="background: var(--c-yellow)"></span>
+      <span style="background: var(--c-green)"></span>
+      <span style="background: var(--c-navy)"></span>
+      <span style="background: var(--c-pink)"></span>
+    </div>
+
+    <section class="book">
+      <p class="book-eyebrow">Binnenkort</p>
+      <h2>Een nieuw boek</h2>
+      <p>
+        Dit najaar verschijnt een nieuw boek over de evolutie van leiderschap en
+        organisaties — de innerlijke reis naar het volgende paradigma in leiderschap en
+        organiseren. De titel maken we binnenkort bekend.
+      </p>
+      <p class="book-meta">Verwachte verschijning: <strong>september / oktober 2026</strong></p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>&copy; {new Date().getFullYear()} Joyfulness Coöperatie U.A.</p>
+  </footer>
+
+  <style>
+    .site-header {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+    }
+
+    .wordmark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.1;
+    }
+
+    .name {
+      font-family: 'Source Serif 4', Georgia, serif;
+      font-weight: 600;
+      font-size: 1.3rem;
+    }
+
+    .kicker {
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      color: var(--c-text-soft);
+      text-transform: uppercase;
+    }
+
+    main {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero .lead {
+      font-size: 1.05rem;
+      color: var(--c-text-soft);
+      max-width: 640px;
+    }
+
+    .dots {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 3rem 0;
+    }
+
+    .dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .book {
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      padding: 2rem;
+      background: #fff;
+    }
+
+    .book-eyebrow {
+      font-size: 0.78rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--c-pink);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .book h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.9rem;
+    }
+
+    .book p {
+      color: var(--c-text-soft);
+    }
+
+    .book p + p {
+      margin-top: 0.9rem;
+    }
+
+    .book-meta {
+      color: var(--c-text) !important;
+    }
+
+    .site-footer {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 1.5rem 1.5rem 3rem;
+      font-size: 0.85rem;
+      color: var(--c-text-soft);
+    }
+  </style>
+</Layout>
