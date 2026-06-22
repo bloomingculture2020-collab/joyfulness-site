@@ -703,26 +703,30 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 20px;
-  border-radius: 4px;
-  border: none;
-  font-family: inherit;
-  font-size: 14px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1.5px solid var(--herfst-m);
+  background: transparent;
+  font-family: 'Jost', sans-serif;
+  font-size: 12.5px;
   font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform 0.15s, background 0.15s, color 0.15s;
   text-decoration: none;
-  color: #fff;
+  color: var(--ink);
 }
+.nc-scan .share-btn svg { fill: var(--ink); }
 .nc-scan .share-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  background: var(--herfst-m);
+  color: #fff;
 }
-.nc-scan .share-btn--copy     { background: #0A66C2; }
-.nc-scan .share-btn--copy.copied { background: #2e7d32; }
-.nc-scan .share-btn--whatsapp { background: #25D366; }
-.nc-scan .share-btn--email    { background: #555; }
-.nc-scan .share-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+.nc-scan .share-btn:hover svg { fill: #fff; }
+.nc-scan .share-btn--copy.copied { background: var(--herfst-m); color: #fff; border-color: var(--herfst-m); }
+.nc-scan .share-btn--copy.copied svg { fill: #fff; }
+.nc-scan .share-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
 
 /* ── TOELICHTING & OPNIEUW ───────────────────────────────── */
 .nc-scan .toelichting {
@@ -758,7 +762,7 @@
   <div class="hero">
     <div class="hero-inner">
       <div class="hero-logo">
-        <span style="display:inline-flex;flex-direction:column;align-items:center;font-family:'Jost',sans-serif;color:#fff;line-height:1.15;"><span style="font-weight:700;font-size:15px;letter-spacing:0.02em;">Joyfulness</span><span style="font-weight:500;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.65;">Coöperatie</span></span>
+        <span style="display:inline-flex;flex-direction:column;align-items:center;margin-bottom:0px;"><img src="/images/coop-logo.png" alt="Joyfulness" style="width:34px;height:34px;margin-bottom:10px;" /><span style="font-family:'Jost',sans-serif;color:#fff;font-weight:700;font-size:15px;letter-spacing:0.02em;line-height:1;">Joyfulness</span><span style="font-family:'Jost',sans-serif;color:#fff;font-weight:500;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.65;margin-top:6px;line-height:1;">Coöperatie</span></span>
       </div>
       <div class="hero-label">Quick Scan</div>
       <h1>De <em>Cyclus</em> van jullie organisatie</h1>
