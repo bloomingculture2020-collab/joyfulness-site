@@ -23,6 +23,11 @@ const leaders = [
       <div class="wordmark-name">Joyfulness</div>
       <div class="wordmark-kicker">Coöperatie</div>
     </div>
+    <nav class="site-nav">
+      <a href="/quickscan-verticale-leiderschapsontwikkeling/">Quickscan Leiderschap</a>
+      <a href="/quickscan-organische-groei/">Quickscan Organische Groei</a>
+      <a href="/#contact">Contact</a>
+    </nav>
   </header>
 
   <main class="wrap">
@@ -254,6 +259,19 @@ const leaders = [
     header.site img { width: 42px; height: 42px; }
     .wordmark-name { font-family:'Jost',sans-serif; font-weight:700; font-size:1.25rem; line-height:1; }
     .wordmark-kicker { font-family:'Jost',sans-serif; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-soft); margin-top: 0.4rem; }
+    .site-nav {
+      margin-left: auto; display: flex; align-items: center; gap: 1.8rem; flex-wrap: wrap;
+    }
+    .site-nav a {
+      font-family: 'Jost', sans-serif; font-weight: 600; font-size: 0.82rem;
+      letter-spacing: 0.02em; color: var(--text); text-decoration: none;
+      border-bottom: 1px solid transparent; padding-bottom: 2px; transition: color 0.15s, border-color 0.15s;
+    }
+    .site-nav a:hover { color: var(--green-dark); border-color: var(--green); }
+    @media (max-width: 760px) {
+      header.site { flex-wrap: wrap; }
+      .site-nav { margin-left: 0; width: 100%; gap: 1.2rem; margin-top: 0.8rem; }
+    }
 
     /* dot divider */
     .dots { display:flex; gap:0.5rem; justify-content:center; margin: 3.2rem 0; }
