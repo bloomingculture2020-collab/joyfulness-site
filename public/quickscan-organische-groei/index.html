@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quick Scan — Organische Groei</title>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,500;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+/* ── WORDPRESS-COMPATIBELE STIJLEN ────────────────────────────────────────
+   Alle stijlen scoped onder .nc-scan om conflicten met WP-thema's te
+   vermijden. Plak de volledige <div class="nc-scan">...</div> in een
+   Custom HTML Gutenberg block, of gebruik WP Coder / Insert Headers plugin.
+────────────────────────────────────────────────────────────────────────── */
+:root {
+  --herfst:    #8B4513;
+  --herfst-l:  #FDF3E7;
+  --herfst-m:  #2F6933;
+  --winter:    #1C3A5E;
+  --winter-l:  #EBF0F7;
+  --winter-m:  #9BB3D0;
+  --lente:     #2D6A2D;
+  --lente-l:   #EBF5EB;
+  --lente-m:   #8FBF8F;
+  --zomer:     #B8860B;
+  --zomer-l:   #FDFAEB;
+  --zomer-m:   #D4B45A;
+  --tempo:     #4A4A6A;
+  --tempo-l:   #F0F0F7;
+  --tempo-m:   #9090B8;
+  --ink:       #131516;
+  --ink-soft:  #3a3d40;
+  --paper:     #faf9f7;
+  --B-color:   #1C3A5E;
+  --Ci-color:  #2D6A2D;
+  --Vd-color:  #5C2D6E;
+}
+
+.nc-scan * { box-sizing: border-box; margin: 0; padding: 0; }
+
+.nc-scan {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Source Serif 4', Georgia, serif;
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+/* ── HERO ───────────────────────────────────────────────── */
+.nc-scan .hero {
+  background: #131516;
+  padding: 32px 40px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0;
+}
+.nc-scan .hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(200,135,62,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 50%, rgba(200,135,62,0.06) 0%, transparent 55%);
+}
+.nc-scan .hero-inner { position: relative; z-index: 1; max-width: 620px; margin: 0 auto; }
+.nc-scan .hero-logo { margin-bottom: 12px; }
+.nc-scan .hero-logo img { width: 48px; height: auto; opacity: 0.85; }
+.nc-scan .hero-label {
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 10px;
+}
+.nc-scan .hero h1 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: clamp(26px, 4vw, 42px);
+  font-weight: 400;
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.nc-scan .hero h1 em { font-style: italic; color: var(--herfst-m); }
+.nc-scan .hero-sub {
+  font-size: 15px;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.7;
+  font-weight: 300;
+  max-width: 500px;
+  margin: 0 auto 20px;
+}
+
+/* ── PROGRESS ───────────────────────────────────────────── */
+.nc-scan .progress-wrap {
+  background: rgba(255,255,255,0.08);
+  height: 3px;
+  width: 100%;
+}
+.nc-scan .progress-fill {
+  height: 3px;
+  width: 0%;
+  background: var(--herfst-m);
+  transition: width 0.4s ease;
+}
+.nc-scan .progress-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  text-align: right;
+  padding: 6px 40px 0;
+  background: #131516;
+}
+
+/* ── FORMULIER ──────────────────────────────────────────── */
+.nc-scan #formulier {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 16px 40px 60px;
+}
+
+/* ── STAP-VOOR-STAP MODUS ─────────────────────────────── */
+.nc-scan .vraag { display: none; }
+.nc-scan .vraag.nc-active {
+  display: block;
+  animation: ncFadeUp 0.4s both;
+}
+.nc-scan .seizoen-header-vr { display: none; }
+.nc-scan .seizoen-header-vr.nc-active {
+  display: flex;
+  animation: ncFadeUp 0.35s both;
+}
+.nc-scan .submit-wrap { display: none; }
+.nc-scan .submit-wrap.nc-active {
+  display: block;
+  animation: ncFadeUp 0.4s both;
+}
+
+/* Volgende-knop onder iedere vraag */
+.nc-scan .btn-volgende {
+  display: block;
+  margin: 16px auto 0;
+  background: var(--herfst-m);
+  color: #fff;
+  border: none;
+  padding: 12px 36px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.25s;
+  opacity: 0;
+  pointer-events: none;
+}
+.nc-scan .btn-volgende.nc-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.nc-scan .btn-volgende:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(200,135,62,0.3);
+}
+
+/* Terug-link */
+.nc-scan .btn-terug {
+  display: inline-block;
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: rgba(19,21,22,0.4);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  padding: 4px 0;
+  transition: color 0.15s;
+}
+.nc-scan .btn-terug:hover { color: var(--ink); }
+
+/* Navigatie wrapper */
+.nc-scan .vraag-nav {
+  text-align: center;
+  padding-top: 4px;
+}
+
+/* ── SEIZOEN HEADER (vragen) ────────────────────────────── */
+.nc-scan .seizoen-header-vr {
+  /* display wordt geregeld door .nc-active in stap-modus */
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid currentColor;
+}
+.nc-scan .seizoen-header-vr:first-of-type { margin-top: 8px; }
+.nc-scan .seizoen-header-vr.sz-herfst { color: var(--herfst); border-color: var(--herfst-m); }
+.nc-scan .seizoen-header-vr.sz-winter  { color: var(--winter); border-color: var(--winter-m); }
+.nc-scan .seizoen-header-vr.sz-lente   { color: var(--lente);  border-color: var(--lente-m); }
+.nc-scan .seizoen-header-vr.sz-zomer   { color: var(--zomer);  border-color: var(--zomer-m); }
+.nc-scan .seizoen-header-vr.sz-tempo   { color: var(--tempo);  border-color: var(--tempo-m); }
+.nc-scan .sz-icon { font-size: 22px; flex-shrink: 0; }
+.nc-scan .sz-naam { font-family: 'Source Serif 4', Georgia, serif; font-size: 18px; font-weight: 600; }
+.nc-scan .sz-sub  { font-size: 12px; opacity: 0.65; margin-top: 2px; letter-spacing: 0.3px; }
+
+/* ── VRAAG ──────────────────────────────────────────────── */
+.nc-scan .vraag {
+  margin-bottom: 22px;
+  padding: 20px 22px;
+  background: #fff;
+  border-radius: 6px;
+  border-left: 3px solid #e8e8e8;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+  animation: ncFadeUp 0.45s both;
+}
+@keyframes ncFadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nc-scan .vraag-nr {
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #888;
+  margin-bottom: 8px;
+}
+.nc-scan .vraag-tekst {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+/* ── SLIDER ─────────────────────────────────────────────── */
+.nc-scan .slider-wrap { --ac: #444; }
+.nc-scan .slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.nc-scan .slider-track {
+  position: relative;
+  height: 4px;
+  background: #ebebeb;
+  border-radius: 2px;
+  margin-bottom: 12px;
+}
+.nc-scan .slider-fill {
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 50%;
+  border-radius: 2px;
+  opacity: 0.5;
+  transition: width 0.2s;
+}
+.nc-scan .slider-track input[type=range] {
+  position: absolute;
+  inset: -8px 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+  height: 20px;
+}
+.nc-scan .slider-numbers {
+  display: flex;
+  gap: 3px;
+}
+.nc-scan .slider-numbers button {
+  flex: 1;
+  height: 30px;
+  border: 1px solid #e4e4e4;
+  background: #fafafa;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.12s;
+  font-family: inherit;
+  padding: 0;
+}
+.nc-scan .slider-numbers button:hover {
+  border-color: var(--ac);
+  color: var(--ac);
+  background: #fff;
+}
+.nc-scan .slider-numbers button.active {
+  background: var(--ac);
+  border-color: var(--ac);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* ── DIVIDER ─────────────────────────────────────────────── */
+.nc-scan .divider {
+  display: none; /* verborgen in stap-modus */
+}
+
+/* ── SUBMIT ──────────────────────────────────────────────── */
+.nc-scan .submit-wrap {
+  text-align: center;
+  padding: 40px 24px;
+  background: #131516;
+  border-radius: 6px;
+  margin-top: 44px;
+}
+.nc-scan .submit-wrap p {
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  margin-bottom: 24px;
+  line-height: 1.6;
+}
+.nc-scan .btn-submit {
+  background: var(--herfst-m);
+  color: var(--ink);
+  border: none;
+  padding: 14px 40px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.nc-scan .btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* ── RESULTATEN ──────────────────────────────────────────── */
+.nc-scan #resultaten { display: none; max-width: 780px; margin: 0 auto; padding: 40px 40px 60px; }
+
+.nc-scan .result-hero {
+  text-align: center;
+  padding: 48px 24px 40px;
+  background: #131516;
+  border-radius: 6px;
+  margin-bottom: 36px;
+}
+.nc-scan .result-hero h2 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 34px;
+  font-weight: 400;
+  color: #fff;
+  margin-bottom: 12px;
+}
+.nc-scan .result-hero p {
+  color: rgba(255,255,255,0.55);
+  font-size: 15px;
+  max-width: 520px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── FORMULE SECTIE ──────────────────────────────────────── */
+.nc-scan .formule-sectie {
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px 26px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.nc-scan .formule-sectie h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 19px;
+  color: var(--ink);
+  margin-bottom: 22px;
+}
+.nc-scan .formule-sub {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+  margin-bottom: 26px;
+  line-height: 1.5;
+}
+.nc-scan .formule-visueel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.nc-scan .f-term { text-align: center; }
+.nc-scan .f-letter {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 16px;
+  line-height: 1;
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+.nc-scan .f-naam {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 2px;
+  color: inherit;
+}
+.nc-scan .f-score {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 8px;
+  padding: 2px 10px;
+  border-radius: 20px;
+  color: #fff;
+  display: inline-block;
+}
+.nc-scan .f-op {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 28px;
+  color: #ccc;
+  margin-top: 0;
+}
+.nc-scan .formule-uitkomst {
+  background: #131516;
+  border-radius: 6px;
+  padding: 18px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.nc-scan .fu-label {
+  color: rgba(255,255,255,0.5);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.nc-scan .fu-waarde {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 28px;
+  color: var(--herfst-m);
+}
+.nc-scan .fu-tekst {
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  font-style: italic;
+}
+.nc-scan .fu-berekening {
+  color: rgba(255,255,255,0.3);
+  font-size: 12px;
+  font-style: italic;
+  width: 100%;
+  margin-top: 4px;
+}
+.nc-scan .formule-legenda {
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.65;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+.nc-scan .formule-legenda strong { color: var(--ink-soft); }
+
+/* ── SEIZOEN KAARTEN (in uitkomst) ───────────────────────── */
+.nc-scan .seizoen-intro {
+  background: #fff;
+  border-radius: 8px;
+  padding: 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.nc-scan .seizoen-intro h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 19px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+.nc-scan .seizoen-intro p {
+  font-size: 13px;
+  color: #888;
+  line-height: 1.65;
+  font-style: italic;
+  margin-bottom: 20px;
+}
+.nc-scan .seizoen-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+@media (max-width: 520px) {
+  .nc-scan .seizoen-grid { grid-template-columns: 1fr; }
+  .nc-scan .formule-visueel { gap: 6px; }
+  .nc-scan .f-letter { font-size: 30px; }
+  .nc-scan #formulier, .nc-scan #resultaten { padding: 24px 18px 48px; }
+  .nc-scan .hero { padding: 36px 20px 0; }
+}
+.nc-scan .seizoen-kaart {
+  padding: 18px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  transition: transform 0.2s;
+}
+.nc-scan .seizoen-kaart:hover { transform: translateY(-2px); }
+.nc-scan .sk-kop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.nc-scan .sk-icon { font-size: 18px; }
+.nc-scan .sk-naam {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 16px;
+  font-weight: 600;
+}
+.nc-scan .sk-thema {
+  font-size: 11px;
+  opacity: 0.6;
+  margin-bottom: 12px;
+  letter-spacing: 0.3px;
+}
+.nc-scan .sk-bar-bg {
+  background: rgba(0,0,0,0.07);
+  border-radius: 2px;
+  height: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.nc-scan .sk-bar {
+  height: 4px;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+}
+.nc-scan .sk-pct {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+}
+.nc-scan .sk-label { font-size: 11px; opacity: 0.55; margin-top: 2px; }
+.nc-scan .sk-duiding {
+  font-size: 12px;
+  line-height: 1.55;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(0,0,0,0.06);
+  opacity: 0.75;
+  font-style: italic;
+}
+
+/* ── ELEMENT CARDS ───────────────────────────────────────── */
+.nc-scan .element-sectie {
+  background: #fff;
+  border-radius: 8px;
+  padding: 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.nc-scan .element-sectie h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 19px;
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+.nc-scan .element-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+@media (max-width: 520px) { .nc-scan .element-grid { grid-template-columns: 1fr; } }
+.nc-scan .element-kaart {
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+}
+.nc-scan .ek-kop {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+.nc-scan .ek-naam { font-size: 12px; font-weight: 700; letter-spacing: 0.3px; }
+.nc-scan .ek-score {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 21px;
+  font-weight: 600;
+}
+.nc-scan .ek-bar-bg {
+  background: rgba(0,0,0,0.07);
+  border-radius: 2px;
+  height: 4px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.nc-scan .ek-bar {
+  height: 4px;
+  border-radius: 2px;
+  width: 0%;
+  transition: width 0.9s cubic-bezier(0.4,0,0.2,1);
+}
+.nc-scan .ek-label { font-size: 11px; opacity: 0.6; margin-top: 4px; }
+
+/* ── DIAGNOSE ────────────────────────────────────────────── */
+.nc-scan .diagnose-sectie {
+  background: #fff;
+  border-radius: 8px;
+  padding: 26px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border-left: 4px solid var(--ink);
+}
+.nc-scan .diagnose-sectie h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 19px;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.nc-scan .diagnose-patroon {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 24px;
+  font-weight: 400;
+  color: var(--ink);
+  margin-bottom: 14px;
+  line-height: 1.3;
+}
+.nc-scan .diagnose-tekst {
+  font-size: 15px;
+  line-height: 1.75;
+  color: var(--ink-soft);
+  margin-bottom: 16px;
+}
+.nc-scan .diagnose-interventie {
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  padding: 12px 16px;
+  border-radius: 4px;
+  line-height: 1.6;
+  border-left: 3px solid var(--herfst);
+}
+
+/* ── CTA ─────────────────────────────────────────────────── */
+.nc-scan .cta-sectie {
+  background: #131516;
+  border-radius: 8px;
+  padding: 32px 28px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.nc-scan .cta-sectie h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 22px;
+  color: #fff;
+  margin-bottom: 10px;
+  font-weight: 400;
+}
+.nc-scan .cta-sectie p {
+  color: rgba(255,255,255,0.55);
+  font-size: 14px;
+  line-height: 1.65;
+  max-width: 480px;
+  margin: 0 auto 22px;
+}
+.nc-scan .cta-sectie .btn-cta {
+  display: inline-block;
+  background: var(--herfst-m);
+  color: var(--ink);
+  border: none;
+  padding: 13px 36px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.15s;
+}
+.nc-scan .cta-sectie .btn-cta:hover { transform: translateY(-1px); }
+
+/* ── SOCIAL SHARE ────────────────────────────────────────── */
+.nc-scan .share-sectie {
+  text-align: center;
+  margin-bottom: 30px;
+  padding: 32px 28px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.nc-scan .share-sectie h3 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 19px;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+.nc-scan .share-sectie .share-sub {
+  font-size: 13px;
+  color: #999;
+  font-style: italic;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.nc-scan .share-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.nc-scan .share-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 4px;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-decoration: none;
+  color: #fff;
+}
+.nc-scan .share-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.nc-scan .share-btn--copy     { background: #0A66C2; }
+.nc-scan .share-btn--copy.copied { background: #2e7d32; }
+.nc-scan .share-btn--whatsapp { background: #25D366; }
+.nc-scan .share-btn--email    { background: #555; }
+.nc-scan .share-btn svg { width: 18px; height: 18px; fill: #fff; flex-shrink: 0; }
+
+/* ── TOELICHTING & OPNIEUW ───────────────────────────────── */
+.nc-scan .toelichting {
+  font-size: 12px;
+  color: #bbb;
+  line-height: 1.7;
+  margin-bottom: 24px;
+  padding: 18px;
+  border-radius: 6px;
+  border: 1px solid #eee;
+}
+.nc-scan .toelichting p + p { margin-top: 8px; }
+.nc-scan .btn-opnieuw {
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #aaa;
+  padding: 9px 22px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.nc-scan .btn-opnieuw:hover { border-color: var(--ink); color: var(--ink); }
+</style>
+</head>
+<body>
+<a href="/" style="display:block;padding:14px 24px;background:#131516;color:rgba(255,255,255,0.55);text-decoration:none;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.05em;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.08);">&larr; Terug naar Joyfulness</a>
+
+<div class="nc-scan">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-logo">
+        <span style="display:inline-flex;flex-direction:column;align-items:center;font-family:'Jost',sans-serif;color:#fff;line-height:1.15;"><span style="font-weight:700;font-size:15px;letter-spacing:0.02em;">Joyfulness</span><span style="font-weight:500;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.65;">Coöperatie</span></span>
+      </div>
+      <div class="hero-label">Quick Scan</div>
+      <h1>De <em>Cyclus</em> van jullie organisatie</h1>
+      <p class="hero-sub">Dertig vragen. Tien minuten. Een eerste indicatie van waar de cyclus stroomt — en waar hij vastloopt.</p>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="progress-label" id="progressLabel">0 / 30</div>
+  </div>
+
+  <!-- VRAGENFORMULIER -->
+  <div id="formulier">
+
+    <!-- ══ THEMA 1 — TERUGBLIKKEN & LEREN ════════════════════ -->
+    <div class="seizoen-header-vr sz-herfst">
+      <span class="sz-icon">🍂</span>
+      <div>
+        <div class="sz-naam">Herfst — oogsten &amp; reflecteren</div>
+        <div class="sz-sub">Wat brengt de cyclus werkelijk op?</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 1</div>
+      <div class="vraag-tekst">In hoeverre wordt er na een groot project of een afgeronde periode bewust stilgestaan bij wat er werkelijk bereikt is — voorbij de formele evaluatie?</div>
+      <div class="slider-wrap" data-vraag="1" data-element="B" data-seizoen="herfst">
+        <div class="slider-labels"><span>Nooit, alleen KPI's</span><span>Altijd, breed en diep</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--herfst)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 2</div>
+      <div class="vraag-tekst">Hoe eerlijk gaat de nabespreking na een afgeronde periode — wordt er gezocht naar onderliggende patronen, of blijft het bij de oppervlakte?</div>
+      <div class="slider-wrap" data-vraag="2" data-element="Ci" data-seizoen="herfst">
+        <div class="slider-labels"><span>Oppervlakkig of afwezig</span><span>Diep en eerlijk</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--herfst)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 3</div>
+      <div class="vraag-tekst">In hoeverre worden mislukkingen en tegenslagen openlijk besproken — als waardevolle lessen, niet als iets om snel te vergeten?</div>
+      <div class="slider-wrap" data-vraag="3" data-element="Ci" data-seizoen="herfst">
+        <div class="slider-labels"><span>Worden vermeden of verzwegen</span><span>Volledig en eerlijk erkend</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--herfst)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <!-- ══ THEMA 2 — LOSLATEN & BEZINNEN ══════════════════════ -->
+    <div class="seizoen-header-vr sz-winter">
+      <span class="sz-icon">❄️</span>
+      <div>
+        <div class="sz-naam">Winter — afstemmen &amp; loslaten</div>
+        <div class="sz-sub">Wat vraagt om loslating en bezinning?</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 4</div>
+      <div class="vraag-tekst">In hoeverre is er na een intensieve periode bewust ruimte voor vertraging en bezinning — niet als luxe, maar als onderdeel van hoe de organisatie werkt?</div>
+      <div class="slider-wrap" data-vraag="4" data-element="Ci" data-seizoen="winter">
+        <div class="slider-labels"><span>Direct door naar het volgende</span><span>Bewust ruimte voor bezinning</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--winter)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 5</div>
+      <div class="vraag-tekst">Hoe goed lukt het om te stoppen met dingen die niet meer werken — ook als er veel in geïnvesteerd is, of als ze ooit succesvol waren?</div>
+      <div class="slider-wrap" data-vraag="5" data-element="B" data-seizoen="winter">
+        <div class="slider-labels"><span>Bijna onmogelijk los te laten</span><span>Bewust en moedig loslaten</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--winter)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 6</div>
+      <div class="vraag-tekst">Hoe goed kan de organisatie in een periode van onzekerheid — wanneer de richting nog niet helder is — geduldig wachten zonder prematuur te handelen?</div>
+      <div class="slider-wrap" data-vraag="6" data-element="B" data-seizoen="winter">
+        <div class="slider-labels"><span>Onduidelijkheid → direct ingrijpen</span><span>Onzekerheid wordt verdragen</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--winter)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <!-- ══ THEMA 3 — RICHTING & VERNIEUWING ════════════════════ -->
+    <div class="seizoen-header-vr sz-lente">
+      <span class="sz-icon">🌱</span>
+      <div>
+        <div class="sz-naam">Lente — richten &amp; verbeelden</div>
+        <div class="sz-sub">Wat wil er nieuw ontstaan?</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 7</div>
+      <div class="vraag-tekst">In hoeverre komt de strategische richting van jullie organisatie voort uit echte bezieling — uit wat er werkelijk wil ontstaan — in plaats van uit angst, druk of gewoonte?</div>
+      <div class="slider-wrap" data-vraag="7" data-element="B" data-seizoen="lente">
+        <div class="slider-labels"><span>Richting volgt angst of druk</span><span>Richting volgt bezieling</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--lente)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 8</div>
+      <div class="vraag-tekst">Hoe goed krijgen nieuwe ideeën en initiatieven de ruimte om zich te ontwikkelen — zonder dat ze direct op haalbaarheid of rendement worden beoordeeld?</div>
+      <div class="slider-wrap" data-vraag="8" data-element="Ci" data-seizoen="lente">
+        <div class="slider-labels"><span>Ideeën worden direct getoetst</span><span>Ideeën mogen rijpen</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--lente)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 9</div>
+      <div class="vraag-tekst">In hoeverre is de koers van de organisatie breed gedragen — voelen mensen op alle niveaus dat ze er deel van uitmaken?</div>
+      <div class="slider-wrap" data-vraag="9" data-element="Ci" data-seizoen="lente">
+        <div class="slider-labels"><span>Richting bepaalt de top alleen</span><span>Koers wordt breed gedragen</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--lente)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <!-- ══ THEMA 4 — GROEIEN & AFBOUWEN ═══════════════════════ -->
+    <div class="seizoen-header-vr sz-zomer">
+      <span class="sz-icon">☀️</span>
+      <div>
+        <div class="sz-naam">Zomer — experimenteren &amp; groeien</div>
+        <div class="sz-sub">Hoe wordt groei duurzaam gedragen?</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 10</div>
+      <div class="vraag-tekst">Hoe goed leert de organisatie van experimenten en fouten — worden lessen actief gedeeld en benut voor de volgende stap?</div>
+      <div class="slider-wrap" data-vraag="10" data-element="Ci" data-seizoen="zomer">
+        <div class="slider-labels"><span>Lessen verdampen</span><span>Lessen worden benut</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--zomer)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 11</div>
+      <div class="vraag-tekst">Herkent de organisatie tijdig de signalen dat groei zijn optimum heeft bereikt — en handelt ze daar ook naar, voordat overbelasting toeslaat?</div>
+      <div class="slider-wrap" data-vraag="11" data-element="B" data-seizoen="zomer">
+        <div class="slider-labels"><span>Signalen worden gemist of genegeerd</span><span>Signalen worden tijdig herkend</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--zomer)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 12</div>
+      <div class="vraag-tekst">In hoeverre weet de organisatie bewust te stoppen of af te bouwen als dat nodig is — ook als de buitenwereld nog groei verwacht?</div>
+      <div class="slider-wrap" data-vraag="12" data-element="B" data-seizoen="zomer">
+        <div class="slider-labels"><span>Doorgaan tot het omvalt</span><span>Bewust en tijdig afbouwen</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--zomer)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- TWEEDE RONDE VERDIEPING -->
+    <div class="seizoen-header-vr sz-herfst">
+      <span class="sz-icon">🍂</span>
+      <div>
+        <div class="sz-naam">Herfst — verdieping</div>
+        <div class="sz-sub">Zelfreflectie en verantwoordelijkheid</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 13</div>
+      <div class="vraag-tekst">In hoeverre durft de organisatie eerlijk te kijken naar haar eigen aandeel in wat er misging — zonder de oorzaken alleen buiten te zoeken?</div>
+      <div class="slider-wrap" data-vraag="13" data-element="B" data-seizoen="herfst">
+        <div class="slider-labels"><span>Schuld ligt altijd buiten</span><span>Volledige zelfreflectie</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--herfst)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 14</div>
+      <div class="vraag-tekst">Hoe goed worden inzichten en ervaringen uit voltooide perioden bewaard en gedeeld — zodat de organisatie niet steeds opnieuw begint?</div>
+      <div class="slider-wrap" data-vraag="14" data-element="Ci" data-seizoen="herfst">
+        <div class="slider-labels"><span>Kennis verdampt na elk project</span><span>Kennis wordt zorgvuldig bewaard</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--herfst)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 15</div>
+      <div class="vraag-tekst">In hoeverre wordt er na een intensieve periode bewust stilgestaan bij wat er gelukt is — ook de kleine dingen, ook door de mensen zelf?</div>
+      <div class="slider-wrap" data-vraag="15" data-element="B" data-seizoen="herfst">
+        <div class="slider-labels"><span>Nooit stilgestaan bij succes</span><span>Bewust gevierd en gewaardeerd</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--herfst)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="seizoen-header-vr sz-winter">
+      <span class="sz-icon">❄️</span>
+      <div>
+        <div class="sz-naam">Winter — verdieping</div>
+        <div class="sz-sub">Loslaten als daad van leiderschap</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 16</div>
+      <div class="vraag-tekst">In hoeverre wordt het bewust stoppen met een initiatief gezien als een daad van leiderschap en moed — in plaats van als falen?</div>
+      <div class="slider-wrap" data-vraag="16" data-element="B" data-seizoen="winter">
+        <div class="slider-labels"><span>Stoppen = falen</span><span>Stoppen = leiderschap</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--winter)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 17</div>
+      <div class="vraag-tekst">Hoe goed wordt de leerervaring van een afgesloten periode meegenomen in de voorbereiding op wat er daarna komt — zodat het nieuwe niet los staat van het oude?</div>
+      <div class="slider-wrap" data-vraag="17" data-element="Ci" data-seizoen="winter">
+        <div class="slider-labels"><span>Perioden staan los van elkaar</span><span>Het verleden voedt het nieuwe</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--winter)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 18</div>
+      <div class="vraag-tekst">In hoeverre worden mensen actief uitgenodigd om af en toe pas op de plaats te maken — ook als de agenda dat niet lijkt toe te staan?</div>
+      <div class="slider-wrap" data-vraag="18" data-element="Ci" data-seizoen="winter">
+        <div class="slider-labels"><span>Vertragen wordt niet gewaardeerd</span><span>Ruimte voor bezinning is normaal</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--winter)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="seizoen-header-vr sz-lente">
+      <span class="sz-icon">🌱</span>
+      <div>
+        <div class="sz-naam">Lente — verdieping</div>
+        <div class="sz-sub">Verbinding tussen winter en nieuw begin</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 19</div>
+      <div class="vraag-tekst">In hoeverre zijn nieuwe strategische keuzes duidelijk verbonden met wat er in eerdere perioden is geleerd — en wordt dat verband ook expliciet gemaakt?</div>
+      <div class="slider-wrap" data-vraag="19" data-element="B" data-seizoen="lente">
+        <div class="slider-labels"><span>Nieuw beleid begint bij nul</span><span>Het verleden voedt het nieuwe</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--lente)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 20</div>
+      <div class="vraag-tekst">In hoeverre krijgen nieuwe initiatieven de tijd om te wortelen — zonder dat ze direct op resultaat worden afgerekend?</div>
+      <div class="slider-wrap" data-vraag="20" data-element="Ci" data-seizoen="lente">
+        <div class="slider-labels"><span>Direct afrekenen op resultaat</span><span>Wortelen krijgt de tijd</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--lente)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 21</div>
+      <div class="vraag-tekst">In hoeverre worden mensen in perioden van verandering en vernieuwing beschermd tegen overbelasting — zodat groei niet ten koste gaat van mensen?</div>
+      <div class="slider-wrap" data-vraag="21" data-element="Ci" data-seizoen="lente">
+        <div class="slider-labels"><span>Mensen worden uitgeput</span><span>Duurzame inzet wordt bewaakt</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="seizoen-header-vr sz-zomer">
+      <span class="sz-icon">☀️</span>
+      <div>
+        <div class="sz-naam">Zomer — verdieping</div>
+        <div class="sz-sub">Duurzame groei en tijdig afbouwen</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 22</div>
+      <div class="vraag-tekst">In hoeverre wordt een periode van succes bewust benut als voedingsbodem voor de volgende stap — in plaats van als eindpunt?</div>
+      <div class="slider-wrap" data-vraag="22" data-element="Ci" data-seizoen="zomer">
+        <div class="slider-labels"><span>Succes is het eindpunt</span><span>Succes voedt het volgende</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--zomer)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 23</div>
+      <div class="vraag-tekst">Hoe goed herkent de organisatie de signalen dat uitbreiden meer kost dan het oplevert — en handelt ze daar tijdig naar?</div>
+      <div class="slider-wrap" data-vraag="23" data-element="B" data-seizoen="zomer">
+        <div class="slider-labels"><span>Signalen worden genegeerd</span><span>Signalen worden tijdig herkend</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--zomer)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 24</div>
+      <div class="vraag-tekst">In hoeverre worden medewerkers actief betrokken bij het bewaken van een gezond en houdbaar werktempo?</div>
+      <div class="slider-wrap" data-vraag="24" data-element="Ci" data-seizoen="zomer">
+        <div class="slider-labels"><span>Alleen leiding bewaakt het tempo</span><span>Iedereen bewaakt het tempo</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--zomer)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ══ THEMA 5 — PRESTATIEDRUK & VERDRAAGZAAMHEID ═════════ -->
+    <div class="seizoen-header-vr sz-tempo">
+      <span class="sz-icon">⏳</span>
+      <div>
+        <div class="sz-naam">Versnellingsdrang</div>
+        <div class="sz-sub">Hoeveel ruimte is er voor vertraging en verdraagzaamheid?</div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 25</div>
+      <div class="vraag-tekst">In hoeverre slaagt de organisatie erin om de druk om continu zichtbare resultaten te leveren — van buiten én van binnenuit — te weerstaan en haar eigen ritme te bewaren?</div>
+      <div class="slider-wrap" data-vraag="25" data-element="Vd" data-seizoen="tempo">
+        <div class="slider-labels"><span>Overweldigende druk</span><span>Nauwelijks druk</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 26</div>
+      <div class="vraag-tekst">In hoeverre wordt een periode van weinig zichtbare activiteit — bezinning, heroriëntatie, herstel — binnen de organisatie geaccepteerd als productief?</div>
+      <div class="slider-wrap" data-vraag="26" data-element="Vd" data-seizoen="tempo">
+        <div class="slider-labels"><span>Rust = achterlopen</span><span>Rust = noodzakelijk en waardevol</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 27</div>
+      <div class="vraag-tekst">In hoeverre kan de organisatie een stille, minder productieve periode verdragen — zonder die periode onmiddellijk te vullen met nieuwe activiteit?</div>
+      <div class="slider-wrap" data-vraag="27" data-element="Vd" data-seizoen="tempo">
+        <div class="slider-labels"><span>Leegte wordt direct gevuld</span><span>Leegte wordt verdragen</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 28</div>
+      <div class="vraag-tekst">In hoeverre is er een gedeeld besef dat trage perioden noodzakelijk zijn voor duurzame groei — en handelt de organisatie daar ook naar?</div>
+      <div class="slider-wrap" data-vraag="28" data-element="Vd" data-seizoen="tempo">
+        <div class="slider-labels"><span>Geen besef, geen geduld</span><span>Diep besef, handelt ernaar</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 29</div>
+      <div class="vraag-tekst">In hoeverre wordt een nieuw strategisch traject pas echt ingezet als het vorige werkelijk is afgesloten — niet uit ongeduld of externe druk?</div>
+      <div class="slider-wrap" data-vraag="29" data-element="Vd" data-seizoen="tempo">
+        <div class="slider-labels"><span>Nieuwe trajecten starten prematuur</span><span>Nieuw begint als het oude klaar is</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="vraag">
+      <div class="vraag-nr">Vraag 30</div>
+      <div class="vraag-tekst">Hoe goed is de organisatie in staat om externe druk — van aandeelhouders, markt of media — te absorberen zonder de eigen koers en het eigen ritme los te laten?</div>
+      <div class="slider-wrap" data-vraag="30" data-element="Vd" data-seizoen="tempo">
+        <div class="slider-labels"><span>Externe druk verstoort alles</span><span>Organisatie behoudt haar ritme</span></div>
+        <div class="slider-track"><div class="slider-fill" style="background:var(--tempo)"></div><input type="range" min="0" max="10" value="5" oninput="ncUpdate(this)"></div>
+        <div class="slider-numbers"><button onclick="ncSet(this,0)" data-val="0">0</button><button onclick="ncSet(this,1)" data-val="1">1</button><button onclick="ncSet(this,2)" data-val="2">2</button><button onclick="ncSet(this,3)" data-val="3">3</button><button onclick="ncSet(this,4)" data-val="4">4</button><button onclick="ncSet(this,5)" data-val="5">5</button><button onclick="ncSet(this,6)" data-val="6">6</button><button onclick="ncSet(this,7)" data-val="7">7</button><button onclick="ncSet(this,8)" data-val="8">8</button><button onclick="ncSet(this,9)" data-val="9">9</button><button onclick="ncSet(this,10)" data-val="10">10</button></div>
+      </div>
+    </div>
+
+    <div class="submit-wrap">
+      <p>Alle dertig vragen beantwoord. Vijf thema's. Eén formule.<br>De uitkomst is een eerste indicatie — geen eindoordeel.</p>
+      <button class="btn-submit" onclick="ncBereken()">Bekijk mijn indicatie →</button>
+    </div>
+
+  </div><!-- /formulier -->
+
+  <!-- RESULTATEN -->
+  <div id="resultaten">
+
+    <!-- 1. UW INDICATIE — patroon direct zichtbaar -->
+    <div class="result-hero">
+      <h2>Jullie indicatie</h2>
+      <p id="res-intro"></p>
+      <div id="res-seizoen-blok" style="margin-top:16px;font-size:17px;color:rgba(255,255,255,0.7);line-height:1.7;"></div>
+      <div style="margin-top:28px;padding-top:24px;border-top:1px solid rgba(255,255,255,0.12);">
+        <div style="font-family:'Source Serif 4', Georgia, serif;font-size:19px;color:rgba(255,255,255,0.85);font-weight:600;margin-bottom:12px;">Jullie organisatiebeeld</div>
+        <div id="res-patroon-kop" style="font-family:'Source Serif 4', Georgia, serif;font-size:26px;color:var(--herfst-m);font-weight:400;"></div>
+        <div id="res-patroon-tekst" style="margin-top:10px;font-size:14px;color:rgba(255,255,255,0.55);line-height:1.7;max-width:520px;margin-left:auto;margin-right:auto;"></div>
+      </div>
+    </div>
+
+    <!-- 2. SCORES NATUURLIJKE CYCLUS -->
+    <div class="seizoen-intro">
+      <h3>Jullie scores per fase van de Natuurlijke Cyclus</h3>
+      <p>De vijf thema's die jullie zojuist invulden zijn verbonden aan de vier seizoenen van de Natuurlijke Cyclus — een model voor organische groei in organisaties. Hieronder zie je hoe jullie organisatie scoort per seizoen.</p>
+      <div class="seizoen-grid" id="seizoenGrid"></div>
+    </div>
+
+    <!-- 3. FORMULE -->
+    <div class="formule-sectie">
+      <h3>De formule van Organische Groei toegepast op jullie organisatie</h3>
+      <div class="formule-visueel" id="fVisueel"></div>
+      <div class="formule-uitkomst" id="fUitkomst"></div>
+      <div class="formule-legenda">
+        <strong>Bewustzijn (B)</strong> — ziet jullie organisatie wanneer een periode voorbij is en een nieuwe vraagt te beginnen?<br>
+        <strong>Cyclusintegratie (Ci)</strong> — wordt iedere fase werkelijk doorleefd en benut?<br>
+        <strong>Versnellingsdrang (Vd)</strong> — hoe groot is de druk om door te rennen? Een hoge Vd remt de organische groei.
+      </div>
+    </div>
+
+    <!-- 4. DRIE ELEMENTEN -->
+    <div class="element-sectie">
+      <h3>De drie elementen van de formule</h3>
+      <div class="element-grid" id="elementGrid"></div>
+    </div>
+
+    <!-- 5. EVOLUTIERICHTING -->
+    <div class="diagnose-sectie" id="diagnoseSectie">
+      <h3>Evolutierichting</h3>
+      <div class="diagnose-interventie" id="diagnoseInterventie"></div>
+    </div>
+
+    <!-- SOCIAL SHARE -->
+    <div class="share-sectie" id="shareSectie">
+      <h3>Deel je resultaat</h3>
+      <p class="share-sub">Daag je netwerk uit — wat is hun score?</p>
+      <div class="share-buttons" id="shareButtons"></div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta-sectie">
+      <h3>Wil je dit verdiepen?</h3>
+      <p>De Natuurlijke Cyclus biedt een volledig model voor organische groei — met een uitgebreid meetinstrument, begeleiding en een praktijkprogramma voor bestuurders en hun teams.</p>
+      <a href="/#contact" class="btn-cta">Neem contact op →</a>
+    </div>
+
+    <div class="toelichting">
+      <p>Deze quick scan geeft een eerste indicatie op basis van dertig vragen. De uitkomst is bedoeld als gespreksopener — niet als eindoordeel.</p>
+      <p>Voor een volledig beeld biedt het uitgebreide meetinstrument (64 vragen, leidersversie) een diepgaande analyse per fase en per seizoen.</p>
+    </div>
+
+    <button class="btn-opnieuw" onclick="ncOpnieuw()">← Opnieuw invullen</button>
+
+  </div><!-- /resultaten -->
+
+</div><!-- /nc-scan -->
+
+<script>
+// ── HELPERS ────────────────────────────────────────────────────────────────
+const gem    = arr => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 5;
+const pct    = v => Math.round(v * 10);        // 0–10 score → 0–100%
+const een    = v => Math.round(v * 10) / 10;   // 1 decimaal
+// G = (B × Ci) / Vd geeft bij gemiddelde scores (~5/5/5) uitkomst 5 → 50%
+// Bij lage Vd kan G hoger uitvallen dan 10; we cappen op 10
+const gSchaal = raw => Math.min(10, raw);
+
+// ── STAP-VOOR-STAP NAVIGATIE ──────────────────────────────────────────────
+const ncVragen = Array.from(document.querySelectorAll('.nc-scan .vraag'));
+const ncHeaders = Array.from(document.querySelectorAll('.nc-scan .seizoen-header-vr'));
+const ncSubmit = document.querySelector('.nc-scan .submit-wrap');
+let ncHuidig = 0;
+
+// Bouw een map: welke seizoen-header hoort bij welke vraag-index
+const ncHeaderMap = {};
+ncHeaders.forEach(h => {
+  // De header staat direct vóór een reeks vragen. Zoek de eerste .vraag erna.
+  let el = h.nextElementSibling;
+  while (el && !el.classList.contains('vraag')) el = el.nextElementSibling;
+  if (el) ncHeaderMap[ncVragen.indexOf(el)] = h;
+});
+
+// Voeg navigatie-knoppen toe aan iedere vraag
+ncVragen.forEach((v, i) => {
+  const nav = document.createElement('div');
+  nav.className = 'vraag-nav';
+  const isLast = (i === ncVragen.length - 1);
+  nav.innerHTML = `
+    <button class="btn-volgende" onclick="ncVolgende()">${isLast ? 'Bekijk mijn indicatie →' : 'Volgende →'}</button>
+    ${i > 0 ? '<br><button class="btn-terug" onclick="ncTerug()">← Vorige vraag</button>' : ''}
+  `;
+  v.appendChild(nav);
+});
+
+function ncToonVraag(idx) {
+  // Verberg alles
+  ncVragen.forEach(v => v.classList.remove('nc-active'));
+  ncHeaders.forEach(h => h.classList.remove('nc-active'));
+  ncSubmit.classList.remove('nc-active');
+
+  if (idx >= ncVragen.length) {
+    // Alle vragen beantwoord → toon submit
+    ncBereken();
+    return;
+  }
+
+  // Toon seizoen-header als die bij deze vraag hoort
+  if (ncHeaderMap[idx]) {
+    ncHeaderMap[idx].classList.add('nc-active');
+  }
+
+  // Toon de vraag
+  ncVragen[idx].classList.add('nc-active');
+  ncHuidig = idx;
+
+  // Toon "Volgende" knop als deze vraag al beantwoord is
+  const wrap = ncVragen[idx].querySelector('.slider-wrap');
+  const btn = ncVragen[idx].querySelector('.btn-volgende');
+  if (wrap.dataset.touched === 'true') {
+    btn.classList.add('nc-visible');
+  } else {
+    btn.classList.remove('nc-visible');
+  }
+
+  // Scroll naar boven van het formulier
+  document.querySelector('.nc-scan').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function ncVolgende() {
+  if (ncHuidig >= ncVragen.length - 1) {
+    ncBereken();
+  } else {
+    ncToonVraag(ncHuidig + 1);
+  }
+}
+
+function ncTerug() {
+  if (ncHuidig > 0) ncToonVraag(ncHuidig - 1);
+}
+
+// Start met vraag 1
+ncToonVraag(0);
+
+// ── SLIDER ─────────────────────────────────────────────────────────────────
+function ncUpdate(input) {
+  const wrap = input.closest('.slider-wrap');
+  const val = parseInt(input.value);
+  wrap.dataset.touched = 'true';
+  wrap.querySelector('.slider-fill').style.width = (val / 10 * 100) + '%';
+  wrap.querySelectorAll('.slider-numbers button').forEach(b =>
+    b.classList.toggle('active', parseInt(b.dataset.val) === val)
+  );
+  ncProgress();
+  // Toon de "Volgende" knop
+  const vraag = wrap.closest('.vraag');
+  const btn = vraag.querySelector('.btn-volgende');
+  if (btn) btn.classList.add('nc-visible');
+}
+
+function ncSet(btn, val) {
+  const wrap = btn.closest('.slider-wrap');
+  const input = wrap.querySelector('input[type=range]');
+  input.value = val;
+  ncUpdate(input);
+}
+
+// Kleur per seizoen instellen + slider-fill op 0% zetten bij start
+document.querySelectorAll('.nc-scan .slider-wrap').forEach(wrap => {
+  const map = { herfst:'#8B4513', winter:'#1C3A5E', lente:'#2D6A2D', zomer:'#B8860B', tempo:'#4A4A6A' };
+  wrap.style.setProperty('--ac', map[wrap.dataset.seizoen] || '#333');
+  wrap.querySelector('.slider-fill').style.width = '0%';
+  wrap.dataset.touched = 'false';
+});
+
+function ncProgress() {
+  const total  = ncVragen.length;
+  const filled = document.querySelectorAll('.nc-scan .slider-wrap[data-touched="true"]').length;
+  document.getElementById('progressFill').style.width  = (filled/total*100)+'%';
+  document.getElementById('progressLabel').textContent = filled+' / '+total;
+}
+ncProgress();
+
+// ── BEREKENING ─────────────────────────────────────────────────────────────
+function ncBereken() {
+  const scores = {};
+  document.querySelectorAll('.nc-scan .slider-wrap').forEach(wrap => {
+    scores[wrap.dataset.vraag] = {
+      val: parseInt(wrap.querySelector('input[type=range]').value),
+      element: wrap.dataset.element,
+      seizoen: wrap.dataset.seizoen
+    };
+  });
+
+  const sz = { herfst:[], winter:[], lente:[], zomer:[] };
+  const B=[], Ci=[], Vd_druk=[], Vd_tol=[];
+  const vdDruk = [];               // geen druk-vragen meer
+  const vdTol  = [25,26,27,28,29,30]; // hoog = minder versnellingsdrang (omgekeerd)
+
+  Object.entries(scores).forEach(([nr,s]) => {
+    const n = parseInt(nr);
+    if (sz[s.seizoen]) sz[s.seizoen].push(s.val);
+    if (s.element==='B')  B.push(s.val);
+    if (s.element==='Ci') Ci.push(s.val);
+    if (s.element==='Vd') {
+      if (vdDruk.includes(n)) Vd_druk.push(s.val);
+      else Vd_tol.push(s.val);
+    }
+  });
+
+  const Bs      = gem(B);
+  const Cis     = gem(Ci);
+  // Vd: druk-vragen tellen direct mee (hoog = meer Vd)
+  // tol-vragen omgekeerd (hoog = minder Vd, dus 10-x)
+  const vdAlles = [
+    ...Vd_druk,
+    ...Vd_tol.map(v => 10 - v)
+  ];
+  const Vds     = gem(vdAlles);
+  const Vd_safe = Math.max(Vds, 1);
+  const G_raw   = (Bs * Cis) / Vd_safe;
+  const Gs      = gSchaal(G_raw);
+
+  ncToon(Bs, Cis, Vds, Gs, G_raw, {
+    herfst: gem(sz.herfst), winter: gem(sz.winter),
+    lente:  gem(sz.lente),  zomer:  gem(sz.zomer)
+  });
+}
+
+function ncToon(B, Ci, Vd, G, G_raw, sz) {
+  document.getElementById('formulier').style.display = 'none';
+  document.getElementById('resultaten').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // Intro + patroon direct in hero
+  const minSeizoen = Object.entries(sz).sort((a,b)=>a[1]-b[1])[0][0];
+  const allEqual = Object.values(sz).every(v => Math.abs(v - Object.values(sz)[0]) < 0.5);
+  const d = diagnoseer(B, Ci, Vd, allEqual ? null : minSeizoen);
+  const sNaam  = { herfst:'Herfst', winter:'Winter', lente:'Lente', zomer:'Zomer' };
+  const sThema = { herfst:'Terugblikken & leren', winter:'Loslaten & bezinnen', lente:'Richting & vernieuwing', zomer:'Groeien & tijdig afbouwen' };
+  const sIcoon = { herfst:'🍂', winter:'❄️', lente:'🌱', zomer:'☀️' };
+  document.getElementById('res-intro').textContent = '';
+  document.getElementById('res-seizoen-blok').innerHTML = allEqual
+    ? `De scores zijn gelijkmatig verdeeld over alle seizoenen.`
+    : `Het seizoen dat de meeste aandacht vraagt is: <strong style="color:#fff">${sIcoon[minSeizoen]} ${sNaam[minSeizoen]}</strong><br>${sThema[minSeizoen]}`;
+  document.getElementById('res-patroon-kop').innerHTML =
+    `<span style="font-size:34px;vertical-align:middle;margin-right:12px;">${d.picto}</span>${d.patroon}`;
+  document.getElementById('res-patroon-tekst').textContent = d.tekst;
+
+  // ── Formule visueel ────────────────────────────────────────────────────
+  document.getElementById('fVisueel').innerHTML = `
+    <div class="f-term">
+      <div class="f-letter" style="color:var(--B-color)">B</div>
+      <div class="f-naam" style="color:var(--B-color)">Bewustzijn</div>
+      <div class="f-score" style="background:var(--B-color)">${een(B)} / 10</div>
+    </div>
+    <div class="f-op">×</div>
+    <div class="f-term">
+      <div class="f-letter" style="color:var(--Ci-color)">Ci</div>
+      <div class="f-naam" style="color:var(--Ci-color)">Cyclusintegratie</div>
+      <div class="f-score" style="background:var(--Ci-color)">${een(Ci)} / 10</div>
+    </div>
+    <div class="f-op">/</div>
+    <div class="f-term">
+      <div class="f-letter" style="color:var(--Vd-color)">Vd</div>
+      <div class="f-naam" style="color:var(--Vd-color)">Versnellingsdrang</div>
+      <div class="f-score" style="background:var(--Vd-color)">${een(Vd)} / 10</div>
+    </div>
+    <div class="f-op">=</div>
+    <div class="f-term">
+      <div class="f-letter" style="color:var(--herfst)">G</div>
+      <div class="f-naam" style="color:var(--herfst)">Organische groei</div>
+      <div class="f-score" style="background:var(--herfst)">${pct(G)}%</div>
+    </div>`;
+
+  const Glabel = G>=7 ? 'Bloeiend' : G>=5 ? 'Groeiend' : G>=3 ? 'Ontkiemend' : 'Sluimerend';
+  document.getElementById('fUitkomst').innerHTML = `
+    <div>
+      <div class="fu-label">Groei-indicatie</div>
+      <div class="fu-waarde">G = ${pct(G)}%</div>
+    </div>
+    <div class="fu-tekst">${Glabel}</div>
+    <div class="fu-berekening">(${een(B)} × ${een(Ci)}) / ${een(Math.max(Vd,1))} = ${Math.round(G_raw*10)/10} → ${pct(G)}%</div>`;
+
+  // ── Seizoen kaarten — met duiding ──────────────────────────────────────
+  const seizoenData = [
+    { key:'herfst', naam:'Herfst', icon:'🍂', kleur:'#8B4513', licht:'#FDF3E7',
+      thema:'Terugblikken & leren',
+      duiding:'In de herfst oogst een organisatie wat zij heeft opgebouwd en kijkt eerlijk terug. Reflectie, verantwoordelijkheid en het delen van lessen zijn de kern van deze fase.' },
+    { key:'winter', naam:'Winter', icon:'❄️', kleur:'#1C3A5E', licht:'#EBF0F7',
+      thema:'Loslaten & bezinnen',
+      duiding:'De winter vraagt om vertragen, loslaten en ruimte maken. Organisaties die deze fase overslaan, missen de bezinning die nodig is om écht nieuw te beginnen.' },
+    { key:'lente',  naam:'Lente',  icon:'🌱', kleur:'#2D6A2D', licht:'#EBF5EB',
+      thema:'Richting & vernieuwing',
+      duiding:'In de lente ontkiemen nieuwe ideeën en wordt de richting voor de volgende periode bepaald. Gedragen vernieuwing vraagt om ruimte voor verbeelding vóór uitvoering.' },
+    { key:'zomer',  naam:'Zomer',  icon:'☀️', kleur:'#B8860B', licht:'#FDFAEB',
+      thema:'Groeien & tijdig afbouwen',
+      duiding:'De zomer is de fase van zichtbare groei en resultaat. Duurzame organisaties weten wanneer ze moeten afbouwen — vóórdat uitputting hen dwingt.' },
+  ];
+
+  const grid = document.getElementById('seizoenGrid');
+  grid.innerHTML = '';
+  seizoenData.forEach(s => {
+    const v = sz[s.key];
+    const p = pct(v);
+    grid.innerHTML += `
+      <div class="seizoen-kaart" style="background:${s.licht};border-color:${s.kleur}33">
+        <div class="sk-kop">
+          <span class="sk-icon">${s.icon}</span>
+          <span class="sk-naam" style="color:${s.kleur}">${s.naam}</span>
+        </div>
+        <div class="sk-thema">${s.thema}</div>
+        <div class="sk-bar-bg"><div class="sk-bar" style="background:${s.kleur}" data-t="${p}"></div></div>
+        <div class="sk-pct" style="color:${s.kleur}">${p}%</div>
+        <div class="sk-label">${scoreTekst(v)}</div>
+        <div class="sk-duiding">${s.duiding}</div>
+      </div>`;
+  });
+
+  // ── Element cards ──────────────────────────────────────────────────────
+  const elData = [
+    { naam:'Bewustzijn (B)',        score:B,  kleur:'#1C3A5E', licht:'#EAF4FB',
+      omschr:'Ziet de organisatie in welke fase zij zich bevindt?', omgekeerd:false },
+    { naam:'Cyclusintegratie (Ci)', score:Ci, kleur:'#2D6A2D', licht:'#EBF5EB',
+      omschr:'Wordt iedere fase werkelijk doorleefd en benut?', omgekeerd:false },
+    { naam:'Versnellingsdrang (Vd)',score:Vd, kleur:'#5C2D6E', licht:'#F5EBF9',
+      omschr:'Hoog = grote druk om door te rennen — dat remt de groei.', omgekeerd:true },
+  ];
+  const egrid = document.getElementById('elementGrid');
+  egrid.innerHTML = '';
+  elData.forEach(el => {
+    const p = pct(el.score);
+    const lbl = el.omgekeerd ? vdLabel(el.score) : scoreTekst(el.score);
+    egrid.innerHTML += `
+      <div class="element-kaart" style="background:${el.licht};border-color:${el.kleur}33">
+        <div class="ek-kop">
+          <div class="ek-naam" style="color:${el.kleur}">${el.naam}</div>
+          <div class="ek-score" style="color:${el.kleur}">${p}%</div>
+        </div>
+        <div class="ek-bar-bg"><div class="ek-bar" style="background:${el.kleur}" data-t="${p}"></div></div>
+        <div class="ek-label" style="color:${el.kleur}">${lbl}</div>
+        <div style="font-size:11px;color:#aaa;margin-top:6px;font-style:italic">${el.omschr}</div>
+      </div>`;
+  });
+
+  // ── Evolutierichting ──────────────────────────────────────────────────
+  document.getElementById('diagnoseInterventie').innerHTML = d.interventie;
+
+  // Animeer balken
+  setTimeout(() => {
+    document.querySelectorAll('.nc-scan .sk-bar, .nc-scan .ek-bar').forEach(b => {
+      b.style.width = b.dataset.t + '%';
+    });
+  }, 80);
+
+  // ── Social share ──────────────────────────────────────────────────────
+  const scanUrl = 'https://joyfulness-site.vercel.app/quickscan-organische-groei/';
+  const shareTekst = `${d.picto} Mijn organisatie scoort "${d.patroon}" (G = ${pct(G)}%) op de Organische Groei Quick Scan van Joyfulness.\n\nBewustzijn ${pct(B)}% · Cyclusintegratie ${pct(Ci)}% · Versnellingsdrang ${pct(Vd)}%\n\nDeze scan laat zien in hoe jullie organisatie scoort op de drivers van organische groei — natuurlijk innoveren.\n\nBenieuwd hoe jullie organisatie scoort? Doe de scan (10 min):`;
+  const shareSubject = `${d.picto} Mijn score: ${d.patroon} (${pct(G)}%) — Organische Groei Quick Scan`;
+
+  const shareVolledig = shareTekst + '\n' + scanUrl;
+  const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareVolledig)}`;
+  const emailUrl = `mailto:?subject=${encodeURIComponent(shareSubject)}&body=${encodeURIComponent(shareTekst + '\n\n' + scanUrl)}`;
+
+  document.getElementById('shareButtons').innerHTML = `
+    <button onclick="ncKopieer(this)" class="share-btn share-btn--copy" data-tekst="${shareVolledig.replace(/"/g, '&quot;')}">
+      <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+      Kopieer tekst
+    </button>
+    <a href="${whatsappUrl}" target="_blank" rel="noopener" class="share-btn share-btn--whatsapp">
+      <svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      WhatsApp
+    </a>
+    <a href="${emailUrl}" class="share-btn share-btn--email">
+      <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+      E-mail
+    </a>`;
+}
+
+function scoreTekst(v) {
+  if (v>=8) return 'Sterk aanwezig';
+  if (v>=6) return 'Goed aanwezig';
+  if (v>=4) return 'Gedeeltelijk aanwezig';
+  if (v>=2) return 'Beperkt aanwezig';
+  return 'Nauwelijks aanwezig';
+}
+
+function vdLabel(v) {
+  if (v>=7) return '⚠ Hoge versnellingsdrang';
+  if (v>=5) return 'Matige versnellingsdrang';
+  if (v>=3) return 'Beperkte versnellingsdrang';
+  return '✓ Lage versnellingsdrang';
+}
+
+function diagnoseer(B, Ci, Vd, minS) {
+  const bH = B>=5, cH = Ci>=5, vH = Vd>6;
+  const sNaam  = { herfst:'herfst', winter:'winter', lente:'lente', zomer:'zomer' };
+  const sIcoon = { herfst:'🍂', winter:'❄️', lente:'🌱', zomer:'☀️' };
+  const sThema = {
+    herfst: 'oogsten en eerlijk terugkijken op wat werkelijk is bereikt',
+    winter: 'vertragen, loslaten en ruimte maken voor bezinning',
+    lente:  'richting bepalen en ruimte geven aan wat nieuw wil ontstaan',
+    zomer:  'groeien en tijdig herkennen wanneer afbouwen nodig is'
+  };
+  const seizoenAdvies = minS
+    ? `Geef bijzondere aandacht aan de <em>${sIcoon[minS]} ${sNaam[minS]}</em>: ${sThema[minS]}.`
+    : `De seizoenen zijn gelijkmatig in balans — versterk de cyclus als geheel.`;
+
+  if (!bH &&  cH &&  vH) return {
+    picto: '🌪️', patroon: 'Windzaaiers',
+    tekst: 'De organisatie verspreidt voortdurend initiatieven en plannen, maar zonder dat ze werkelijk wortel schieten. Er is veel beweging, maar weinig verdieping. Wat wordt gezaaid, krijgt geen tijd om te groeien.',
+    interventie: `<strong>Geef de grond rust — en leer zaaien op de goede plek.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verhoog <strong>B (Bewustzijn)</strong> door bewuste reflectiemomenten in te bouwen, en verlaag <strong>Vd (Versnellingsdrang)</strong> door de druk om continu zichtbaar te presteren te verminderen.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra initiatieven de tijd krijgen om te wortelen.</em>` };
+  if (!bH &&  cH && !vH) return {
+    picto: '🌾', patroon: 'Rustende Akker',
+    tekst: 'De grond ligt stil. Er is rust, maar de energie ontbreekt om iets nieuws te laten ontstaan. Er is potentie aanwezig — maar nog geen gerichte verzorging van wat kan groeien.',
+    interventie: `<strong>Bereid de grond voor — groei begint met gerichte aandacht.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verhoog <strong>B (Bewustzijn)</strong> door te onderzoeken waar energie op wil komen, en verhoog <strong>Ci (Cyclusintegratie)</strong> door de fasen van groei bewust te doorlopen.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra er gerichte energie in de grond wordt gestoken.</em>` };
+
+  if (!bH && !cH &&  vH) return {
+    picto: '🌪️', patroon: 'Windzaaiers',
+    tekst: 'De organisatie verspreidt voortdurend initiatieven en plannen, maar zonder dat ze werkelijk wortel schieten. Er is veel beweging, maar weinig verdieping. Wat wordt gezaaid, krijgt geen tijd om te groeien.',
+    interventie: `<strong>Geef de grond rust — en leer zaaien op de goede plek.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verhoog <strong>B (Bewustzijn)</strong> door bewuste reflectiemomenten in te bouwen, en verlaag <strong>Vd (Versnellingsdrang)</strong> door de druk om continu zichtbaar te presteren te verminderen.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra initiatieven de tijd krijgen om te wortelen.</em>` };
+
+  if (!bH && !cH && !vH) return {
+    picto: '🌾', patroon: 'Rustende Akker',
+    tekst: 'De grond ligt stil. Er is rust, maar de energie ontbreekt om iets nieuws te laten ontstaan. Er is potentie aanwezig — maar nog geen gerichte verzorging van wat kan groeien.',
+    interventie: `<strong>Bereid de grond voor — groei begint met gerichte aandacht.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verhoog <strong>B (Bewustzijn)</strong> door te onderzoeken waar energie op wil komen, en verhoog <strong>Ci (Cyclusintegratie)</strong> door de fasen van groei bewust te doorlopen.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra er gerichte energie in de grond wordt gestoken.</em>` };
+
+  if ( bH && !cH &&  vH) return {
+    picto: '🌱', patroon: 'Vroege Uitlopers',
+    tekst: 'De organisatie voelt dat er iets nieuws wil ontstaan, maar de groei wordt geforceerd. Ideeën worden te snel uitgevoerd en krijgen geen tijd om te rijpen — zoals jonge scheuten die te vroeg uitlopen en kwetsbaar zijn voor vorst.',
+    interventie: `<strong>Geef de scheuten bescherming — niet iedere kiem is al klaar voor buiten.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verhoog <strong>Ci (Cyclusintegratie)</strong> door iedere fase werkelijk te doorleven, en verlaag <strong>Vd (Versnellingsdrang)</strong> door de druk om snel resultaat te tonen te verminderen.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra rijping vóór uitvoering komt.</em>` };
+
+  if ( bH && !cH && !vH) return {
+    picto: '🧊', patroon: 'Bevroren Knoppen',
+    tekst: 'De potentie is zichtbaar, maar de beweging blijft uit. De organisatie ziet wat mogelijk is, maar iets houdt de ontplooiing tegen — zoals knoppen die klaar zijn om te openen, maar nog vastzitten in de kou.',
+    interventie: `<strong>Breng warmte in de grond — een kleine beweging breekt het ijs.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verhoog <strong>Ci (Cyclusintegratie)</strong> door de cyclus actief te doorlopen in plaats van bij het inzicht te blijven staan.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra inzicht wordt omgezet in beweging.</em>` };
+
+  if ( bH &&  cH &&  vH) return {
+    picto: '🌿', patroon: 'Kasgroei',
+    tekst: 'De organisatie groeit en ontwikkelt zich, maar onder hoge druk. Er is veel energie en productie — maar het tempo dreigt de natuurlijke balans te verstoren. Snelle groei onder kunstmatige druk.',
+    interventie: `<strong>Zet de ramen open — een kas heeft buitenlucht nodig.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: verlaag <strong>Vd (Versnellingsdrang)</strong> door de externe en interne druk te benoemen en te begrenzen.<br><br>
+      <em>Jullie kunnen doorgroeien naar <strong>🌳 Levende Groei</strong> — zodra de cyclus op eigen kracht draait, zonder kunstmatige druk.</em>` };
+
+  return {
+    picto: '🌳', patroon: 'Levende Groei',
+    tekst: 'De organisatie beweegt mee met de natuurlijke cyclus van zaaien, wortelen, groeien en oogsten. Bewustzijn, integratie en tempo zijn in balans. Groei ontstaat organisch en duurzaam.',
+    interventie: `<strong>Koester wat leeft — en bereid de volgende cyclus voor.</strong><br><br>
+      ${seizoenAdvies}<br><br>
+      In de formule: bewaar de balans tussen <strong>B</strong>, <strong>Ci</strong> en <strong>Vd</strong> — en wees alert wanneer de versnellingsdrang weer toeneemt.<br><br>
+      <em>Dit is de meest vruchtbare toestand. Blijf bewegen met de seizoenen.</em>` };
+}
+
+function ncKopieer(btn) {
+  const tekst = btn.dataset.tekst;
+  navigator.clipboard.writeText(tekst).then(() => {
+    btn.classList.add('copied');
+    btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg> Gekopieerd!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Kopieer tekst';
+    }, 2500);
+  });
+}
+
+function ncOpnieuw() {
+  document.getElementById('resultaten').style.display = 'none';
+  document.getElementById('formulier').style.display  = 'block';
+  // Reset alle sliders naar onbeantwoord
+  document.querySelectorAll('.nc-scan .slider-wrap').forEach(wrap => {
+    wrap.dataset.touched = 'false';
+    wrap.querySelector('input[type=range]').value = 5;
+    wrap.querySelector('.slider-fill').style.width = '0%';
+    wrap.querySelectorAll('.slider-numbers button').forEach(b => b.classList.remove('active'));
+  });
+  // Reset alle "Volgende" knoppen
+  document.querySelectorAll('.nc-scan .btn-volgende').forEach(b => b.classList.remove('nc-visible'));
+  ncProgress();
+  ncToonVraag(0);
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+</script>
+
+</body>
+</html>
