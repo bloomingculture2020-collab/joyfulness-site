@@ -4,7 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quick Scan — Verticale Leiderschapsontwikkeling</title>
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,500;1,8..60,600&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family:'Golpherd'; src:url('/fonts/Golpherd.ttf') format('truetype'); font-weight:700; font-display:swap; }
+  @font-face { font-family:'Libertad'; src:url('/fonts/Libertad-Regular.otf') format('opentype'); font-weight:400; font-display:swap; }
+  @font-face { font-family:'Libertad'; src:url('/fonts/Libertad-ExtraBold.otf') format('opentype'); font-weight:800; font-display:swap; }
+  @font-face { font-family:'Noto Sans'; src:url('/fonts/NotoSans-Light.ttf') format('truetype'); font-weight:300; font-display:swap; }
+  @font-face { font-family:'Noto Sans'; src:url('/fonts/NotoSans-Bold.ttf') format('truetype'); font-weight:700; font-display:swap; }
+</style>
 <style>
   :root {
     --ink: #131516;
@@ -33,7 +39,7 @@
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     background: var(--paper);
     color: var(--ink);
     min-height: 100vh;
@@ -96,7 +102,7 @@
   }
 
   .intro-label {
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 11px;
     font-weight: 500;
     letter-spacing: 0.2em;
@@ -106,7 +112,7 @@
   }
 
   .intro-title {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: clamp(28px, 5.5vw, 42px);
     font-weight: 300;
     line-height: 1.1;
@@ -115,7 +121,7 @@
   }
 
   .intro-subtitle {
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: clamp(14px, 2.5vw, 17px);
     font-weight: 300;
     font-style: normal;
@@ -155,7 +161,7 @@
   }
 
   .intro-meta-number {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 28px;
     font-weight: 300;
     color: var(--accent-gold-light);
@@ -174,7 +180,7 @@
     padding: 14px 40px;
     background: #2F6933;
     color: #fff;
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.12em;
@@ -259,7 +265,7 @@
   }
 
   .quiz-question {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 26px;
     font-weight: 400;
     color: var(--ink);
@@ -324,7 +330,7 @@
   }
 
   .option-text {
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 17px;
     font-weight: 400;
     color: var(--ink-soft);
@@ -351,7 +357,7 @@
     background: none;
     border: 1px solid var(--line);
     color: var(--ink-muted);
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 15px;
     font-weight: 400;
     cursor: pointer;
@@ -370,7 +376,7 @@
     padding: 14px 36px;
     background: #2F6933;
     color: white;
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 15px;
     font-weight: 500;
     letter-spacing: 0.08em;
@@ -447,7 +453,7 @@
   }
 
   .results-title {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: clamp(28px, 5vw, 42px);
     font-weight: 300;
     color: var(--paper);
@@ -457,7 +463,7 @@
   }
 
   .results-subtitle {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: clamp(16px, 3vw, 20px);
     font-weight: 300;
     font-style: italic;
@@ -483,7 +489,7 @@
   }
 
   .span-text {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 20px;
     font-weight: 400;
     font-style: italic;
@@ -540,7 +546,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 18px;
     font-weight: 400;
     flex-shrink: 0;
@@ -560,7 +566,7 @@
   .niveau-card[data-niveau="Alchemist"]      .niveau-rank { background: var(--c-alchemist); }
 
   .niveau-name {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 24px;
     font-weight: 400;
     color: var(--ink);
@@ -604,7 +610,7 @@
   }
 
   .niveau-invite {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 16px;
     font-style: italic;
     color: var(--ink-soft);
@@ -658,7 +664,7 @@
   }
 
   .section-title {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 20px;
     font-weight: 400;
     color: var(--ink);
@@ -674,7 +680,7 @@
     border-radius: var(--radius);
     padding: 28px 28px 24px;
     margin-bottom: 36px;
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     color: var(--ink);
     line-height: 1.75;
     font-size: 14.5px;
@@ -694,7 +700,7 @@
   }
 
   .persoonlijk-beeld-title {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 19px;
     font-weight: 400;
     font-style: italic;
@@ -722,7 +728,7 @@
   }
 
   .cta-section-title {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 20px;
     color: #fff;
     margin-bottom: 8px;
@@ -758,7 +764,7 @@
     margin-top: 48px;
     padding: 24px;
     border-top: 1px solid var(--line);
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 13px;
     color: var(--ink-soft);
     line-height: 1.7;
@@ -782,7 +788,7 @@
     border: 1px solid var(--line);
   }
   .share-sectie h3 {
-    font-family: 'Source Serif 4', Georgia, serif;
+    font-family: 'Golpherd', 'Libertad', sans-serif;
     font-size: 19px;
     color: var(--ink);
     margin-bottom: 6px;
@@ -809,7 +815,7 @@
     border-radius: 999px;
     border: 1.5px solid #2F6933;
     background: transparent;
-    font-family: 'Jost', sans-serif;
+    font-family: 'Libertad', sans-serif;
     font-size: 12.5px;
     font-weight: 600;
     letter-spacing: 0.03em;
@@ -836,7 +842,7 @@
     padding: 16px;
     background: #131516;
     color: var(--paper);
-    font-family: 'Inter', 'Source Serif 4', Georgia, serif;
+    font-family: 'Inter', 'Golpherd', 'Libertad', sans-serif;
     font-size: 13px;
     font-weight: 500;
     letter-spacing: 0.12em;

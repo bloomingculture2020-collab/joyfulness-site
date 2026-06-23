@@ -17,13 +17,16 @@ const leaders = [
   title="Joyfulness Coöperatie"
   description="Joyfulness — coöperatie voor de evolutie van leiderschap en organiseren. Binnenkort: een nieuw boek over de innerlijke reis naar het volgende paradigma."
 >
-  <header class="site">
+  <header class="site" id="site-header">
     <img src="/images/coop-logo.png" alt="Joyfulness logo" width="42" height="42" />
     <div>
       <div class="wordmark-name">Joyfulness</div>
       <div class="wordmark-kicker">Coöperatie</div>
     </div>
-    <nav class="site-nav">
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav" id="site-nav">
       <a href="/quickscan-verticale-leiderschapsontwikkeling/">Quickscan Leiderschap</a>
       <a href="/quickscan-organische-groei/">Quickscan Organische Groei</a>
       <a href="/#contact">Contact</a>
@@ -115,6 +118,14 @@ const leaders = [
     <section class="doorkijkje">
       <div class="card-dark doorkijkje-grid">
         <div class="doorkijkje-img">
+          <img src="/images/doorkijkje-janine.jpg" alt="Citaat van Janine Vos uit het boek" class="zoomable" title="Klik om te vergroten" />
+          <button class="zoom-hint" aria-label="Vergroten">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35M11 8v6M8 11h6"/></svg>
+          </button>
+        </div>
+        <!-- Lightbox -->
+        <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Vergroot citaat">
+          <button class="lightbox-close" aria-label="Sluiten">&#x2715;</button>
           <img src="/images/doorkijkje-janine.jpg" alt="Citaat van Janine Vos uit het boek" />
         </div>
         <div>
@@ -254,8 +265,8 @@ const leaders = [
   <style>
     .wrap { max-width: var(--max-width); margin: 0 auto; padding: 0 1.75rem; }
     .kicker {
-      font-family: 'Jost', sans-serif;
-      font-weight: 600;
+      font-family: 'Libertad', sans-serif;
+      font-weight: 800;
       font-size: 0.78rem;
       letter-spacing: 0.14em;
       text-transform: uppercase;
@@ -265,24 +276,44 @@ const leaders = [
 
     /* header */
     header.site {
-      display: flex; align-items: center; gap: 0.75rem;
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
       padding: 2.4rem 1.75rem 1.2rem; max-width: var(--max-width); margin: 0 auto;
+      position: relative;
     }
-    header.site img { width: 42px; height: 42px; }
+    header.site > img { width: 42px; height: 42px; flex-shrink: 0; }
     .wordmark-name { font-family:'Jost',sans-serif; font-weight:700; font-size:1.25rem; line-height:1; }
     .wordmark-kicker { font-family:'Jost',sans-serif; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-soft); margin-top: 0.4rem; }
     .site-nav {
-      margin-left: auto; display: flex; align-items: center; gap: 1.8rem; flex-wrap: wrap;
+      margin-left: auto; display: flex; align-items: center; gap: 1.8rem;
     }
     .site-nav a {
-      font-family: 'Jost', sans-serif; font-weight: 600; font-size: 0.82rem;
+      font-family: 'Libertad', sans-serif; font-weight: 600; font-size: 0.82rem;
       letter-spacing: 0.02em; color: var(--text); text-decoration: none;
       border-bottom: 1px solid transparent; padding-bottom: 2px; transition: color 0.15s, border-color 0.15s;
     }
     .site-nav a:hover { color: var(--green-dark); border-color: var(--green); }
+
+    /* hamburger */
+    .nav-toggle {
+      display: none; margin-left: auto; flex-direction: column; justify-content: center;
+      gap: 5px; background: none; border: none; cursor: pointer; padding: 4px 0; width: 28px;
+    }
+    .nav-toggle span {
+      display: block; height: 2px; width: 100%; background: var(--text);
+      border-radius: 2px; transition: transform 0.22s, opacity 0.22s;
+    }
+    header.site.nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    header.site.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+    header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
     @media (max-width: 760px) {
-      header.site { flex-wrap: wrap; }
-      .site-nav { margin-left: 0; width: 100%; gap: 1.2rem; margin-top: 0.8rem; }
+      .nav-toggle { display: flex; }
+      .site-nav {
+        display: none; width: 100%; flex-direction: column; align-items: flex-start;
+        gap: 0; margin-left: 0; padding: 0.4rem 0 0.8rem; border-top: 1px solid var(--border);
+      }
+      .site-nav a { padding: 0.7rem 0; font-size: 0.95rem; width: 100%; border-bottom: none; }
+      header.site.nav-open .site-nav { display: flex; }
     }
 
     /* dot divider */
@@ -309,7 +340,7 @@ const leaders = [
     .contact-grid { display:grid; grid-template-columns: 1.4fr 1fr; gap: 2.6rem; align-items:start; }
     #contact-form { display:flex; flex-direction:column; gap: 0.8rem; margin-top: 1.4rem; }
     #contact-form input, #contact-form textarea {
-      font-family: 'Source Serif 4', serif; font-size: 1rem; padding: 0.7rem 0.9rem;
+      font-family: 'Libertad', sans-serif; font-size: 1rem; padding: 0.7rem 0.9rem;
       border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text);
       resize: vertical;
     }
@@ -321,13 +352,17 @@ const leaders = [
     #contact-form button:hover { background: var(--green-dark); }
     .contact-call { border-left: 1px solid var(--border); padding-left: 2.4rem; text-align:center; }
     .call-btn {
-      display:inline-block; margin-top: 1.2rem; padding: 0.95rem 1.8rem;
-      background: var(--green-dark); color:#fff !important; text-decoration:none;
-      border-radius: 999px; font-family:'Jost',sans-serif; font-weight:600; font-size:1.02rem;
+      display:inline-block; margin-top: 1.2rem; padding: 0.85rem 1.8rem;
+      background: var(--green); color:#fff !important; text-decoration:none;
+      border-radius: 999px; font-family:'Jost',sans-serif; font-weight:600; font-size:0.85rem;
+      letter-spacing: 0.04em; text-transform: uppercase;
     }
+    .call-btn:hover { background: var(--green-dark); }
     @media (max-width: 760px) {
       .contact-grid { grid-template-columns: 1fr; }
       .contact-call { border-left:none; padding-left:0; border-top:1px solid var(--border); padding-top:1.6rem; }
+      #contact-form button { width: 100%; text-align: center; justify-content: center; }
+      .call-btn { display: block; text-align: center; }
     }
 
     /* wij werken voor */
@@ -343,6 +378,10 @@ const leaders = [
       transition: filter .2s ease;
     }
     .logo-grid img:hover { filter: none; }
+    @media (max-width: 540px) {
+      .logo-grid { flex-direction: column; gap: 1.6rem; }
+      .logo-grid img { max-width: 170px; max-height: 60px; }
+    }
 
     /* book section */
     .book-section { background: var(--bg-soft); border-radius: 18px; overflow:hidden; }
@@ -356,7 +395,7 @@ const leaders = [
     .book-grid h2 { font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom: 1.1rem; }
     .book-grid p { font-size: 1.02rem; }
     .heading-sans {
-      font-family: 'Jost', sans-serif;
+      font-family: 'Libertad', sans-serif;
       text-transform: uppercase;
       color: var(--green-dark);
       font-size: clamp(1.25rem, 2.2vw, 1.65rem);
@@ -374,18 +413,45 @@ const leaders = [
 
     @media (max-width: 760px) {
       .book-grid { grid-template-columns: 1fr; }
-      .book-grid .img-col { height: 260px; }
-      .book-grid .text-col { padding: 2.2rem 1.6rem; }
+      .book-grid .img-col { height: 260px; order: -1 !important; }
+      .book-grid .text-col { padding: 2.2rem 1.6rem; order: 1 !important; }
     }
 
     /* doorkijkje */
     .doorkijkje-grid {
       display:grid; grid-template-columns: 0.85fr 1.15fr; gap: 2.8rem; align-items:center;
     }
+    .doorkijkje-img { position: relative; }
     .doorkijkje-img img {
       width: 100%; display:block; border-radius: 14px;
       box-shadow: 0 18px 40px -16px rgba(0,0,0,0.5);
+      cursor: zoom-in;
     }
+    .zoom-hint {
+      position: absolute; bottom: 10px; right: 10px;
+      background: rgba(255,255,255,0.88); border: none; border-radius: 50%;
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--green-dark); backdrop-filter: blur(4px);
+      transition: background 0.15s;
+    }
+    .zoom-hint:hover { background: #fff; }
+    /* Lightbox */
+    .lightbox {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.88); align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img {
+      max-width: min(92vw, 700px); max-height: 90vh;
+      border-radius: 10px; object-fit: contain;
+    }
+    .lightbox-close {
+      position: absolute; top: 1.2rem; right: 1.4rem;
+      background: none; border: none; color: #fff; font-size: 1.8rem;
+      cursor: pointer; line-height: 1; opacity: 0.75;
+    }
+    .lightbox-close:hover { opacity: 1; }
     @media (max-width: 760px) {
       .doorkijkje-grid { grid-template-columns: 1fr; }
     }
@@ -405,8 +471,8 @@ const leaders = [
     }
     .leader h3 { font-size: 1.02rem; color: var(--green-dark); margin-bottom: 0.3rem; }
     .leader-role, .leader-org {
-      font-family:'Source Serif 4', serif; font-style:italic; font-weight:600;
-      color: var(--text); font-size: 0.85rem; margin: 0; line-height: 1.35;
+      font-family:'Noto Sans', sans-serif; font-weight: 300;
+      color: var(--text); font-size: 0.82rem; margin: 0; line-height: 1.35;
     }
     @media (max-width: 1024px) {
       .leaders-grid { grid-template-columns: 1fr 1fr; gap: 2.6rem 1.8rem; }
@@ -465,6 +531,34 @@ const leaders = [
   </style>
 
   <script>
+    // Hamburger menu
+    const header = document.getElementById('site-header') as HTMLElement | null;
+    const toggle = header?.querySelector('.nav-toggle') as HTMLButtonElement | null;
+    toggle?.addEventListener('click', () => {
+      const open = header!.classList.toggle('nav-open');
+      toggle.setAttribute('aria-expanded', String(open));
+    });
+    // Close nav when a link is clicked
+    header?.querySelectorAll('.site-nav a').forEach(a => {
+      a.addEventListener('click', () => {
+        header.classList.remove('nav-open');
+        toggle?.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox') as HTMLElement | null;
+    const zoomImg = document.querySelector('.doorkijkje-img img.zoomable') as HTMLElement | null;
+    const zoomHint = document.querySelector('.zoom-hint') as HTMLElement | null;
+    const closeBtn = lightbox?.querySelector('.lightbox-close') as HTMLElement | null;
+    function openLightbox() { lightbox?.classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeLightbox() { lightbox?.classList.remove('open'); document.body.style.overflow = ''; }
+    zoomImg?.addEventListener('click', openLightbox);
+    zoomHint?.addEventListener('click', openLightbox);
+    closeBtn?.addEventListener('click', closeLightbox);
+    lightbox?.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
     const form = document.getElementById('contact-form') as HTMLFormElement | null;
     form?.addEventListener('submit', function (e) {
       e.preventDefault();
