@@ -40,7 +40,7 @@ import Layout from '../../layouts/Layout.astro';
           <img src="/images/blog-paradigma-wortels.jpg" alt="Wortels van bomen verbonden door een lichtgevend netwerk" class="blog-card-img" />
         </a>
         <div class="blog-card-body">
-          <p class="blog-card-kicker">Paradigma &amp; Leiderschap</p>
+          <p class="blog-card-kicker">Evolutie van Leiderschap</p>
           <h2 class="blog-card-title">
             <a href="/blog/van-machine-naar-ecosysteem/">Van machine naar ecosysteem: waarom het mechanistische paradigma over de datum raakt</a>
           </h2>
@@ -65,29 +65,24 @@ import Layout from '../../layouts/Layout.astro';
 <style>
   /* HEADER */
   .site {
-    background: #fff;
-    border-bottom: 1px solid #e7e1d4;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.85rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    padding: 2.4rem 1.75rem 1.2rem; max-width: var(--max-width); margin: 0 auto;
+    position: relative;
   }
-  .logo-link { display: flex; align-items: center; text-decoration: none; }
-  .site-logo { height: 36px; width: auto; display: block; }
-  .site-nav { display: flex; gap: 2rem; align-items: center; }
+  .logo-link { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
+  .site-logo { height: 80px; width: auto; display: block; }
+  @media (max-width: 760px) { .site-logo { height: 60px; } }
+  .site-nav { margin-left: auto; display: flex; align-items: center; gap: 1.8rem; }
   .site-nav a {
-    color: #5c5650;
-    text-decoration: none;
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.03em;
-    transition: color 0.2s;
+    font-family: 'Libertad', sans-serif; font-weight: 600; font-size: 0.82rem;
+    letter-spacing: 0.02em; color: var(--text); text-decoration: none;
+    border-bottom: 1px solid transparent; padding-bottom: 2px; transition: color 0.15s, border-color 0.15s;
   }
-  .site-nav a:hover, .site-nav a.active { color: #1c3e20; }
-  .nav-toggle { display: none; }
+  .site-nav a:hover, .site-nav a.active { color: var(--green-dark); border-color: var(--green); }
+  .nav-toggle {
+    display: none; margin-left: auto; flex-direction: column; justify-content: center;
+    gap: 5px; background: none; border: none; cursor: pointer; padding: 4px 0; width: 28px;
+  }
 
   /* PAGE HEADER */
   .blog-page-header {
@@ -233,24 +228,13 @@ import Layout from '../../layouts/Layout.astro';
       padding: 4px;
     }
     .nav-toggle span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: #5c5650;
-      border-radius: 2px;
+      display: block; height: 2px; width: 100%; background: var(--text);
+      border-radius: 2px; transition: transform 0.22s, opacity 0.22s;
     }
+    .nav-toggle { display: flex; }
     .site-nav {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #fff;
-      border-bottom: 1px solid #e7e1d4;
-      flex-direction: column;
-      padding: 1rem 1.5rem;
-      gap: 1rem;
-      z-index: 99;
+      display: none; width: 100%; flex-direction: column; align-items: flex-start;
+      gap: 0; margin-left: 0; padding: 0.4rem 0 0.8rem; border-top: 1px solid var(--border);
     }
     .site-nav.open { display: flex; }
     .blog-page-header { padding: 2.5rem 1.25rem 2rem; }

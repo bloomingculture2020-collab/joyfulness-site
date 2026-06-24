@@ -56,7 +56,7 @@ const jsonLd = JSON.stringify({
     <img src="/images/blog-paradigma-wortels.jpg" alt="Wortels van bomen verbonden door een lichtgevend netwerk — symbool voor het ecosystemische organisatiemodel" />
     <div class="blog-hero-overlay"></div>
     <div class="blog-hero-content">
-      <p class="blog-kicker">Paradigma &amp; Leiderschap</p>
+      <p class="blog-kicker">Evolutie van Leiderschap</p>
       <h1>Van machine naar ecosysteem</h1>
       <p class="blog-hero-sub">Waarom het mechanistische paradigma over de datum raakt</p>
     </div>
@@ -66,26 +66,11 @@ const jsonLd = JSON.stringify({
   <main class="blog-wrap">
     <article class="blog-article">
 
-      <!-- BYLINE + SHARE TOP -->
+      <!-- BYLINE -->
       <div class="blog-meta">
         <div class="blog-byline">
           <span>Door <strong>Johan Spaans &amp; Menno Braakman</strong></span>
           <span class="blog-date">24 juni 2026</span>
-        </div>
-        <div class="share-bar">
-          <span class="share-label">Deel:</span>
-          <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(articleUrl)}`} class="share-btn share-linkedin" target="_blank" rel="noopener" aria-label="Deel op LinkedIn">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            LinkedIn
-          </a>
-          <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} class="share-btn share-facebook" target="_blank" rel="noopener" aria-label="Deel op Facebook">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            Facebook
-          </a>
-          <button class="share-btn share-copy" onclick="navigator.clipboard.writeText(window.location.href); this.textContent='✓ Gekopieerd!'; setTimeout(()=>this.textContent='Kopieer link',2000);" aria-label="Kopieer link">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-            Kopieer link
-          </button>
         </div>
       </div>
 
@@ -222,30 +207,26 @@ const jsonLd = JSON.stringify({
 </Layout>
 
 <style>
-  /* ── HEADER (copied from index) ── */
+  /* ── HEADER ── */
   .site {
-    background: var(--bg-dark);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.85rem 2rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    padding: 2.4rem 1.75rem 1.2rem; max-width: var(--max-width); margin: 0 auto;
+    position: relative;
   }
-  .logo-link { display: flex; align-items: center; text-decoration: none; }
-  .site-logo { height: 36px; width: auto; display: block; }
-  .site-nav { display: flex; gap: 2rem; align-items: center; }
+  .logo-link { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
+  .site-logo { height: 80px; width: auto; display: block; }
+  @media (max-width: 760px) { .site-logo { height: 60px; } }
+  .site-nav { margin-left: auto; display: flex; align-items: center; gap: 1.8rem; }
   .site-nav a {
-    color: rgba(255,255,255,0.8);
-    text-decoration: none;
-    font-family: 'Noto Sans', sans-serif;
-    font-size: 0.85rem;
-    letter-spacing: 0.03em;
-    transition: color 0.2s;
+    font-family: 'Libertad', sans-serif; font-weight: 600; font-size: 0.82rem;
+    letter-spacing: 0.02em; color: var(--text); text-decoration: none;
+    border-bottom: 1px solid transparent; padding-bottom: 2px; transition: color 0.15s, border-color 0.15s;
   }
-  .site-nav a:hover { color: #fff; }
-  .nav-toggle { display: none; }
+  .site-nav a:hover { color: var(--green-dark); border-color: var(--green); }
+  .nav-toggle {
+    display: none; margin-left: auto; flex-direction: column; justify-content: center;
+    gap: 5px; background: none; border: none; cursor: pointer; padding: 4px 0; width: 28px;
+  }
 
   /* ── HERO ── */
   .blog-hero {
@@ -284,10 +265,11 @@ const jsonLd = JSON.stringify({
   }
   .blog-hero-content h1 {
     font-family: 'Golpherd', serif;
-    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
     color: #ffffff;
     line-height: 1.1;
     margin-bottom: 0.5rem;
+    white-space: nowrap;
   }
   .blog-hero-sub {
     font-family: 'Libertad', sans-serif;
@@ -506,35 +488,15 @@ const jsonLd = JSON.stringify({
   .site-footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
 
   /* ── MOBILE ── */
-  @media (max-width: 640px) {
-    .site { padding: 0.85rem 1rem; }
-    .nav-toggle {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-    }
+  @media (max-width: 760px) {
+    .nav-toggle { display: flex; }
     .nav-toggle span {
-      display: block;
-      width: 22px;
-      height: 2px;
-      background: rgba(255,255,255,0.8);
-      border-radius: 2px;
+      display: block; height: 2px; width: 100%; background: var(--text);
+      border-radius: 2px; transition: transform 0.22s, opacity 0.22s;
     }
     .site-nav {
-      display: none;
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      background: #1c3e20;
-      flex-direction: column;
-      padding: 1rem 1.5rem;
-      gap: 1rem;
-      z-index: 99;
+      display: none; width: 100%; flex-direction: column; align-items: flex-start;
+      gap: 0; margin-left: 0; padding: 0.4rem 0 0.8rem; border-top: 1px solid var(--border);
     }
     .site-nav.open { display: flex; }
     .blog-hero { height: 340px; }
