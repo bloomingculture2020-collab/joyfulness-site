@@ -1,0 +1,267 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout
+  title="Blog — Joyfulness Coöperatie"
+  description="Inzichten over leiderschap, bewustzijnsontwikkeling en de overgang naar ecosystemisch organiseren. Door Johan Spaans en Menno Braakman."
+  canonicalUrl="https://www.joyfulness.company/blog/"
+>
+
+  <!-- HEADER -->
+  <header class="site" id="site-header">
+    <a href="/" class="logo-link">
+      <img src="/images/logo-horizontaal.png" alt="Joyfulness Coöperatie" class="site-logo" />
+    </a>
+    <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false" aria-controls="site-nav">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav" id="site-nav">
+      <a href="/blog/" class="active">Blog</a>
+      <a href="/quickscan-verticale-leiderschapsontwikkeling/">Quickscan Leiderschap</a>
+      <a href="/quickscan-organische-groei/">Quickscan Organische Groei</a>
+      <a href="/#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- PAGE HEADER -->
+  <div class="blog-page-header">
+    <p class="blog-index-kicker">Joyfulness Inzichten</p>
+    <h1>Blog</h1>
+    <p class="blog-index-sub">Over leiderschap, bewustzijnsontwikkeling en de overgang naar een nieuw paradigma in organiseren.</p>
+  </div>
+
+  <!-- ARTICLE LIST -->
+  <main class="blog-index-wrap">
+    <div class="blog-index-grid">
+
+      <article class="blog-card">
+        <a href="/blog/van-machine-naar-ecosysteem/" class="blog-card-img-link" tabindex="-1" aria-hidden="true">
+          <img src="/images/blog-paradigma-wortels.jpg" alt="Wortels van bomen verbonden door een lichtgevend netwerk" class="blog-card-img" />
+        </a>
+        <div class="blog-card-body">
+          <p class="blog-card-kicker">Paradigma &amp; Leiderschap</p>
+          <h2 class="blog-card-title">
+            <a href="/blog/van-machine-naar-ecosysteem/">Van machine naar ecosysteem: waarom het mechanistische paradigma over de datum raakt</a>
+          </h2>
+          <p class="blog-card-excerpt">Waarom werken verandertrajecten, feedbacktrainingen en KPI-systemen steeds minder? En wat vraagt de overgang naar ecosystemisch organiseren van jou als leider?</p>
+          <div class="blog-card-footer">
+            <span class="blog-card-meta">Johan Spaans &amp; Menno Braakman &middot; 24 juni 2026</span>
+            <a href="/blog/van-machine-naar-ecosysteem/" class="blog-card-read">Lees artikel &rarr;</a>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <p>&copy; 2026 <a href="https://www.joyfulness.company">Joyfulness Coöperatie</a> &mdash; Uw evolutiepartner in leiderschap en organiseren</p>
+  </footer>
+
+</Layout>
+
+<style>
+  /* HEADER */
+  .site {
+    background: var(--bg-dark);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo-link { display: flex; align-items: center; text-decoration: none; }
+  .site-logo { height: 36px; width: auto; display: block; }
+  .site-nav { display: flex; gap: 2rem; align-items: center; }
+  .site-nav a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    transition: color 0.2s;
+  }
+  .site-nav a:hover, .site-nav a.active { color: #fff; }
+  .nav-toggle { display: none; }
+
+  /* PAGE HEADER */
+  .blog-page-header {
+    background: #1c3e20;
+    padding: 4rem 2rem 3.5rem;
+    text-align: center;
+  }
+  .blog-index-kicker {
+    font-family: 'LibertadBold', sans-serif;
+    font-size: 0.72rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #7ec87e;
+    margin-bottom: 0.75rem;
+  }
+  .blog-page-header h1 {
+    font-family: 'Golpherd', serif;
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    color: #fff;
+    margin-bottom: 0.75rem;
+    line-height: 1.1;
+  }
+  .blog-index-sub {
+    font-family: 'Libertad', sans-serif;
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.75);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* GRID */
+  .blog-index-wrap {
+    background: #f7f4ee;
+    padding: 3rem 2rem 5rem;
+  }
+  .blog-index-grid {
+    max-width: 860px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  /* CARD */
+  .blog-card {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    transition: box-shadow 0.2s;
+  }
+  .blog-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+  .blog-card-img-link { display: block; overflow: hidden; }
+  .blog-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+  .blog-card:hover .blog-card-img { transform: scale(1.03); }
+  .blog-card-body {
+    padding: 1.75rem 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+  .blog-card-kicker {
+    font-family: 'LibertadBold', sans-serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #2F6933;
+    margin-bottom: 0.5rem;
+  }
+  .blog-card-title {
+    font-family: 'LibertadBold', serif;
+    font-size: 1.25rem;
+    line-height: 1.35;
+    margin-bottom: 0.75rem;
+  }
+  .blog-card-title a {
+    color: #1c3e20;
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .blog-card-title a:hover { color: #2F6933; }
+  .blog-card-excerpt {
+    font-family: 'Libertad', serif;
+    font-size: 0.92rem;
+    color: #5c5650;
+    line-height: 1.6;
+    flex: 1;
+    margin-bottom: 1.25rem;
+  }
+  .blog-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .blog-card-meta {
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.75rem;
+    color: #9a9088;
+  }
+  .blog-card-read {
+    font-family: 'LibertadBold', sans-serif;
+    font-size: 0.82rem;
+    color: #2F6933;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+  .blog-card-read:hover { color: #1c3e20; }
+
+  /* FOOTER */
+  .site-footer {
+    background: #1c3e20;
+    color: rgba(255,255,255,0.6);
+    text-align: center;
+    padding: 2rem;
+    font-family: 'Noto Sans', sans-serif;
+    font-size: 0.8rem;
+  }
+  .site-footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+
+  /* MOBILE */
+  @media (max-width: 640px) {
+    .site { padding: 0.85rem 1rem; }
+    .nav-toggle {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: rgba(255,255,255,0.8);
+      border-radius: 2px;
+    }
+    .site-nav {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #1c3e20;
+      flex-direction: column;
+      padding: 1rem 1.5rem;
+      gap: 1rem;
+      z-index: 99;
+    }
+    .site-nav.open { display: flex; }
+    .blog-page-header { padding: 2.5rem 1.25rem 2rem; }
+    .blog-index-wrap { padding: 2rem 1rem 3rem; }
+    .blog-card { grid-template-columns: 1fr; }
+    .blog-card-img { height: 200px; }
+    .blog-card-body { padding: 1.25rem; }
+  }
+</style>
+
+<script>
+  const toggle = document.querySelector('.nav-toggle');
+  const nav = document.querySelector('.site-nav');
+  toggle?.addEventListener('click', () => {
+    const open = nav?.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', String(open));
+  });
+</script>
