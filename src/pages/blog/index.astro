@@ -65,7 +65,8 @@ import Layout from '../../layouts/Layout.astro';
 <style>
   /* HEADER */
   .site {
-    background: var(--bg-dark);
+    background: #fff;
+    border-bottom: 1px solid #e7e1d4;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -78,14 +79,14 @@ import Layout from '../../layouts/Layout.astro';
   .site-logo { height: 36px; width: auto; display: block; }
   .site-nav { display: flex; gap: 2rem; align-items: center; }
   .site-nav a {
-    color: rgba(255,255,255,0.8);
+    color: #5c5650;
     text-decoration: none;
     font-family: 'Noto Sans', sans-serif;
     font-size: 0.85rem;
     letter-spacing: 0.03em;
     transition: color 0.2s;
   }
-  .site-nav a:hover, .site-nav a.active { color: #fff; }
+  .site-nav a:hover, .site-nav a.active { color: #1c3e20; }
   .nav-toggle { display: none; }
 
   /* PAGE HEADER */
@@ -209,14 +210,15 @@ import Layout from '../../layouts/Layout.astro';
 
   /* FOOTER */
   .site-footer {
-    background: #1c3e20;
-    color: rgba(255,255,255,0.6);
+    background: #fff;
+    border-top: 1px solid #e7e1d4;
+    color: #9a9088;
     text-align: center;
     padding: 2rem;
     font-family: 'Noto Sans', sans-serif;
     font-size: 0.8rem;
   }
-  .site-footer a { color: rgba(255,255,255,0.8); text-decoration: none; }
+  .site-footer a { color: #5c5650; text-decoration: none; }
 
   /* MOBILE */
   @media (max-width: 640px) {
@@ -234,7 +236,7 @@ import Layout from '../../layouts/Layout.astro';
       display: block;
       width: 22px;
       height: 2px;
-      background: rgba(255,255,255,0.8);
+      background: #5c5650;
       border-radius: 2px;
     }
     .site-nav {
@@ -243,7 +245,8 @@ import Layout from '../../layouts/Layout.astro';
       top: 100%;
       left: 0;
       right: 0;
-      background: #1c3e20;
+      background: #fff;
+      border-bottom: 1px solid #e7e1d4;
       flex-direction: column;
       padding: 1rem 1.5rem;
       gap: 1rem;
