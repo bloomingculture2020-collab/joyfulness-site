@@ -942,7 +942,7 @@ function renderModelView(){
           <div class="project-card-top">
             <div>
               <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
-              <div class="project-card-name">${esc(p.name)}</div>
+              <div class="project-card-name">${p.emoji?`<span class="card-emoji">${p.emoji}</span>`:""}${esc(p.name)}</div>
               ${p.desc?`<div class="project-card-desc">${esc(p.desc)}</div>`:''}
             </div>
           </div>
@@ -1105,7 +1105,29 @@ function renderProjectView(){
       <div class="result-season-badge">${ph.seasonLabel} · Fase ${p.phaseIdx+1} van 8</div>
       <h2 class="result-phase-name">${ph.name}</h2>
       <p class="result-subtitle">${ph.subtitle}</p>
-      <div class="result-project">Project: <strong>${esc(p.name)}</strong></div>
+<div class="proj-emoji-row no-print">
+        <button class="proj-emoji-btn${p.emoji==='🌱'?' sel':''}" data-emoji="🌱">🌱</button>
+        <button class="proj-emoji-btn${p.emoji==='🌿'?' sel':''}" data-emoji="🌿">🌿</button>
+        <button class="proj-emoji-btn${p.emoji==='🌸'?' sel':''}" data-emoji="🌸">🌸</button>
+        <button class="proj-emoji-btn${p.emoji==='🌞'?' sel':''}" data-emoji="🌞">🌞</button>
+        <button class="proj-emoji-btn${p.emoji==='🍂'?' sel':''}" data-emoji="🍂">🍂</button>
+        <button class="proj-emoji-btn${p.emoji==='🍃'?' sel':''}" data-emoji="🍃">🍃</button>
+        <button class="proj-emoji-btn${p.emoji==='💡'?' sel':''}" data-emoji="💡">💡</button>
+        <button class="proj-emoji-btn${p.emoji==='🔥'?' sel':''}" data-emoji="🔥">🔥</button>
+        <button class="proj-emoji-btn${p.emoji==='🎯'?' sel':''}" data-emoji="🎯">🎯</button>
+        <button class="proj-emoji-btn${p.emoji==='🌊'?' sel':''}" data-emoji="🌊">🌊</button>
+        <button class="proj-emoji-btn${p.emoji==='⚡'?' sel':''}" data-emoji="⚡">⚡</button>
+        <button class="proj-emoji-btn${p.emoji==='🏔'?' sel':''}" data-emoji="🏔">🏔</button>
+        <button class="proj-emoji-btn none${p.emoji==='—'?' sel':''}" data-emoji="—">✕</button>
+      </div>
+      <div class="proj-name-edit">
+        <span class="proj-name-static" id="proj-name-display">${esc(p.name)}</span>
+      </div>
+      <div class="proj-desc-block">
+        ${p.desc
+          ? `<span class="proj-desc-static" id="proj-desc-display">${esc(p.desc)}</span>`
+          : `<span class="proj-desc-add" id="proj-desc-display">+ beschrijving toevoegen</span>`}
+      </div>
       <button class="btn-phase-change no-print" id="btn-phase-change">↕ Verplaats naar andere fase</button>
     </div>
 
@@ -1237,6 +1259,44 @@ function bindEvents(){
   document.getElementById('btn-proj-next')?.addEventListener('click',()=>{
     const idx=PROJECTS.findIndex(x=>x.id===STATE.activeId);
     if(idx<PROJECTS.length-1){STATE.activeId=PROJECTS[idx+1].id;render();}
+  });
+
+
+  // Project: emoji picker
+  document.querySelectorAll('.proj-emoji-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const p=getProj(STATE.activeId); if(!p) return;
+      const e=btn.dataset.emoji;
+      p.emoji=(e==='—')?'':e;
+      saveProjects(); render();
+    });
+  });
+
+  // Project: inline rename
+  document.getElementById('proj-name-display')?.addEventListener('click',()=>{
+    const p=getProj(STATE.activeId); if(!p) return;
+    const display=document.getElementById('proj-name-display');
+    if(display.tagName==='INPUT') return;
+    const inp=document.createElement('input');
+    inp.className='proj-name-input-hero'; inp.type='text'; inp.value=p.name;
+    display.replaceWith(inp); inp.focus(); inp.select();
+    const save=()=>{ const v=inp.value.trim(); if(v) p.name=v; saveProjects(); render(); };
+    inp.addEventListener('blur',save);
+    inp.addEventListener('keydown',ev=>{ if(ev.key==='Enter') inp.blur(); if(ev.key==='Escape'){inp.value=p.name;inp.blur();} });
+  });
+
+  // Project: inline desc edit
+  document.getElementById('proj-desc-display')?.addEventListener('click',()=>{
+    const p=getProj(STATE.activeId); if(!p) return;
+    const display=document.getElementById('proj-desc-display');
+    if(display.tagName==='TEXTAREA') return;
+    const ta=document.createElement('textarea');
+    ta.className='proj-desc-input-hero'; ta.rows=2; ta.value=p.desc||'';
+    ta.placeholder='Korte beschrijving van dit project...';
+    display.replaceWith(ta); ta.focus();
+    const save=()=>{ p.desc=ta.value.trim(); saveProjects(); render(); };
+    ta.addEventListener('blur',save);
+    ta.addEventListener('keydown',ev=>{ if(ev.key==='Escape'){ta.value=p.desc||'';ta.blur();} });
   });
 
   // Project: phase change
