@@ -732,7 +732,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function getProj(id){return PROJECTS.find(p=>p.id===id);}
 
 /* ══ STATE ══ */
-let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie' };
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie' };
 
 /* ══ WHEEL BUILDER ══ */
 const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
@@ -943,6 +943,7 @@ function renderModelView(){
             <div>
               <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
               <div class="project-card-name">${esc(p.name)}</div>
+              ${p.desc?`<div class="project-card-desc">${esc(p.desc)}</div>`:''}
             </div>
           </div>
           <div class="project-progress">
@@ -1009,6 +1010,8 @@ function renderWizardView(){
       <div class="name-wrap">
         <label class="name-label" for="proj-name">Projectnaam</label>
         <input id="proj-name" class="name-input" type="text" placeholder="bijv. Teamontwikkeltraject Q3 · Nieuwe strategie · ..." autofocus/>
+        <label class="name-label" for="proj-desc" style="margin-top:.75rem">Korte beschrijving <span style="font-weight:400;color:var(--text-soft)">(optioneel)</span></label>
+        <textarea id="proj-desc" class="name-input" rows="2" placeholder="Waar gaat dit project over? Wat is de context?" style="resize:vertical;min-height:60px"></textarea>
       </div>
       <button class="btn-start" id="btn-wiz-start">Start met 3 vragen →</button>
     </div>`;
@@ -1043,7 +1046,7 @@ function renderWizardView(){
       <div class="result-season-badge">${ph.seasonLabel} · Fase ${phIdx+1} van 8</div>
       <h2 class="result-phase-name">${ph.name}</h2>
       <p class="result-subtitle">${ph.subtitle}</p>
-      ${STATE.draftName?`<div class="result-project">Project: <strong>${esc(STATE.draftName)}</strong></div>`:''}
+      ${STATE.draftName?`<div class="result-project">Project: <strong>${esc(STATE.draftName)}</strong>${STATE.draftDesc?` <span style='font-weight:400;opacity:.85'>— ${esc(STATE.draftDesc)}</span>`:''}</div>`:''}
     </div>
     <div class="result-body">
       <div class="result-sec">
@@ -1196,7 +1199,7 @@ function bindEvents(){
   document.getElementById('btn-back-model2')?.addEventListener('click',()=>{STATE.view='model';render();});
 
   // Model: wizard start
-  document.getElementById('btn-wizard')?.addEventListener('click',()=>{STATE.view='wizard';STATE.wStep=0;STATE.answers=[];STATE.draftName='';render();});
+  document.getElementById('btn-wizard')?.addEventListener('click',()=>{STATE.view='wizard';STATE.wStep=0;STATE.answers=[];STATE.draftName='';STATE.draftDesc='';render();});
 
   // Model: PDF export
   document.getElementById('btn-pdf')?.addEventListener('click',printPDF);
@@ -1333,7 +1336,9 @@ function bindEvents(){
   // Wizard: name step start
   document.getElementById('btn-wiz-start')?.addEventListener('click',()=>{
     const name=(document.getElementById('proj-name')?.value||'').trim();
+    const desc=(document.getElementById('proj-desc')?.value||'').trim();
     STATE.draftName=name||'Naamloos project';
+    STATE.draftDesc=desc;
     STATE.wStep=1; render();
   });
   document.getElementById('proj-name')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-wiz-start')?.click();});
@@ -1356,7 +1361,7 @@ function bindEvents(){
   // Wizard: add to model
   document.getElementById('btn-add-confirm')?.addEventListener('click',()=>{
     const phIdx=STATE.answers[0]*4+STATE.answers[1]*2+STATE.answers[2];
-    const proj={id:uid(),name:STATE.draftName,phaseIdx:phIdx,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
+    const proj={id:uid(),name:STATE.draftName,desc:STATE.draftDesc,phaseIdx:phIdx,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
     PROJECTS.push(proj);
     saveProjects();
     STATE.view='project'; STATE.activeId=proj.id; STATE.answers=[]; STATE.wStep=0;
