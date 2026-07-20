@@ -687,8 +687,6 @@ async function signInGoogle(){
   await _sb.auth.signInWithOAuth({provider:'google',
     options:{redirectTo:window.location.origin+window.location.pathname}});
 }
-    options:{redirectTo:window.location.origin+window.location.pathname}});
-}
 async function signOut(){
   if(!_sb) return;
   await _sb.auth.signOut();
