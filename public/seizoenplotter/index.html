@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Seizoenplotter — Joyfulness Coöperatie</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@400;500;600;700&family=Noto+Sans:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #2F6933; --green-dark: #1c3e20;
+  --text: #201f1d; --text-soft: #5c5650;
+  --border: #e7e1d4; --bg-soft: #f7f4ee; --max: 1100px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: #fff; color: var(--text); font-family: 'Inter', sans-serif;
+  font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+
+/* ── HEADER ── */
+.site-header { display: flex; align-items: center; gap: 1rem;
+  padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
+  max-width: var(--max); margin: 0 auto; }
+.logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
+  color: var(--green-dark); text-decoration: none; }
+.logo span { color: var(--green); }
+.header-nav { margin-left: auto; display: flex; gap: 1.75rem; }
+.header-nav a { font-size: 0.82rem; font-weight: 600; color: var(--text);
+  text-decoration: none; letter-spacing: 0.02em;
+  border-bottom: 1px solid transparent; padding-bottom: 2px;
+  transition: color 0.15s, border-color 0.15s; }
+.header-nav a:hover, .header-nav a.active { color: var(--green-dark); border-color: var(--green); }
+
+/* ── PAGE HEADER ── */
+.page-header { background: #fff; padding: 2.5rem 2rem 2rem; text-align: center;
+  border-bottom: 1px solid var(--border); }
+.kicker { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--green); margin-bottom: 0.6rem; }
+.page-header h1 { font-family: 'Inter', sans-serif;
+  font-size: clamp(1.4rem, 3vw, 2.1rem); color: var(--green-dark);
+  font-weight: 600; line-height: 1.2; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+.page-header .sub { font-size: 0.95rem; color: var(--text-soft); max-width: 600px; margin: 0 auto; }
+
+/* ── MAIN ── */
+.plotter-wrap { background: var(--bg-soft); padding: 2.5rem 1.5rem 5rem; min-height: 70vh; }
+.quiz-inner { max-width: var(--max); margin: 0 auto; }
+
+/* ── MODEL VIEW LAYOUT ── */
+.model-layout { display: grid; grid-template-columns: 520px 1fr; gap: 2.5rem;
+  align-items: start; max-width: var(--max); margin: 0 auto; }
+.wheel-col { display: flex; flex-direction: column; gap: 0.85rem; }
+.wheel-hint { font-size: 0.75rem; color: var(--text-soft); font-style: italic; text-align: center; }
+.wheel-wrap { position: relative; }
+.wheel-zoom-btn { position: absolute; top: 8px; right: 8px; width: 34px; height: 34px; background: rgba(255,255,255,0.92); border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 4px rgba(0,0,0,0.12); z-index: 10; transition: background 0.15s, box-shadow 0.15s; }
+.wheel-zoom-btn:hover { background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+.wheel-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(20,15,10,0.65); z-index: 2000; align-items: center; justify-content: center; padding: 2vw; }
+.wheel-modal-overlay.open { display: flex; }
+.wheel-modal-inner { position: relative; width: min(90vw, 88vh); max-width: 760px; }
+.wheel-modal-inner svg { width: 100%; height: auto; border-radius: 12px; display: block; box-shadow: 0 8px 40px rgba(0,0,0,0.35); }
+.wheel-modal-close { position: absolute; top: -14px; right: -14px; width: 34px; height: 34px; background: white; border: 1.5px solid var(--border); border-radius: 50%; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10; line-height: 1; }
+.wheel-modal-close:hover { background: #f7f4ee; }
+
+#wheel-svg { width: 100%; max-width: 520px; display: block;
+  border-radius: 10px; overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12); }
+
+.wheel-label-g { cursor: pointer; }
+.wheel-label-g .lbl-bg { transition: fill 0.15s, filter 0.15s; }
+.wheel-label-g:hover .lbl-bg { filter: brightness(1.35); }
+
+.wheel-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+/* ── PROJECT LIST COLUMN ── */
+.projects-col { display: flex; flex-direction: column; gap: 1.25rem; }
+.projects-col-title { font-family: 'Playfair Display', serif; font-size: 1.25rem;
+  color: var(--green-dark); margin-bottom: 0.25rem; }
+.projects-empty { font-size: 0.9rem; color: var(--text-soft); font-style: italic;
+  padding: 1.5rem; background: white; border-radius: 8px; border: 1px solid var(--border); }
+
+.project-card { background: white; border-radius: 8px; border: 1px solid var(--border);
+  padding: 1.1rem 1.3rem; cursor: pointer; transition: box-shadow 0.18s, border-color 0.18s;
+  border-left: 4px solid transparent; }
+.project-card:hover { box-shadow: 0 3px 14px rgba(0,0,0,0.1); }
+.project-card.season-winter { border-left-color: #3a6a90; }
+.project-card.season-lente  { border-left-color: #2F6933; }
+.project-card.season-zomer  { border-left-color: #c07800; }
+.project-card.season-herfst { border-left-color: #9a3000; }
+.project-card-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; }
+.project-season-badge { font-size: 0.65rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--text-soft); }
+.project-card-name { font-family: 'Playfair Display', serif; font-size: 1.05rem;
+  color: var(--green-dark); font-weight: 700; margin: 0.15rem 0 0.1rem; }
+.project-card-phase { font-size: 0.8rem; color: var(--text-soft); }
+.project-progress { margin-top: 0.7rem; display: flex; align-items: center; gap: 0.6rem; }
+.progress-track { flex: 1; height: 5px; background: #e7e1d4; border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--green); border-radius: 3px; transition: width 0.3s; }
+.progress-lbl { font-size: 0.72rem; color: var(--text-soft); white-space: nowrap; }
+
+/* ── START OPTIONS ── */
+.start-options { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch;
+  margin-top: 0.75rem; background: white; border: 1.5px solid var(--border); border-radius: 10px;
+  overflow: hidden; }
+.start-card { padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 0.55rem;
+  transition: background 0.2s; }
+.start-divider { display: flex; align-items: center; justify-content: center;
+  width: 36px; font-size: 0.7rem; font-weight: 700; color: #b5aca0;
+  text-transform: uppercase; letter-spacing: 0.06em; border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border); }
+.start-card.active { background: #f0f7f0; }
+.start-card-label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--green); display: flex; align-items: center; gap: 0.4rem; }
+.start-card-label svg { opacity: 0.7; }
+.start-card-body { font-size: 0.84rem; color: var(--text-soft); }
+.start-card-phase { font-size: 0.8rem; font-weight: 600; color: var(--green-dark);
+  background: #daeeda; border-radius: 4px; padding: 0.2rem 0.5rem; display: inline-block; }
+.start-card-input-row { display: flex; gap: 0.4rem; }
+.quickadd-input { flex: 1; font-family: 'Inter', sans-serif; font-size: 0.88rem;
+  border: 1.5px solid var(--border); border-radius: 6px; padding: 0.45rem 0.7rem;
+  outline: none; color: var(--text); transition: border-color 0.2s; background: white; }
+.quickadd-input:focus { border-color: var(--green); }
+.btn-quickadd { background: var(--green); color: white; border: none; border-radius: 6px;
+  padding: 0.45rem 0.85rem; font-family: 'Inter', sans-serif; font-size: 0.82rem;
+  font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap; }
+.btn-quickadd:hover { background: var(--green-dark); }
+.btn-quickcancel { background: none; border: none; color: var(--text-soft); cursor: pointer;
+  font-size: 0.8rem; padding: 0.45rem 0.2rem; font-family: 'Inter', sans-serif; line-height: 1; }
+.start-actions { display: flex; align-items: center; gap: 0.75rem; margin-top: 0.65rem; }
+
+/* ── QUICK-ADD PANEL (legacy, unused) ── */
+.quickadd-panel { display: none; }
+
+/* ── BUTTONS ── */
+.btn-start { display: inline-flex; align-items: center; gap: 0.5rem;
+  background: var(--green); color: #fff; border: none; border-radius: 7px;
+  padding: 0.8rem 1.6rem; font-family: 'Inter', sans-serif;
+  font-size: 0.92rem; font-weight: 600; cursor: pointer;
+  transition: background 0.2s; }
+.btn-start:hover { background: var(--green-dark); }
+.btn-export { display: inline-flex; align-items: center; gap: 0.4rem;
+  background: none; border: 1.5px solid var(--border); border-radius: 7px;
+  padding: 0.75rem 1.3rem; font-family: 'Inter', sans-serif;
+  font-size: 0.88rem; font-weight: 600; color: var(--text-soft); cursor: pointer;
+  transition: border-color 0.2s, color 0.2s; }
+.btn-export:hover { border-color: var(--green); color: var(--green-dark); }
+.btn-back { background: white; border: 1.5px solid var(--border); border-radius: 8px;
+  cursor: pointer; padding: 0.4rem 0.85rem 0.4rem 0.45rem;
+  font-size: 0.8rem; font-weight: 600; color: var(--text-soft);
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  margin-bottom: 1.5rem; transition: border-color 0.18s, color 0.18s, box-shadow 0.18s;
+  font-family: 'Inter', sans-serif; }
+.btn-back:hover { border-color: var(--green); color: var(--green-dark);
+  box-shadow: 0 2px 8px rgba(47,105,51,0.12); }
+.btn-back-icon { width: 22px; height: 22px; border-radius: 4px; overflow: hidden; flex-shrink: 0; display: block; }
+.btn-restart { display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 600;
+  border: 2px solid var(--green); color: var(--green); background: none;
+  border-radius: 7px; padding: 0.65rem 1.3rem; cursor: pointer;
+  transition: background 0.2s, color 0.2s; }
+.btn-restart:hover { background: var(--green); color: #fff; }
+.btn-danger { display: inline-flex; align-items: center; gap: 0.4rem;
+  font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600;
+  border: none; color: #b04040; background: none; cursor: pointer;
+  padding: 0.5rem 0; opacity: 0.75; transition: opacity 0.15s; }
+.btn-danger:hover { opacity: 1; }
+
+/* ── WIZARD ── */
+.progress-bar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 2.5rem;
+  font-size: 0.78rem; color: var(--text-soft); }
+.progress-steps { display: flex; gap: 7px; }
+.progress-dot { width: 11px; height: 11px; border-radius: 50%; background: #d8d0c4; transition: all 0.3s; }
+.progress-dot.done { background: var(--green); }
+.progress-dot.active { background: var(--green-dark); box-shadow: 0 0 0 3px #c5dcc680; }
+.q-step-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--green); margin-bottom: 0.6rem; }
+.q-text { font-family: 'Playfair Display', serif; font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  color: var(--green-dark); line-height: 1.3; margin-bottom: 0.5rem; }
+.q-hint { font-size: 0.88rem; color: var(--text-soft); margin-bottom: 1.75rem; font-style: italic; }
+.name-wrap { margin-bottom: 1.5rem; }
+.name-label { display: block; font-size: 0.72rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); margin-bottom: 0.45rem; }
+.name-input { width: 100%; font-family: 'Inter', sans-serif; font-size: 1rem;
+  border: 1.5px solid var(--border); border-radius: 7px; padding: 0.65rem 1rem;
+  outline: none; color: var(--text); transition: border-color 0.2s; background: #fff; }
+.name-input:focus { border-color: var(--green); }
+.options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+.opt-card { border: 2px solid var(--border); border-radius: 10px; padding: 1.3rem 1.2rem;
+  cursor: pointer; background: #fff; text-align: left;
+  transition: border-color 0.2s, background 0.2s, transform 0.1s; font-family: inherit; appearance: none; }
+.opt-card:hover { border-color: var(--green); background: #f2f8f2; transform: translateY(-1px); }
+.opt-card:active { transform: translateY(0); }
+.opt-label { display: block; font-weight: 600; font-size: 0.97rem; color: var(--text); margin-bottom: 0.35rem; }
+.opt-desc { font-size: 0.84rem; color: var(--text-soft); line-height: 1.55; }
+
+/* ── RESULT / PROJECT VIEW ── */
+.result-hero { border-radius: 12px 12px 0 0; padding: 2.4rem 2.2rem 1.9rem; color: #fff; }
+.result-hero.winter { background: linear-gradient(135deg, #1a3a5c 0%, #2d5a8e 100%); }
+.result-hero.lente  { background: linear-gradient(135deg, #1c3e20 0%, #2F6933 100%); }
+.result-hero.zomer  { background: linear-gradient(135deg, #6b4400 0%, #b87800 100%); }
+.result-hero.herfst { background: linear-gradient(135deg, #5c2000 0%, #9c3a00 100%); }
+.result-season-badge { display: inline-block; font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase; opacity: 0.82;
+  border: 1px solid rgba(255,255,255,0.35); border-radius: 20px; padding: 0.22rem 0.7rem; margin-bottom: 0.9rem; }
+.result-phase-name { font-family: 'Playfair Display', serif;
+  font-size: clamp(1.8rem, 4vw, 3rem); line-height: 1.1; color: #fff; margin-bottom: 0.3rem; }
+.result-subtitle { font-size: 1rem; opacity: 0.88; margin-bottom: 0.7rem; }
+.result-project { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.2);
+  font-size: 0.82rem; opacity: 0.75; }
+.result-project strong { opacity: 1; font-weight: 600; font-size: 0.9rem; }
+.result-body { border: 1.5px solid var(--border); border-top: none; border-radius: 0 0 12px 12px;
+  overflow: hidden; margin-bottom: 2rem; background: white; }
+.result-sec { padding: 1.6rem 2rem; border-bottom: 1px solid #eee9e0; }
+.result-sec:last-child { border-bottom: none; }
+.result-sec-title { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; margin-bottom: 0.85rem; }
+.result-sec-title.winter { color: #2d5a8e; }
+.result-sec-title.lente  { color: var(--green); }
+.result-sec-title.zomer  { color: #9a6000; }
+.result-sec-title.herfst { color: #8a3000; }
+.result-sec-intro { font-size: 0.82rem; color: var(--text-soft); margin: -0.3rem 0 0.6rem; font-style: italic; }
+.result-text { font-size: 0.93rem; color: var(--text); line-height: 1.7; }
+.result-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem; }
+.col-label { font-family: 'Noto Sans', sans-serif; font-weight: 700; font-size: 0.82rem;
+  color: var(--text); margin-bottom: 0.65rem; }
+.result-footer { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; }
+.result-footer .btn-back { margin-bottom: 0; }
+
+/* Project navigation */
+.proj-nav { display: flex; gap: 0.5rem; margin-bottom: 1.2rem; }
+.proj-nav-btn { background: white; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 0.4rem 0.85rem; font-size: 0.78rem; font-weight: 600; color: var(--text-soft);
+  cursor: pointer; font-family: 'Inter',sans-serif; transition: border-color 0.15s, color 0.15s; }
+.proj-nav-btn:hover { border-color: var(--green); color: var(--green-dark); }
+.proj-nav-btn:disabled { opacity: 0.35; cursor: default; pointer-events: none; }
+.proj-nav-name { font-size: 0.72rem; display: block; font-weight: 400; opacity: 0.7; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.proj-nav-spacer { flex: 1; }
+
+/* Phase change button */
+.btn-phase-change { background: rgba(255,255,255,0.18); border: 1.5px solid rgba(255,255,255,0.4);
+  border-radius: 6px; color: white; font-size: 0.72rem; font-weight: 600; font-family: 'Inter',sans-serif;
+  padding: 0.3rem 0.7rem; cursor: pointer; margin-top: 0.7rem; opacity: 0.85; transition: opacity 0.15s, background 0.15s; }
+.btn-phase-change:hover { opacity: 1; background: rgba(255,255,255,0.28); }
+
+/* Phase picker modal */
+.phase-picker-overlay { display: none; position: fixed; inset: 0; background: rgba(20,15,10,0.6); z-index: 2001; align-items: center; justify-content: center; padding: 1.5rem; }
+.phase-picker-overlay.open { display: flex; }
+.phase-picker-inner { background: white; border-radius: 12px; box-shadow: 0 8px 40px rgba(0,0,0,0.25); width: 100%; max-width: 480px; overflow: hidden; }
+.phase-picker-header { padding: 1rem 1.25rem 0.75rem; border-bottom: 1px solid var(--border); }
+.phase-picker-title { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-soft); margin: 0; }
+.phase-picker-list { padding: 0.5rem; }
+.phase-picker-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.85rem; border-radius: 8px; cursor: pointer; transition: background 0.12s; border: none; width: 100%; background: none; text-align: left; font-family: 'Inter',sans-serif; }
+.phase-picker-item:hover { background: var(--bg-soft); }
+.phase-picker-item.current { background: #edf5ee; }
+.phase-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.phase-dot.winter { background: #5a85b0; }
+.phase-dot.lente  { background: var(--green); }
+.phase-dot.zomer  { background: #c08000; }
+.phase-dot.herfst { background: #a04010; }
+.phase-picker-name { font-size: 0.88rem; font-weight: 600; color: var(--text); }
+.phase-picker-sub  { font-size: 0.72rem; color: var(--text-soft); }
+.phase-picker-close { display: block; width: 100%; padding: 0.75rem; border: none; border-top: 1px solid var(--border); background: none; font-size: 0.82rem; color: var(--text-soft); cursor: pointer; font-family: 'Inter',sans-serif; transition: background 0.12s; }
+.phase-picker-close:hover { background: var(--bg-soft); }
+
+/* Collapsible info sections */
+details.result-sec { padding: 0; }
+details.result-sec summary { list-style: none; display: flex; align-items: center; justify-content: space-between;
+  padding: 1.2rem 2rem; cursor: pointer; user-select: none; }
+details.result-sec summary::-webkit-details-marker { display: none; }
+details.result-sec summary::after { content: '▸'; font-size: 0.65rem; opacity: 0.5; flex-shrink: 0; }
+details.result-sec[open] summary::after { content: '▾'; }
+details.result-sec .result-text { padding: 0 2rem 1.4rem; margin: 0; }
+@media (max-width: 760px) {
+  details.result-sec summary { padding: 1rem 1.3rem; }
+  details.result-sec .result-text { padding: 0 1.3rem 1.2rem; }
+}
+.result-source { font-size: 0.78rem; color: #9a9088; font-style: italic; }
+
+/* ── CHECKLIST ── */
+.checklist { display: flex; flex-direction: column; gap: 0.6rem; }
+.check-item { display: flex; align-items: flex-start; gap: 0.65rem; cursor: pointer; }
+.check-item input[type="checkbox"] {
+  width: 16px; height: 16px; margin-top: 3px; flex-shrink: 0; cursor: pointer;
+  accent-color: var(--green); }
+.check-label { font-size: 0.91rem; color: var(--text); line-height: 1.6; }
+.check-item.done .check-label { text-decoration: line-through; color: var(--text-soft); }
+
+/* ── REFLECTIE BULLETS ── */
+.q-bullet-item { display: flex; align-items: flex-start; gap: 0.55rem; }
+.q-bullet { color: var(--green); font-size: 1.15rem; line-height: 1.55; flex-shrink: 0; margin-top: 0.05rem; }
+
+/* ── REFLECTIE ANTWOORDEN ── */
+.q-answer-wrap { padding-left: 22px; margin-top: 0.35rem; margin-bottom: 0.5rem; }
+.q-answer-textarea { width: 100%; font-family: 'Inter', sans-serif; font-size: 0.87rem;
+  line-height: 1.6; color: var(--text); border: 1.5px solid var(--border);
+  border-radius: 6px; padding: 0.55rem 0.75rem; resize: vertical; min-height: 68px;
+  background: #faf8f5; outline: none; transition: border-color 0.2s, background 0.2s; }
+.q-answer-textarea:focus { border-color: var(--green); background: #fff; }
+.q-answer-textarea::placeholder { color: #bbb5ab; font-style: italic; }
+
+/* ── SITE FOOTER ── */
+.site-footer { background: #fff; border-top: 1px solid var(--border);
+  text-align: center; padding: 2rem; font-size: 0.8rem; color: #9a9088; }
+.site-footer a { color: #5c5650; text-decoration: none; }
+
+/* ── SAVE INDICATOR ── */
+.save-indicator { font-size: 0.75rem; color: var(--green); font-weight: 500;
+  opacity: 0; transition: opacity 0.3s; }
+.save-indicator.show { opacity: 1; }
+
+/* ── PRINT STYLES ── */
+@media print {
+  .no-print, .site-header, .site-footer, .plotter-wrap, .page-header { display: none !important; }
+  #print-wrap { display: block !important; }
+  body { background: white; font-family: 'Inter', sans-serif;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { margin: 1.8cm 2cm; size: A4; }
+}
+#print-wrap { display: none; }
+
+/* Cover page */
+.print-cover { page-break-after: always; min-height: 26cm;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 2cm 0; }
+.print-cover-kicker { font-size: 8pt; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: #2F6933; margin-bottom: 0.5cm; }
+.print-cover-title { font-family: 'Playfair Display', serif; font-size: 28pt;
+  color: #1c3e20; line-height: 1.15; margin-bottom: 0.2cm; }
+.print-cover-sub { font-size: 11pt; color: #5c5650; margin-bottom: 0.8cm; }
+.print-cover-date { font-size: 8.5pt; color: #9a9088; margin-top: 0.4cm; }
+.print-cover-wheel { margin: 0.6cm auto; }
+#print-wrap svg { width: 14cm; height: 14cm; display: block; margin: 0 auto;
+  border-radius: 10px; overflow: hidden;
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+#print-wrap svg rect, #print-wrap svg circle, #print-wrap svg path, #print-wrap svg line {
+  -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+/* Legend table */
+.print-legend-table { margin-top: 0.6cm; width: auto; border-collapse: collapse; }
+.print-legend-table td { padding: 0.18cm 0.4cm; font-size: 9.5pt; vertical-align: middle; }
+.print-legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+.print-legend-dot.season-winter { background: #2d5a8e; }
+.print-legend-dot.season-lente  { background: #2F6933; }
+.print-legend-dot.season-zomer  { background: #b87800; }
+.print-legend-dot.season-herfst { background: #9c3a00; }
+.print-legend-name { font-weight: 600; color: #201f1d; }
+.print-legend-phase { color: #5c5650; }
+
+/* Project pages */
+.print-project-page { page-break-before: always; padding: 0; }
+
+.print-proj-header { padding: 0.7cm 0.9cm 0.6cm; color: white; margin-bottom: 0.55cm;
+  border-radius: 0 0 8px 8px; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+.print-proj-header.season-winter { background: linear-gradient(135deg,#1a3a5c,#2d5a8e); }
+.print-proj-header.season-lente  { background: linear-gradient(135deg,#1c3e20,#2F6933); }
+.print-proj-header.season-zomer  { background: linear-gradient(135deg,#6b4400,#b87800); }
+.print-proj-header.season-herfst { background: linear-gradient(135deg,#5c2000,#9c3a00); }
+.print-proj-season { font-size: 7pt; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; opacity: 0.82; margin-bottom: 0.15cm; }
+.print-proj-name { font-family: 'Playfair Display', serif; font-size: 20pt;
+  line-height: 1.1; margin-bottom: 0.1cm; }
+.print-proj-subtitle { font-size: 9.5pt; opacity: 0.88; font-style: italic; }
+
+.print-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6cm; }
+.print-body-full { margin-bottom: 0.4cm; }
+.print-sec { margin-bottom: 0.45cm; }
+.print-sec-label { font-size: 6.5pt; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #5c5650; margin-bottom: 0.18cm;
+  padding-bottom: 0.1cm; border-bottom: 1px solid #e7e1d4; }
+.print-sec p { font-size: 8.5pt; line-height: 1.55; color: #201f1d; margin: 0; }
+
+/* Checklist items */
+.print-q-item { margin-bottom: 0.3cm; }
+.print-q-row { display: flex; gap: 0.25cm; font-size: 8.5pt; color: #201f1d; line-height: 1.45; }
+.print-q-row.done { color: #999; text-decoration: line-through; }
+.print-q-box { flex-shrink: 0; font-size: 10pt; line-height: 1; }
+.print-q-answer { margin: 0.1cm 0 0 0.55cm; font-size: 8pt; color: #444; line-height: 1.5;
+  padding: 0.15cm 0.35cm; border-left: 2px solid #c5dcc6; font-style: italic; }
+
+.print-check-item { display: flex; gap: 0.25cm; font-size: 8pt; color: #201f1d;
+  line-height: 1.45; margin-bottom: 0.22cm; }
+.print-check-item.done { color: #aaa; text-decoration: line-through; }
+
+.print-footer { margin-top: 0.5cm; padding-top: 0.3cm; border-top: 1px solid #e7e1d4;
+  font-size: 7pt; color: #aaa; text-align: right; }
+
+/* ── MOBILE ── */
+@media (max-width: 760px) {
+  .model-layout { grid-template-columns: 1fr; }
+  .options-grid { grid-template-columns: 1fr; }
+  .result-cols { grid-template-columns: 1fr; }
+  .result-sec { padding: 1.2rem 1.3rem; }
+  .result-hero { padding: 1.75rem 1.4rem 1.5rem; }
+  .header-nav { display: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header no-print">
+  <a href="#" class="logo">Joyfulness <span>Coöperatie</span></a>
+  <nav class="header-nav">
+    <a href="#">Blog</a>
+    <a href="#" class="active">Seizoenplotter</a>
+    <a href="#">Quickscan Leiderschap</a>
+    <a href="#">Contact</a>
+  </nav>
+</header>
+
+<div class="page-header no-print">
+  <p class="kicker">DE NATUURLIJKE CYCLUS</p>
+  <h1>In welk subseizoen bevindt jouw project zich?</h1>
+  <p class="sub">Plot je projecten in de Natuurlijke Cyclus — klik op een fase of beantwoord 3 vragen.</p>
+</div>
+
+<main class="plotter-wrap no-print">
+  <div id="quiz-root"></div>
+</main>
+
+<footer class="site-footer no-print">
+  <p>&copy; 2026 <a href="#">Joyfulness Coöperatie</a> &mdash; Uw evolutiepartner in leiderschap en organiseren</p>
+</footer>
+<div class="phase-picker-overlay no-print" id="phase-picker">
+  <div class="phase-picker-inner">
+    <div class="phase-picker-header"><p class="phase-picker-title">Verplaats naar andere fase</p></div>
+    <div class="phase-picker-list" id="phase-picker-list"></div>
+    <button class="phase-picker-close" id="phase-picker-close">Annuleren</button>
+  </div>
+</div>
+<div class="wheel-modal-overlay no-print" id="wheel-modal">
+  <div class="wheel-modal-inner" id="wheel-modal-inner">
+    <button class="wheel-modal-close" id="wheel-modal-close" title="Sluiten">✕</button>
+  </div>
+</div>
+
+<!-- PRINT CONTAINER -->
+<div id="print-wrap"></div>
+
+<script>
+/* ══ PHASES ══ */
+const PHASES = [
+  { name:'Afstemmen', season:'winter', seasonLabel:'Winter',
+    subtitle:'Afsluiten met dankbaarheid, loslaten met vertrouwen',
+    happening:'Het collectief beweegt richting afronding van een vorige cyclus. De hectiek van groei en vieren maakt plaats voor verstilling en verinnerlijking. Dit is het moment van collectief afscheid: loslaten van wat niet meer dient en ruimte scheppen voor wat wil komen.',
+    tension:'De neiging om vast te houden aan oude structuren of successen, of juist al vooruit te willen naar het nieuwe. Afstemmen vraagt een midden: bewust stilstaan bij wat was, vóórdat de volgende cyclus begint.',
+    alignment:'Jij bent begeleider van de verandering. Je voelt wat er leeft onder de oppervlakte en helpt de groep op een goede manier afscheid te nemen van wat niet meer past — met dankbaarheid, niet met oordeel.',
+    questionsOrg:['Welke patronen, structuren of loyaliteiten vragen nu om bewust afscheid — en wordt die ruimte ook werkelijk gecreëerd?','Is er ruimte voor verstilling en collectieve herbezinning, of wordt de volgende cyclus al ingeluid voordat de vorige is afgesloten?','Welke onuitgesproken spanningen, vermoeidheid of weerstand leven er in het collectief en vragen om erkenning?'],
+    questionsLeider:['Kun jij de leegte en het niet-weten na afronding vasthouden — zonder te snel een nieuw doel of richting te forceren?','Ben je in staat om wat geweest is met dankbaarheid los te laten — ook je eigen successen en vertrouwde werkwijzen?','Luister je naar wat er onder de oppervlakte leeft in het systeem, of vul je de stilte in met activiteit?'],
+    deliverables:['Collectief afscheidsritueel of afrondingsgesprek','Ruimte voor onuitgesproken spanningen en erkenning','Helder geformuleerd wat wordt losgelaten'],
+    kpis:['Mate van werkelijk loslaten vs. vasthouden','Kwaliteit van collectieve erkenning en afsluiting','Openheid voor wat er in de stilte leeft'] },
+
+  { name:'Richten', season:'winter', seasonLabel:'Winter',
+    subtitle:'Richting geven door ruimte te maken, niet door te controleren',
+    happening:'Dit is het begin van iedere collectieve beweging — de fase waarin een kiem van intentie of verlangen aanwezig is, maar nog niet volledig zichtbaar. Het Collectieve Veld is diffuus en vol potentieel. De eerste prille signalen van een nieuwe richting dienen zich aan.',
+    tension:'De neiging om direct controle te nemen en zelf de richting te bepalen. De schaduw van de leider kan zich manifesteren als te snel willen invullen, waardoor de collectieve wijsheid niet de ruimte krijgt om te spreken.',
+    alignment:'Jij bent niet langer de aanjager, maar een facilitator van het collectieve creatieve veld. Je opent je volledig voor co-creatie en helpt de essentie van wat wil ontstaan te vangen — zonder het te forceren.',
+    questionsOrg:['Worden de eerste prille signalen van een nieuwe richting waargenomen en gegeven ruimte — of worden ze al snel ingekaderd in bestaande denkkaders?','Welke onzichtbare ankers — oude loyaliteiten, onverwerkte collectieve pijn — kunnen de richting onbewust sturen?','Worden alle stemmen uitgenodigd in het zoeken naar richting, inclusief twijfel, onzekerheid en terughoudendheid?'],
+    questionsLeider:['Kun jij de onduidelijkheid van het begin vasthouden — zonder zelf direct de richting te gaan bepalen of in te vullen?','Lukt het je om te faciliteren in plaats van te sturen, ook als de essentie van wat wil ontstaan nog niet helder is?','Ben je alert op collectieve projectie op jou als leider, en kun je die herkennen zonder er in mee te gaan?'],
+    deliverables:['Eerste gedeelde intentie of richtinggevende vraag','Co-creatieve sessies vanuit open luisteren','Zichtbaar maken van prille signalen en verlangens'],
+    kpis:['Kwaliteit van luisteren naar het collectieve Veld','Mate van co-creatie vs. top-down richting geven','Energie en resonantie bij de eerste richtinggevende intentie'] },
+
+  { name:'Verbeelden', season:'lente', seasonLabel:'Lente',
+    subtitle:'De leider als hoeder van de collectieve droom',
+    happening:'De collectieve droom kristalliseert en krijgt vorm. Het Collectieve Veld is bruisend en creatief. Er is een openheid voor nieuwe ideeën en een verlangen om mogelijkheden te verkennen. Tegelijk speelt ook hier de schaduw: subtiel cynisme of "gezonde terughoudendheid" kan de droom weghouden.',
+    tension:'Het durven loslaten van eigen ideeën en het vertrouwen op de collectieve creativiteit. De schaduw kan zich manifesteren als de neiging om de droom te snel te vertalen naar een uitvoerbaar plan.',
+    alignment:'Jij schept een veilige en stimulerende omgeving voor collectieve ideevorming. Je faciliteert visiesessies en creëert ruimte voor zowel droom als twijfel — want inclusief is een Collectief Veld pas echt creatief.',
+    questionsOrg:['Durft het collectief echt te dromen, of remmen beperkende overtuigingen de verbeelding — ook als ze onuitgesproken zijn?','Zijn alle stemmen welkom in het verbeeldingsproces, inclusief angst, twijfel en gemis?','Wordt de collectieve droom werkelijk gedragen en gevoeld, of blijft het een rationeel visiedocument?'],
+    questionsLeider:['Kun jij jouw eigen visie loslaten ten gunste van de collectieve verbeelding, ook als die een andere richting neemt dan jij voor ogen had?','Bescherm jij de creatieve ruimte tegen te snelle concretisering — ook wanneer de onzekerheid ongemakkelijk wordt?','Ben je alert op de collectieve schaduw die de verbeelding begrenst: het cynisme of ‘realisme’ dat dromen onzichtbaar de pas afsnijdt?'],
+    deliverables:['Gedeelde collectieve visie of "collectieve droom"','Visiesessies met ruimte voor creativiteit en twijfel','Inventarisatie van collectieve verlangens en ambities'],
+    kpis:['Inclusiviteit van de visie: worden alle stemmen gehoord?','Energie en bezieling bij de geformuleerde richting','Mate van authenticiteit vs. oppervlakkigheid van de visie'] },
+
+  { name:'Organiseren', season:'lente', seasonLabel:'Lente',
+    subtitle:'Echte structuren ontstaan uit erkenning van het verleden',
+    happening:'De abstracte visie krijgt een concretere structuur. Het Collectieve Veld richt zich op afstemming en effectiviteit. Er is een verlangen naar helderheid over rollen en processen. Tegelijk worden ook oude structuren, historische besluiten en relationele spanningen zichtbaar.',
+    tension:'De balans tussen structuur en flexibiliteit. De schaduw van de leider kan zich manifesteren als een neiging tot overorganiseren — waardoor de bezieling bevriest in procedures — of juist te weinig structuur, waardoor de energie verwatert.',
+    alignment:'Jij bent niet alleen bouwer van structuren, maar ook hoeder van de systemische integriteit. Je faciliteert gesprekken over rollen en verantwoordelijkheden, zodat de organisatiestructuur dienend is aan de bedoeling.',
+    questionsOrg:['Weerspiegelen de nieuwe structuren en rollen de werkelijke intentie van het collectief — of herhalen ze onbewust oude patronen uit het verleden?','Welke systemische pijn (eerdere reorganisaties, overbelasting, ingesleten loyaliteiten) staat organisch organiseren in de weg en verdient erkenning?','Is er ruimte voor experiment en iteratie in de organisatievorm, of wordt er meteen een definitieve structuur opgelegd?'],
+    questionsLeider:['Kun jij de spanning dragen tussen structuur en flexibiliteit — en de neiging weerstaan om te controleren hóé mensen zich organiseren?','Ben je in staat te luisteren naar wat werkelijk in de weg staat van organisch organiseren, als hoeder van de systemische integriteit?','Herken je wanneer weerstand of volgzaamheid in het team voortkomt uit oude pijn met autoriteit, en ga je daar bewust mee om?'],
+    deliverables:['Heldere rollen, verantwoordelijkheden en spelregels','Processen en structuren die de nieuwe richting dragen','Ruimte voor historische spanningen die de structuur beïnvloeden'],
+    kpis:['Helderheid en draagvlak voor de nieuwe rolverdeling','Mate van flexibiliteit vs. starheid van de structuren','Ervaren dienendheid: helpt de structuur of belemmert ze?'] },
+
+  { name:'Experimenteren', season:'zomer', seasonLabel:'Zomer',
+    subtitle:'Leven met het onbekende, leren van de werkelijkheid',
+    happening:'De ideeën ontmoeten de werkelijkheid. Het is de fase van actie, testen en leren. Het Collectieve Veld is dynamisch en energetisch — er is drang om vooruit te gaan en resultaten te zien. Maar het systeem draagt ook de historische patronen mee: oud collectief geheugen kan hier als rem werken.',
+    tension:'De angst voor falen en de neiging om terug te vallen in bekende, veilige reflexen bij het eerste obstakel. De schaduw kan zich manifesteren als perfectionisme, angst voor falen, of de neiging om alles te willen beheersen.',
+    alignment:'Jij bent geen probleemoplosser maar een begeleider van collectief leren. Je herkent de patronen die bovenkomen en noemt ze, zonder ze te veroordelen. Fouten zijn geen falen, maar leermomenten.',
+    questionsOrg:['Worden tegenslagen behandeld als leermomenten — of activeert het collectief oud geheugen van ‚dit probeerden we eerder en het mislukte’?','Is er voldoende psychologische veiligheid om fouten zichtbaar te delen, ook met de bredere organisatie?','Kan het collectief onderscheiden wat werkelijk van nu is, en wat een echo is uit het verleden?'],
+    questionsLeider:['Kun jij de spanning van onzekerheid en onvolledigheid dragen — zonder experimenten vroegtijdig af te breken of succes te simuleren?','Ben jij in staat als begeleider van collectief leren aanwezig te blijven bij de groeipijn, in plaats van als probleemoplosser in te stappen?','Herken je wanneer het collectief jou onbewust beschouwt als drager van vroegere mislukkingen — of als hoopdrager die het nu moet waarmaken?'],
+    deliverables:['Lopende experimenten met heldere leervragen','Regelmatige reflectie- en evaluatiemomenten','Gedocumenteerde learnings en eerste aanpassingen'],
+    kpis:['Iteratiesnelheid en leervermogen van het team','Kwaliteit van verzamelde praktijkfeedback','Veerkracht bij tegenslag: doorleren vs. terugvallen'] },
+
+  { name:'Groeien', season:'zomer', seasonLabel:'Zomer',
+    subtitle:'Ware groei is niet alleen expansie, maar ook verdieping',
+    happening:'Nieuwe inzichten en werkwijzen verankeren zich en breiden uit. Het Collectieve Veld is positief en energetisch — er is een gevoel van vooruitgang en momentum. Tegelijk schuilt hier het risico van identificatie met succes: gehechtheid aan expansie kan verdere groei blokkeren.',
+    tension:'De neiging om alles zelf te willen overzien en controleren, of om te delegeren zonder voldoende verbinding te houden met de richting. Ware groei vraagt ook verdieping, niet alleen meer van hetzelfde.',
+    alignment:'Jij bent bewaker van de volwassenheid van het Veld. Je nodigt het collectief uit om zichzelf niet alleen te vieren, maar ook te bevragen: groeien we in de juiste richting, en wie wordt daarin meegenomen?',
+    questionsOrg:['Worden alle bijdragen erkend in de groei — ook van degenen die op de achtergrond werken of zich vergeten voelen?','Is het collectief in staat de spanning te verdragen die groei meebrengt, of worden ongemakkelijke signalen weggezet om het momentum te bewaren?','Zijn structuren en rollen mee-geëvolueerd met de groei, of houdt de organisatie vast aan wat ooit werkte?'],
+    questionsLeider:['Kun jij loslaten en delegeren — ook wanneer dat betekent dat kwaliteit of tempo anders wordt dan jij voor ogen had?','Ben jij als leider bewaker van de volwassenheid van het Veld — en durf jij het collectief te bevragen in plaats van alleen te vieren?','Ben je alert op signalen van overbelasting of onderhuidse onvrede die door het enthousiasme over groei worden toegedekt?'],
+    deliverables:['Groeiplan dat ook verdieping adresseert','Systeem voor inclusiviteit: wie wordt meegenomen in de groei?','Momenten van reflectie midden in de expansie'],
+    kpis:['Groei van impact én kwaliteit van de onderlinge verbinding','Inclusiviteit van de groei: worden alle betrokkenen meegenomen?','Mate van behoud van bezieling naast schaalgroei'] },
+
+  { name:'Oogsten', season:'herfst', seasonLabel:'Herfst',
+    subtitle:'Echte afronding erkent niet alleen het succes, maar herstelt ook de balans',
+    happening:'De tijd om stil te staan, de vruchten van de gezamenlijke inspanningen te plukken en succes te vieren. Het Collectieve Veld is voldaan en energiek. Maar Oogsten brengt ook systemische thema’s naar de oppervlakte: wie voelt zich gezien, en wie niet?',
+    tension:'De neiging om alleen de "mooie" resultaten te vieren en minder zichtbare bijdragen of onderhuidse spanningen te negeren. De schaduw kan zich manifesteren als toe willen naar het volgende project zonder de lopende cyclus werkelijk af te ronden.',
+    alignment:'Jij bent geen manager van succes, maar een rituele begeleider van betekenis. Je helpt het collectief om zichzelf volledig te zien: in zijn licht én in zijn blinde vlekken.',
+    questionsOrg:['Wordt ieders bijdrage werkelijk erkend — inclusief de onzichtbare offers, overbelaste teamleden en degenen die weinig in beeld waren?','Is er ruimte voor zowel vieren als voor ontevredenheid, gemis en conflicten die nog niet zijn uitgesproken?','Is de balans van geven en nemen hersteld, of liggen er spanningen die onbesproken de volgende cyclus in worden meegenomen?'],
+    questionsLeider:['Kun jij werkelijk vertragen en stilstaan bij wat bereikt is — ook als de drang om door te gaan groot is?','Ben jij in staat het volledige verhaal zichtbaar te maken: inclusief wat onderweg is achtergebleven en wie uit balans is geraakt?','Durf jij de spanning te dragen van mensen die zich niet gezien of erkend voelen, en die ruimte te geven vóórdat wordt afgesloten?'],
+    deliverables:['Oogstbijeenkomst met expliciete erkenning van bijdragen','Resultatenrapportage inclusief niet-kwantificeerbare opbrengsten','Ritueel van afsluiting en overdracht'],
+    kpis:['Gerealiseerde doelen vs. oorspronkelijke intentie','Mate van inclusieve erkenning: iedereen voelt zich gezien','Kwaliteit van de afsluiting: voelt het als een echt einde?'] },
+
+  { name:'Reflecteren', season:'herfst', seasonLabel:'Herfst',
+    subtitle:'Ware reflectie is de moed om met zachte ogen de volledige waarheid te zien',
+    happening:'Na het Oogsten betreedt het collectief de Reflectiefase: de overgang van Herfst naar Winter. Het Collectieve Veld is verstild en naar binnen gericht. De dynamiek van groei en resultaat maakt plaats voor beschouwing, betekenisgeving en eerlijke zelfevaluatie.',
+    tension:'De neiging om reflectie te reduceren tot een oppervlakkige feedbackronde of een afvinkmoment. De schaduw van de leider kan zich manifesteren als de neiging om ongemakkelijke waarheden te omzeilen of het verleden te rooskleurig te schilderen.',
+    alignment:'Jij bent hoeder van openheid en waarheid. Je begeleidt het Veld bij het stellen van de vragen die er echt toe doen — ook als ze ongemakkelijk zijn. Je schept een bedding voor het onvolmaakte om mee te doen.',
+    questionsOrg:['Is er werkelijk ruimte voor de ongemakkelijke waarheden — wat niet werkte, wat gemist werd, en wie niet gehoord werd?','Worden onderliggende patronen en dynamieken in de onderstroom benoemd, of blijft reflectie aan de oppervlakte van gedrag en resultaten?','Draagt deze reflectie bij aan werkelijk collectief leren, of dreigt het systeem oude patronen mee te nemen naar de volgende cyclus?'],
+    questionsLeider:['Kun jij de spanning dragen van pijnlijke spiegels — ook wanneer de reflectie jouw eigen aandeel in minder succesvolle momenten zichtbaar maakt?','Ben jij in staat het reflectieproces te beschermen tegen snelle conclusies, en ruimte te houden voor traagheid en het niet-weten?','Stel jij de vragen die er echt toe doen — ook de ongemakkelijke — in plaats van alleen de successen te benoemen?'],
+    deliverables:['Diepgaande retrospective met ruimte voor het onvolmaakte','Gedocumenteerde lessen voor de volgende cyclus','Collectieve integratie van opgedane wijsheid'],
+    kpis:['Diepte van reflectie: voorbij de oppervlakte?','Bereidheid om ongemakkelijke waarheden te benoemen','Kwaliteit van geïntegreerde lessen voor de volgende cyclus'] }
+];
+
+/* ══ QUESTION TREE ══ */
+const Q1 = { step:'Vraag 1 van 3', question:'Is het project of initiatief op dit moment zichtbaar en actief in de buitenwereld?', hint:'Denk aan: is er al een publiek, klant of bredere context die reageert op dit project?',
+  options:[{label:'Achter de schermen', desc:'Het project speelt zich intern af — bezinning, voorbereiding of ontwikkeling.'},{label:'Op het podium', desc:'Het project is zichtbaar en actief — er is een publiek, klant of buitenwereld die reageert.'}] };
+const Q2 = [
+  { step:'Vraag 2 van 3', question:'Welke energie heerst er in het project?', hint:'Voelt het meer als verstilling en bezinning, of als iets dat begint te leven?',
+    options:[{label:'Verstilling en bezinning — Winter', desc:'De energie is rustig. Er is ruimte voor reflectie, loslaten of herijking.'},{label:'Nieuwe beweging begint — Lente', desc:'Er is een prille intentie of creatieve energie. Ideeën beginnen vorm te krijgen.'}] },
+  { step:'Vraag 2 van 3', question:'Wat is de dominante beweging in het project?', hint:'Groeien en leren, of oogsten en bezinnen?',
+    options:[{label:'Actief uitrollen en leren — Zomer', desc:'Het project is volop in beweging: experimenteren, groeien, leren van de praktijk.'},{label:'Oogsten en reflecteren — Herfst', desc:'De vruchten worden geplukt. Er is ruimte voor erkenning en lessen trekken.'}] }
+];
+const Q3 = [
+  { step:'Vraag 3 van 3', question:'Waar zit het zwaartepunt?', hint:'Kies de beschrijving die het beste aansluit.',
+    options:[{label:'Afstemmen', desc:'Afronden, loslaten en ruimte scheppen — bewust afscheid nemen van de vorige cyclus.'},{label:'Richten', desc:'De eerste prille signalen van een nieuwe richting dienen zich aan.'}] },
+  { step:'Vraag 3 van 3', question:'Waar zit het zwaartepunt?', hint:'Kies de beschrijving die het beste aansluit.',
+    options:[{label:'Verbeelden', desc:'Er wordt gedroomd en gecreëerd — de collectieve visie krijgt vorm in co-creatie.'},{label:'Organiseren', desc:'De visie vertaalt zich naar structuren, rollen en processen.'}] },
+  { step:'Vraag 3 van 3', question:'Waar zit het zwaartepunt?', hint:'Kies de beschrijving die het beste aansluit.',
+    options:[{label:'Experimenteren', desc:'De ideeën ontmoeten de werkelijkheid — we testen, leren en passen aan.'},{label:'Groeien', desc:'De inzichten verankeren zich — er is momentum en organische expansie.'}] },
+  { step:'Vraag 3 van 3', question:'Waar zit het zwaartepunt?', hint:'Kies de beschrijving die het beste aansluit.',
+    options:[{label:'Oogsten', desc:'Vruchten plukken en bijdragen eren — tijd om de cyclus bewust af te ronden.'},{label:'Reflecteren', desc:'Lessen integreren en wijsheid meenemen naar het volgende begin.'}] }
+];
+
+/* ══ STORAGE ══ */
+function loadProjects(){try{return JSON.parse(localStorage.getItem('jf_projects')||'[]');}catch{return[];}}
+function saveProjects(){try{localStorage.setItem('jf_projects',JSON.stringify(PROJECTS));}catch{}}
+let PROJECTS = loadProjects();
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+function getProj(id){return PROJECTS.find(p=>p.id===id);}
+
+/* ══ STATE ══ */
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1 };
+
+/* ══ WHEEL BUILDER ══ */
+const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
+
+function buildWheel(forPrint=false) {
+  const W=480, H=480, cx=240, cy=240, R=148;
+  function toRad(d){return (d-90)*Math.PI/180;}
+  function pt(angle,r){return{x:+(cx+r*Math.cos(toRad(angle))).toFixed(1),y:+(cy+r*Math.sin(toRad(angle))).toFixed(1)};}
+
+  // Count projects per phase
+  const counts={};
+  PROJECTS.forEach(p=>{counts[p.phaseIdx]=(counts[p.phaseIdx]||0)+1;});
+
+  // Project chips per phase (positioned closer to center)
+  const chipsByPhase={};
+  PROJECTS.forEach(p=>{if(!chipsByPhase[p.phaseIdx])chipsByPhase[p.phaseIdx]=[];chipsByPhase[p.phaseIdx].push(p);});
+
+  // For print: solid colors (gradients don't reliably print via browser)
+  const defs=forPrint?'':
+    `<defs>
+      <radialGradient id="gW" cx="100%" cy="0%" r="130%"><stop offset="0%" stop-color="#e0f0fa"/><stop offset="55%" stop-color="#8ab8d8"/><stop offset="100%" stop-color="#3a6a90"/></radialGradient>
+      <radialGradient id="gL" cx="0%" cy="0%" r="130%"><stop offset="0%" stop-color="#cceab8"/><stop offset="55%" stop-color="#60aa70"/><stop offset="100%" stop-color="#1c5a2c"/></radialGradient>
+      <radialGradient id="gZ" cx="0%" cy="100%" r="130%"><stop offset="0%" stop-color="#fff0a0"/><stop offset="55%" stop-color="#f0b028"/><stop offset="100%" stop-color="#b07000"/></radialGradient>
+      <radialGradient id="gH" cx="100%" cy="100%" r="130%"><stop offset="0%" stop-color="#f4c488"/><stop offset="55%" stop-color="#c05a18"/><stop offset="100%" stop-color="#702000"/></radialGradient>
+    </defs>`;
+
+  const fillW=forPrint?'#7aa8cc':'url(#gW)';
+  const fillL=forPrint?'#4a9a5c':'url(#gL)';
+  const fillZ=forPrint?'#d9a020':'url(#gZ)';
+  const fillH=forPrint?'#b04e18':'url(#gH)';
+
+  const bgs=`<rect x="0" y="0" width="${W/2}" height="${H/2}" fill="${fillW}"/>
+    <rect x="${W/2}" y="0" width="${W/2}" height="${H/2}" fill="${fillL}"/>
+    <rect x="${W/2}" y="${H/2}" width="${W/2}" height="${H/2}" fill="${fillZ}"/>
+    <rect x="0" y="${H/2}" width="${W/2}" height="${H/2}" fill="${fillH}"/>
+    <line x1="${W/2}" y1="0" x2="${W/2}" y2="${H}" stroke="white" stroke-width="1.5" opacity="0.35"/>
+    <line x1="0" y1="${H/2}" x2="${W}" y2="${H/2}" stroke="white" stroke-width="1.5" opacity="0.35"/>`;
+
+  const sStyle=`font-family='Playfair Display,Georgia,serif' font-size='16' font-weight='700' letter-spacing='0.12em' fill='white' filter='url(#txtShadow)'`;
+  const shadowDef=forPrint?'':
+    `<filter id="txtShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="rgba(0,0,0,0.55)"/>
+    </filter>`;
+  const sNames=`
+    <text x="${W*0.15}" y="${H*0.1}" ${sStyle}>WINTER</text>
+    <text x="${W*0.62}" y="${H*0.1}" ${sStyle}>LENTE</text>
+    <text x="${W*0.63}" y="${H*0.965}" ${sStyle}>ZOMER</text>
+    <text x="${W*0.14}" y="${H*0.965}" ${sStyle}>HERFST</text>`;
+
+  const ring=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1a1815" stroke-width="1.8" opacity="0.7"/>`;
+  const centerDot=`<circle cx="${cx}" cy="${cy}" r="4" fill="rgba(26,24,21,0.3)"/>`;
+
+  // Project chips inside wheel — 1 chip per phase (count badge on label shows total)
+  let chips='';
+  const chipR=55, chipW=72, chipH=20;
+  Object.entries(chipsByPhase).forEach(([phIdx,projs])=>{
+    const ang=ANGLES[parseInt(phIdx)];
+    const proj=projs[0]; // show most recently active project
+    const p=pt(ang,chipR);
+    const label=proj.name.length>9?proj.name.slice(0,8)+'…':proj.name;
+    const sColor = proj.phaseIdx<2?'#2d5a8e': proj.phaseIdx<4?'#1c5a2c': proj.phaseIdx<6?'#b07000':'#702000';
+    const action=forPrint?'':` data-proj-id="${proj.id}" data-fullname="${proj.name.replace(/"/g,'&quot;')}" data-cx="${p.x.toFixed(1)}" data-cy="${p.y.toFixed(1)}" data-color="${sColor}" style="cursor:pointer"`;
+    chips+=`<g class="proj-chip"${action}>
+      <rect x="${(p.x-chipW/2).toFixed(1)}" y="${(p.y-chipH/2).toFixed(1)}" width="${chipW}" height="${chipH}" rx="5" fill="${sColor}" opacity="0.88"/>
+      <text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="white" font-family="'Inter',sans-serif" font-size="8.5" font-weight="600">${esc(label)}</text>
+    </g>`;
+  });
+
+  // Phase labels (with optional count badge)
+  const LW=94, LH=29;
+  let labels='';
+  for(let i=0;i<8;i++){
+    const p=pt(ANGLES[i],R);
+    const ph=PHASES[i];
+    const delay=(i*0.065).toFixed(2);
+    const cnt=counts[i]||0;
+    const action=forPrint?'':` class="wheel-label-g" data-idx="${i}" style="cursor:pointer;opacity:0;animation:lblIn 0.4s ease ${delay}s forwards"`;
+    labels+=`<g${action}>
+      <rect x="${(p.x-LW/2).toFixed(1)}" y="${(p.y-LH/2).toFixed(1)}" width="${LW}" height="${LH}" rx="7" class="lbl-bg" fill="#2F6933" style="filter:drop-shadow(0 1px 3px rgba(0,0,0,0.25))"/>
+      <text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" class="wheel-lbl-txt" fill="white" font-family="'Inter',sans-serif" font-size="10.5" font-weight="600">${ph.name}</text>
+      ${cnt>0?`<circle cx="${(p.x+LW/2-2).toFixed(1)}" cy="${(p.y-LH/2+2).toFixed(1)}" r="8" fill="white"/>
+      <text x="${(p.x+LW/2-2).toFixed(1)}" y="${(p.y-LH/2+6.5).toFixed(1)}" text-anchor="middle" fill="#1c3e20" font-family="'Inter',sans-serif" font-size="8.5" font-weight="700">${cnt}</text>`:''}
+    </g>`;
+  }
+
+  // Hover tooltip overlay (hidden by default, rendered on top)
+  const tooltip=forPrint?'':
+    `<g id="chip-tt" style="pointer-events:none;opacity:0;transition:opacity 0.12s">
+      <rect id="chip-tt-bg" rx="8" fill="#1c3e20" style="filter:drop-shadow(0 3px 10px rgba(0,0,0,0.45))"/>
+      <text id="chip-tt-txt" fill="white" font-family="'Inter',sans-serif" font-size="11.5" font-weight="600" text-anchor="middle" dominant-baseline="middle"/>
+    </g>`;
+
+  const svgAttrs=forPrint
+    ?'style="-webkit-print-color-adjust:exact;print-color-adjust:exact;border-radius:10px"'
+    :'id="wheel-svg"';
+  return `<svg ${svgAttrs} viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    ${defs}${shadowDef||''}${bgs}${sNames}${ring}${chips}${labels}${centerDot}${tooltip}
+  </svg>`;
+}
+
+/* ══ RENDER ══ */
+function render(){
+  const root=document.getElementById('quiz-root');
+  if(!root) return;
+  if(STATE.view==='model') root.innerHTML=renderModelView();
+  else if(STATE.view==='wizard') root.innerHTML=renderWizardView();
+  else if(STATE.view==='project') root.innerHTML=renderProjectView();
+  bindEvents();
+  window.scrollTo({top:0,behavior:'instant'});
+}
+
+/* ── MODEL VIEW ── */
+function renderModelView(){
+  const wheel=buildWheel();
+  const hasProj=PROJECTS.length>0;
+  const qPhase=STATE.quickAddPhase;
+
+  const projectCards=hasProj
+    ? PROJECTS.map(p=>{
+        const ph=PHASES[p.phaseIdx];
+        const doneD=(p.checkedD||[]).filter(Boolean).length;
+        const doneK=(p.checkedK||[]).filter(Boolean).length;
+        const doneOrg=(p.answersOrg||[]).filter(a=>a&&a.trim()).length;
+        const doneLeider=(p.answersLeider||[]).filter(a=>a&&a.trim()).length;
+        const totalDone=doneD+doneK+doneOrg+doneLeider;
+        return `<div class="project-card season-${ph.season}" data-card-id="${p.id}">
+          <div class="project-card-top">
+            <div>
+              <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
+              <div class="project-card-name">${esc(p.name)}</div>
+            </div>
+          </div>
+          <div class="project-progress">
+            <div class="progress-track"><div class="progress-fill" style="width:${Math.round(totalDone/12*100)}%"></div></div>
+            <span class="progress-lbl">${totalDone}/12 afgerond</span>
+          </div>
+        </div>`;
+      }).join('')
+    : `<p class="projects-empty">Nog geen projecten. Voeg hieronder je eerste project toe.</p>`;
+
+  const iconClick=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`;
+  const iconSearch=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.6"/><line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
+
+  const cardDirect=`<div class="start-card${qPhase>=0?' active':''}">
+    <div class="start-card-label">${iconClick} Fase bekend</div>
+    ${qPhase>=0
+      ? `<span class="start-card-phase">→ ${PHASES[qPhase].name}</span>
+         <div class="start-card-input-row">
+           <input class="quickadd-input" id="qa-name" type="text" placeholder="Projectnaam..." autofocus/>
+           <button class="btn-quickadd" id="btn-qa-confirm">Toevoegen</button>
+           <button class="btn-quickcancel" id="btn-qa-cancel">✕</button>
+         </div>`
+      : `<div class="start-card-body">Klik op een faselabel in het model hierboven.</div>`
+    }
+  </div>`;
+
+  const cardWizard=`<div class="start-card">
+    <div class="start-card-label">${iconSearch} Ontdek huidige fase</div>
+    <div class="start-card-body">Beantwoord 3 vragen en de tool bepaalt de fase.</div>
+    <div><button class="btn-start" id="btn-wizard" style="font-size:0.84rem;padding:0.6rem 1.1rem">Start 3 vragen →</button></div>
+  </div>`;
+
+  return `<div class="model-layout">
+    <div class="wheel-col">
+      <div class="wheel-wrap">
+        ${wheel}
+        <button class="wheel-zoom-btn no-print" id="btn-wheel-zoom" title="Uitvergroten"><svg width="16" height="16" viewBox="0 0 18 18" fill="none"><circle cx="7.5" cy="7.5" r="5" stroke="currentColor" stroke-width="1.6"/><line x1="11.5" y1="11.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="5.5" y1="7.5" x2="9.5" y2="7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><line x1="7.5" y1="5.5" x2="7.5" y2="9.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="start-options">
+        ${cardDirect}
+        <div class="start-divider">of</div>
+        ${cardWizard}
+      </div>
+      ${hasProj?`<div class="start-actions">
+        <button class="btn-export no-print" id="btn-pdf">↓ Download als PDF</button>
+        <span class="save-indicator" id="save-ind"></span>
+      </div>`:''}
+    </div>
+    <div class="projects-col">
+      <h3 class="projects-col-title">Geplotte projecten</h3>
+      ${projectCards}
+    </div>
+  </div>`;
+}
+
+/* ── WIZARD VIEW ── */
+function renderWizardView(){
+  if(STATE.wStep===0){
+    return `<div class="quiz-inner">
+      ${backBtn('btn-back-model')}
+      <p class="q-step-label">Nieuw project plotten</p>
+      <p class="q-text">Hoe heet het project?</p>
+      <p class="q-hint">Beantwoord daarna 3 korte vragen en ontdek in welk subseizoen het zit.</p>
+      <div class="name-wrap">
+        <label class="name-label" for="proj-name">Projectnaam</label>
+        <input id="proj-name" class="name-input" type="text" placeholder="bijv. Teamontwikkeltraject Q3 · Nieuwe strategie · ..." autofocus/>
+      </div>
+      <button class="btn-start" id="btn-wiz-start">Start met 3 vragen →</button>
+    </div>`;
+  }
+
+  if(STATE.wStep<=3){
+    const q=STATE.wStep===1?Q1:STATE.wStep===2?Q2[STATE.answers[0]]:Q3[STATE.answers[0]*2+STATE.answers[1]];
+    return `<div class="quiz-inner">
+      ${STATE.wStep>1?`<button class="btn-back" id="btn-wiz-back">← Vorige vraag</button>`:''}
+      <div class="progress-bar">
+        <div class="progress-steps">${[1,2,3].map(i=>`<div class="progress-dot ${i<STATE.wStep?'done':i===STATE.wStep?'active':''}"></div>`).join('')}</div>
+        <span>Vraag ${STATE.wStep} van 3</span>
+      </div>
+      <p class="q-step-label">${q.step}</p>
+      <p class="q-text">${q.question}</p>
+      <p class="q-hint">${q.hint}</p>
+      <div class="options-grid">
+        ${q.options.map((o,i)=>`<button class="opt-card" data-answer="${i}">
+          <span class="opt-label">${o.label}</span>
+          <span class="opt-desc">${o.desc}</span>
+        </button>`).join('')}
+      </div>
+    </div>`;
+  }
+
+  // step 4: result + add to model
+  const phIdx=STATE.answers[0]*4+STATE.answers[1]*2+STATE.answers[2];
+  const ph=PHASES[phIdx];
+  const s=ph.season;
+  return `<div class="quiz-inner">
+    <div class="result-hero ${s}">
+      <div class="result-season-badge">${ph.seasonLabel} · Fase ${phIdx+1} van 8</div>
+      <h2 class="result-phase-name">${ph.name}</h2>
+      <p class="result-subtitle">${ph.subtitle}</p>
+      ${STATE.draftName?`<div class="result-project">Project: <strong>${esc(STATE.draftName)}</strong></div>`:''}
+    </div>
+    <div class="result-body">
+      <div class="result-sec">
+        <p class="result-sec-title ${s}">Wat speelt er wezenlijk?</p>
+        <p class="result-text">${ph.happening}</p>
+      </div>
+      <div class="result-sec">
+        <p class="result-sec-title ${s}">Spanningsveld</p>
+        <p class="result-text">${ph.tension}</p>
+      </div>
+    </div>
+    <div class="result-footer">
+      <button class="btn-start" id="btn-add-confirm">✓ Voeg toe aan model</button>
+      <button class="btn-restart" id="btn-wiz-redo">Opnieuw proberen</button>
+    </div>
+  </div>`;
+}
+
+/* ── PROJECT VIEW ── */
+function renderProjectView(){
+  const p=getProj(STATE.activeId);
+  if(!p){STATE.view='model';return renderModelView();}
+  const ph=PHASES[p.phaseIdx];
+  const s=ph.season;
+  const cQ=p.checkedQ||[false,false,false,false];
+  const cD=p.checkedD||[false,false,false];
+  const cK=p.checkedK||[false,false,false];
+  const aOrg=p.answersOrg||['','',''];
+  const aLeider=p.answersLeider||['','',''];
+  const doneQ=cQ.filter(Boolean).length;
+
+  // First-visit detection: sections open on first view, collapsed after
+  const firstView=!p.viewed;
+  if(firstView){p.viewed=true;saveProjects();}
+  const dOpen=firstView?' open':'';
+
+  // prev/next navigation
+  const idx=PROJECTS.findIndex(x=>x.id===STATE.activeId);
+  const prev=PROJECTS[idx-1]||null;
+  const next=PROJECTS[idx+1]||null;
+  const navRow=`<div class="proj-nav">
+    <button class="proj-nav-btn" id="btn-proj-prev" ${!prev?'disabled':''}>
+      ← ${prev?`<span class="proj-nav-name">${esc(prev.name)}</span>`:''}
+    </button>
+    <span class="proj-nav-spacer"></span>
+    <button class="proj-nav-btn" id="btn-proj-next" ${!next?'disabled':''}>
+      ${next?`<span class="proj-nav-name">${esc(next.name)}</span>`:''} →
+    </button>
+  </div>`;
+
+  return `<div class="quiz-inner">
+    ${backBtn('btn-back-model')}
+    ${navRow}
+
+    <div class="result-hero ${s}">
+      <div class="result-season-badge">${ph.seasonLabel} · Fase ${p.phaseIdx+1} van 8</div>
+      <h2 class="result-phase-name">${ph.name}</h2>
+      <p class="result-subtitle">${ph.subtitle}</p>
+      <div class="result-project">Project: <strong>${esc(p.name)}</strong></div>
+      <button class="btn-phase-change no-print" id="btn-phase-change">↕ Verplaats naar andere fase</button>
+    </div>
+
+    <div class="result-body">
+      <details class="result-sec"${dOpen}>
+        <summary><span class="result-sec-title ${s}" style="margin:0">Wat speelt er wezenlijk?</span></summary>
+        <p class="result-text">${ph.happening}</p>
+      </details>
+      <details class="result-sec"${dOpen}>
+        <summary><span class="result-sec-title ${s}" style="margin:0">Spanningsveld</span></summary>
+        <p class="result-text">${ph.tension}</p>
+      </details>
+      <details class="result-sec"${dOpen}>
+        <summary><span class="result-sec-title ${s}" style="margin:0">Hoe stem je af als leider?</span></summary>
+        <p class="result-text">${ph.alignment}</p>
+      </details>
+      <div class="result-sec">
+        <p class="result-sec-title ${s}">Reflectievragen — Organisatie</p>
+        <div class="checklist">
+          ${ph.questionsOrg.map((q,i)=>`<div>
+            <div class="q-bullet-item">
+              <span class="q-bullet">•</span>
+              <span class="check-label">${q}</span>
+            </div>
+            <div class="q-answer-wrap">
+              <textarea class="q-answer-textarea proj-answer" data-section="org" data-idx="${i}" rows="3" placeholder="Jouw antwoord...">${esc(aOrg[i]||'')}</textarea>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="result-sec">
+        <p class="result-sec-title ${s}">Reflectievragen — Leider</p>
+        <p class="result-sec-intro">Kan de leider de spanning van deze subfase dragen? Wat vraagt dat?</p>
+        <div class="checklist">
+          ${ph.questionsLeider.map((q,i)=>`<div>
+            <div class="q-bullet-item">
+              <span class="q-bullet">•</span>
+              <span class="check-label">${q}</span>
+            </div>
+            <div class="q-answer-wrap">
+              <textarea class="q-answer-textarea proj-answer" data-section="leider" data-idx="${i}" rows="3" placeholder="Jouw antwoord...">${esc(aLeider[i]||'')}</textarea>
+            </div>
+          </div>`).join('')}
+        </div>
+      </div>
+      <div class="result-sec">
+        <div class="result-cols">
+          <div>
+            <p class="col-label">Deliverables</p>
+            <div class="checklist">
+              ${ph.deliverables.map((d,i)=>`<label class="check-item${cD[i]?' done':''}">
+                <input type="checkbox" class="proj-check" data-type="d" data-idx="${i}" ${cD[i]?'checked':''}/>
+                <span class="check-label">${d}</span>
+              </label>`).join('')}
+            </div>
+          </div>
+          <div>
+            <p class="col-label">KPI's</p>
+            <div class="checklist">
+              ${ph.kpis.map((k,i)=>`<label class="check-item${cK[i]?' done':''}">
+                <input type="checkbox" class="proj-check" data-type="k" data-idx="${i}" ${cK[i]?'checked':''}/>
+                <span class="check-label">${k}</span>
+              </label>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="result-footer">
+      ${backBtn('btn-back-model2')}
+      <span class="save-indicator" id="save-ind-proj"></span>
+      <span class="result-source" style="margin-left:auto">Gebaseerd op <em>De Natuurlijke Cyclus</em> — Johan Spaans &amp; Menno Braakman</span>
+      <button class="btn-danger" id="btn-delete">Verwijder project</button>
+    </div>
+  </div>`;
+}
+
+/* ══ EVENTS ══ */
+function showSaved(id){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.textContent='✓ Opgeslagen';
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2000);
+}
+
+function bindEvents(){
+  // Back to model
+  document.getElementById('btn-back-model')?.addEventListener('click',()=>{STATE.view='model';render();});
+  document.getElementById('btn-back-model2')?.addEventListener('click',()=>{STATE.view='model';render();});
+
+  // Model: wizard start
+  document.getElementById('btn-wizard')?.addEventListener('click',()=>{STATE.view='wizard';STATE.wStep=0;STATE.answers=[];STATE.draftName='';render();});
+
+  // Model: PDF export
+  document.getElementById('btn-pdf')?.addEventListener('click',printPDF);
+  document.getElementById('btn-wheel-zoom')?.addEventListener('click',openWheelModal);
+
+  // Project: prev/next navigation
+  document.getElementById('btn-proj-prev')?.addEventListener('click',()=>{
+    const idx=PROJECTS.findIndex(x=>x.id===STATE.activeId);
+    if(idx>0){STATE.activeId=PROJECTS[idx-1].id;render();}
+  });
+  document.getElementById('btn-proj-next')?.addEventListener('click',()=>{
+    const idx=PROJECTS.findIndex(x=>x.id===STATE.activeId);
+    if(idx<PROJECTS.length-1){STATE.activeId=PROJECTS[idx+1].id;render();}
+  });
+
+  // Project: phase change
+  document.getElementById('btn-phase-change')?.addEventListener('click',()=>openPhasePicker());
+
+  // Model: phase label click (quick add)
+  document.querySelectorAll('.wheel-label-g').forEach(g=>{
+    const idx=parseInt(g.dataset.idx);
+    g.addEventListener('click',()=>{
+      STATE.quickAddPhase=idx;
+      render();
+      setTimeout(()=>document.getElementById('qa-name')?.focus(),50);
+    });
+  });
+
+  // Model: project chip hover tooltip
+  document.querySelectorAll('.proj-chip[data-fullname]').forEach(chip=>{
+    chip.addEventListener('mouseenter',()=>{
+      const name=chip.dataset.fullname;
+      const cx=parseFloat(chip.dataset.cx);
+      const cy=parseFloat(chip.dataset.cy);
+      const color=chip.dataset.color||'#1c3e20';
+      const W=480, pad=18, h=30;
+      const w=Math.min(W-20, Math.max(80, name.length*7.2+pad*2));
+      // position above the chip, clamped within SVG bounds
+      let tx=cx, ty=cy-22;
+      if(tx-w/2<4) tx=w/2+4;
+      if(tx+w/2>W-4) tx=W-4-w/2;
+      if(ty-h/2<4) ty=h/2+4;
+      const bg=document.getElementById('chip-tt-bg');
+      const txt=document.getElementById('chip-tt-txt');
+      const tt=document.getElementById('chip-tt');
+      if(!bg||!txt||!tt) return;
+      bg.setAttribute('x',tx-w/2); bg.setAttribute('y',ty-h/2);
+      bg.setAttribute('width',w); bg.setAttribute('height',h);
+      bg.setAttribute('fill',color);
+      txt.setAttribute('x',tx); txt.setAttribute('y',ty);
+      txt.textContent=name;
+      tt.style.opacity='1';
+    });
+    chip.addEventListener('mouseleave',()=>{
+      const tt=document.getElementById('chip-tt');
+      if(tt) tt.style.opacity='0';
+    });
+  });
+
+  // Model: project chip click
+  document.querySelectorAll('.proj-chip[data-proj-id]').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      STATE.view='project'; STATE.activeId=chip.dataset.projId; render();
+    });
+  });
+
+  // Model: project card hover → highlight wheel phase
+  document.querySelectorAll('.project-card[data-card-id]').forEach(card=>{
+    const proj=getProj(card.dataset.cardId);
+    if(!proj) return;
+    const phIdx=proj.phaseIdx;
+    card.addEventListener('mouseenter',()=>{
+      document.querySelectorAll('.wheel-label-g').forEach(g=>{
+        g.style.opacity=g.dataset.idx==phIdx?'1':'0.18';
+      });
+      document.querySelectorAll('.proj-chip').forEach(c=>{
+        c.style.opacity=c.dataset.projId===proj.id?'1':'0.18';
+      });
+      const bg=document.querySelector(`.wheel-label-g[data-idx="${phIdx}"] .lbl-bg`);
+      if(bg) bg.style.filter='brightness(1.35) drop-shadow(0 0 6px rgba(255,255,255,0.45))';
+    });
+    card.addEventListener('mouseleave',()=>{
+      document.querySelectorAll('.wheel-label-g').forEach(g=>{g.style.opacity='';});
+      document.querySelectorAll('.proj-chip').forEach(c=>{c.style.opacity='';});
+      document.querySelectorAll('.wheel-label-g .lbl-bg').forEach(b=>{b.style.filter='';});
+    });
+  });
+
+  // Model: project card click
+  document.querySelectorAll('.project-card[data-card-id]').forEach(card=>{
+    card.addEventListener('click',()=>{
+      STATE.view='project'; STATE.activeId=card.dataset.cardId; render();
+    });
+  });
+
+  // Quick add confirm
+  document.getElementById('btn-qa-confirm')?.addEventListener('click',()=>{
+    const name=(document.getElementById('qa-name')?.value||'').trim();
+    if(!name){document.getElementById('qa-name')?.focus();return;}
+    const proj={id:uid(),name,phaseIdx:STATE.quickAddPhase,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
+    PROJECTS.push(proj);
+    saveProjects();
+    STATE.quickAddPhase=-1;
+    STATE.view='project'; STATE.activeId=proj.id;
+    render();
+  });
+  document.getElementById('qa-name')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-qa-confirm')?.click();});
+  document.getElementById('btn-qa-cancel')?.addEventListener('click',()=>{STATE.quickAddPhase=-1;render();});
+
+  // Wizard: name step start
+  document.getElementById('btn-wiz-start')?.addEventListener('click',()=>{
+    const name=(document.getElementById('proj-name')?.value||'').trim();
+    STATE.draftName=name||'Naamloos project';
+    STATE.wStep=1; render();
+  });
+  document.getElementById('proj-name')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-wiz-start')?.click();});
+
+  // Wizard: answer selection
+  document.querySelectorAll('.opt-card[data-answer]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const val=parseInt(btn.dataset.answer);
+      STATE.answers.push(val);
+      if(STATE.answers.length<3){STATE.wStep++;render();}
+      else{STATE.wStep=4;render();}
+    });
+  });
+
+  // Wizard: back
+  document.getElementById('btn-wiz-back')?.addEventListener('click',()=>{
+    STATE.wStep--; STATE.answers.pop(); render();
+  });
+
+  // Wizard: add to model
+  document.getElementById('btn-add-confirm')?.addEventListener('click',()=>{
+    const phIdx=STATE.answers[0]*4+STATE.answers[1]*2+STATE.answers[2];
+    const proj={id:uid(),name:STATE.draftName,phaseIdx:phIdx,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
+    PROJECTS.push(proj);
+    saveProjects();
+    STATE.view='project'; STATE.activeId=proj.id; STATE.answers=[]; STATE.wStep=0;
+    render();
+  });
+
+  // Wizard: redo
+  document.getElementById('btn-wiz-redo')?.addEventListener('click',()=>{STATE.wStep=1;STATE.answers=[];render();});
+
+  // Project: checkboxes
+  document.querySelectorAll('.proj-check').forEach(cb=>{
+    cb.addEventListener('change',()=>{
+      const p=getProj(STATE.activeId);
+      if(!p) return;
+      const type=cb.dataset.type, idx=parseInt(cb.dataset.idx);
+      if(type==='d'){if(!p.checkedD)p.checkedD=[false,false,false];p.checkedD[idx]=cb.checked;}
+      if(type==='k'){if(!p.checkedK)p.checkedK=[false,false,false];p.checkedK[idx]=cb.checked;}
+      saveProjects();
+      showSaved('save-ind-proj');
+      // Update done class on label
+      const label=cb.closest('.check-item');
+      if(label){label.classList.toggle('done',cb.checked);}
+    });
+  });
+
+  // Project: reflection answer textareas (debounced)
+  let answerTimer=null;
+  document.querySelectorAll('.proj-answer').forEach(ta=>{
+    ta.addEventListener('input',()=>{
+      const p=getProj(STATE.activeId);
+      if(!p) return;
+      const idx=parseInt(ta.dataset.idx);
+      const sec=ta.dataset.section;
+      if(sec==='leider'){
+        if(!p.answersLeider) p.answersLeider=['','',''];
+        p.answersLeider[idx]=ta.value;
+      } else {
+        if(!p.answersOrg) p.answersOrg=['','',''];
+        p.answersOrg[idx]=ta.value;
+      }
+      clearTimeout(answerTimer);
+      answerTimer=setTimeout(()=>{saveProjects();showSaved('save-ind-proj');},600);
+    });
+  });
+
+  // Project: delete
+  document.getElementById('btn-delete')?.addEventListener('click',()=>{
+    if(!confirm(`Project "${getProj(STATE.activeId)?.name}" verwijderen?`)) return;
+    PROJECTS=PROJECTS.filter(p=>p.id!==STATE.activeId);
+    saveProjects();
+    STATE.view='model'; STATE.activeId=null; render();
+  });
+}
+
+/* ══ PRINT / PDF ══ */
+function printPDF(){
+  const wrap=document.getElementById('print-wrap');
+  const dateStr=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  const wheelSVG=buildWheel(true);
+
+  // ── Pagina 1: cover met model + legenda ──
+  const legendRows=PROJECTS.map(p=>{
+    const ph=PHASES[p.phaseIdx];
+    return `<tr>
+      <td><span class="print-legend-dot season-${ph.season}"></span></td>
+      <td class="print-legend-name">${esc(p.name)}</td>
+      <td class="print-legend-phase">${ph.seasonLabel} &mdash; ${ph.name}</td>
+    </tr>`;
+  }).join('');
+
+  let html=`<div class="print-cover">
+    <p class="print-cover-kicker">De Natuurlijke Cyclus</p>
+    <h1 class="print-cover-title">Projectoverzicht</h1>
+    <p class="print-cover-sub">${PROJECTS.length} project${PROJECTS.length!==1?'en':''} in kaart gebracht</p>
+    <div class="print-cover-wheel">${wheelSVG}</div>
+    <table class="print-legend-table">
+      <tbody>${legendRows}</tbody>
+    </table>
+    <p class="print-cover-date">Gegenereerd op ${dateStr}</p>
+  </div>`;
+
+  // ── Pagina per project ──
+  PROJECTS.forEach((p,pi)=>{
+    const ph=PHASES[p.phaseIdx];
+    const cD=p.checkedD||[];
+    const cK=p.checkedK||[];
+    const aOrg=p.answersOrg||[];
+    const aLeider=p.answersLeider||[];
+    const doneD=cD.filter(Boolean).length;
+    const doneK=cK.filter(Boolean).length;
+
+    const qOrgItems=ph.questionsOrg.map((q,i)=>`<div class="print-q-item">
+      <div class="print-q-row">
+        <span class="print-q-box">•</span>
+        <span>${q}</span>
+      </div>
+      ${aOrg[i]?`<div class="print-q-answer">${esc(aOrg[i]).replace(/\n/g,'<br>')}</div>`:''}
+    </div>`).join('');
+    const qLeiderItems=ph.questionsLeider.map((q,i)=>`<div class="print-q-item">
+      <div class="print-q-row">
+        <span class="print-q-box">•</span>
+        <span>${q}</span>
+      </div>
+      ${aLeider[i]?`<div class="print-q-answer">${esc(aLeider[i]).replace(/\n/g,'<br>')}</div>`:''}
+    </div>`).join('');
+
+    const dItems=ph.deliverables.map((d,i)=>`<div class="print-check-item${cD[i]?' done':''}">
+      <span>${cD[i]?'☑':'☐'}</span><span>${d}</span>
+    </div>`).join('');
+
+    const kItems=ph.kpis.map((k,i)=>`<div class="print-check-item${cK[i]?' done':''}">
+      <span>${cK[i]?'☑':'☐'}</span><span>${k}</span>
+    </div>`).join('');
+
+    html+=`<div class="print-project-page">
+      <div class="print-proj-header season-${ph.season}">
+        <div class="print-proj-season">${ph.seasonLabel} &nbsp;·&nbsp; Fase ${p.phaseIdx+1} van 8</div>
+        <div class="print-proj-name">${esc(p.name)}</div>
+        <div class="print-proj-subtitle">${ph.name}: ${ph.subtitle}</div>
+      </div>
+
+      <div class="print-body-full print-sec">
+        <div class="print-sec-label">Wat speelt er wezenlijk?</div>
+        <p>${ph.happening}</p>
+      </div>
+
+      <div class="print-body-full print-sec">
+        <div class="print-sec-label">Spanningsveld</div>
+        <p>${ph.tension}</p>
+      </div>
+
+      <div class="print-body-full print-sec">
+        <div class="print-sec-label">Reflectievragen — Organisatie</div>
+        ${qOrgItems}
+      </div>
+      <div class="print-body-full print-sec">
+        <div class="print-sec-label">Reflectievragen — Leider</div>
+        <div class="print-sec-intro" style="font-size:0.82em;color:#5c5650;margin-bottom:0.4em;">Kan de leider de spanning van deze subfase dragen? Wat vraagt dat?</div>
+        ${qLeiderItems}
+      </div>
+
+      <div class="print-body">
+        <div class="print-sec">
+          <div class="print-sec-label">Deliverables &nbsp;<span style="font-weight:400;opacity:0.6;">(${doneD}/3)</span></div>
+          ${dItems}
+        </div>
+        <div class="print-sec">
+          <div class="print-sec-label">KPI's &nbsp;<span style="font-weight:400;opacity:0.6;">(${doneK}/3)</span></div>
+          ${kItems}
+        </div>
+      </div>
+
+      <div class="print-footer">Gebaseerd op <em>De Natuurlijke Cyclus</em> &mdash; Johan Spaans &amp; Menno Braakman</div>
+    </div>`;
+  });
+
+  wrap.innerHTML=html;
+  window.print();
+  setTimeout(()=>{wrap.innerHTML='';},1200);
+}
+
+/* ══ PHASE PICKER ══ */
+function openPhasePicker(){
+  const overlay=document.getElementById('phase-picker');
+  const list=document.getElementById('phase-picker-list');
+  if(!overlay||!list) return;
+  const p=getProj(STATE.activeId);
+  if(!p) return;
+  const seasonColors={winter:'winter',lente:'lente',zomer:'zomer',herfst:'herfst'};
+  list.innerHTML=PHASES.map((ph,i)=>`
+    <button class="phase-picker-item${i===p.phaseIdx?' current':''}" data-phase-idx="${i}">
+      <span class="phase-dot ${ph.season}"></span>
+      <span><span class="phase-picker-name">${ph.name}</span><br><span class="phase-picker-sub">${ph.seasonLabel} · Fase ${i+1} van 8</span></span>
+    </button>`).join('');
+  overlay.classList.add('open');
+  list.querySelectorAll('.phase-picker-item').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const newIdx=parseInt(btn.dataset.phaseIdx);
+      if(newIdx===p.phaseIdx){overlay.classList.remove('open');return;}
+      p.phaseIdx=newIdx;
+      saveProjects();
+      overlay.classList.remove('open');
+      render();
+    });
+  });
+  document.getElementById('phase-picker-close')?.addEventListener('click',()=>overlay.classList.remove('open'));
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.classList.remove('open');});
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.getElementById('phase-picker')?.classList.remove('open');});
+
+/* ══ WHEEL MODAL ══ */
+function openWheelModal(){
+  const modal=document.getElementById('wheel-modal');
+  const inner=document.getElementById('wheel-modal-inner');
+  if(!modal||!inner) return;
+  // Build a fresh wheel SVG; rename all IDs to avoid clashing with main wheel
+  let svgStr=buildWheel()
+    .replace('id="wheel-svg"','id="wheel-svg-modal"')
+    .replace('id="chip-tt"','id="chip-tt-m"')
+    .replace('id="chip-tt-bg"','id="chip-tt-bg-m"')
+    .replace('id="chip-tt-txt"','id="chip-tt-txt-m"');
+  // Keep the close button, rebuild inner
+  const closeBtn=inner.querySelector('.wheel-modal-close');
+  inner.innerHTML='';
+  if(closeBtn) inner.appendChild(closeBtn);
+  else { const b=document.createElement('button'); b.className='wheel-modal-close'; b.id='wheel-modal-close'; b.title='Sluiten'; b.textContent='✕'; inner.appendChild(b); }
+  const svgWrap=document.createElement('div');
+  svgWrap.innerHTML=svgStr;
+  const svg=svgWrap.firstChild;
+  inner.appendChild(svg);
+  modal.classList.add('open');
+  // Phase label clicks: select + close
+  inner.querySelectorAll('.wheel-label-g').forEach(g=>{
+    g.addEventListener('click',()=>{
+      const idx=parseInt(g.dataset.idx);
+      STATE.quickAddPhase=idx;
+      modal.classList.remove('open');
+      render();
+      setTimeout(()=>document.getElementById('qa-name')?.focus(),80);
+    });
+  });
+  // Project chip tooltip — scoped to modal SVG
+  inner.querySelectorAll('.proj-chip[data-fullname]').forEach(chip=>{
+    chip.addEventListener('mouseenter',()=>{
+      const svgEl=inner.querySelector('svg');
+      const bg=svgEl?.getElementById ? svgEl.getElementById('chip-tt-bg-m') : inner.querySelector('#chip-tt-bg-m');
+      const txt=svgEl?.getElementById ? svgEl.getElementById('chip-tt-txt-m') : inner.querySelector('#chip-tt-txt-m');
+      const tt=svgEl?.getElementById ? svgEl.getElementById('chip-tt-m') : inner.querySelector('#chip-tt-m');
+      if(!tt||!bg||!txt) return;
+      const name=chip.dataset.fullname;
+      const cx=parseFloat(chip.dataset.cx);
+      const cy=parseFloat(chip.dataset.cy);
+      txt.textContent=name;
+      const tW=Math.max(name.length*6.8+20,80);
+      const above=cy>240;
+      bg.setAttribute('x',(cx-tW/2).toFixed(1));
+      bg.setAttribute('y',above?(cy-44).toFixed(1):(cy+14).toFixed(1));
+      bg.setAttribute('width',tW.toFixed(1));
+      bg.setAttribute('height','26');
+      txt.setAttribute('x',cx.toFixed(1));
+      txt.setAttribute('y',above?(cy-31).toFixed(1):(cy+27).toFixed(1));
+      tt.style.opacity='1';
+    });
+    chip.addEventListener('mouseleave',()=>{
+      const tt=inner.querySelector('#chip-tt-m');
+      if(tt) tt.style.opacity='0';
+    });
+  });
+  // Project chip click: go to project
+  inner.querySelectorAll('.proj-chip[data-proj-id]').forEach(chip=>{
+    chip.addEventListener('click',e=>{
+      e.stopPropagation();
+      STATE.activeId=chip.dataset.projId;
+      STATE.view='project';
+      modal.classList.remove('open');
+      render();
+    });
+  });
+  // Close button
+  inner.querySelector('.wheel-modal-close')?.addEventListener('click',()=>modal.classList.remove('open'));
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape') document.getElementById('wheel-modal')?.classList.remove('open');});
+document.getElementById('wheel-modal')?.addEventListener('click',e=>{if(e.target===document.getElementById('wheel-modal')) document.getElementById('wheel-modal').classList.remove('open');});
+
+/* ══ HELPERS ══ */
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+const MINI_WHEEL=`<svg class="btn-back-icon" viewBox="0 0 22 22" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="11" height="11" fill="#7aa8cc"/>
+  <rect x="11" y="0" width="11" height="11" fill="#4a9a5c"/>
+  <rect x="11" y="11" width="11" height="11" fill="#d9a020"/>
+  <rect x="0" y="11" width="11" height="11" fill="#b04e18"/>
+  <line x1="11" y1="0" x2="11" y2="22" stroke="white" stroke-width="0.6" opacity="0.45"/>
+  <line x1="0" y1="11" x2="22" y2="11" stroke="white" stroke-width="0.6" opacity="0.45"/>
+  <circle cx="11" cy="11" r="6.2" stroke="white" stroke-width="1.1" fill="none"/>
+  <circle cx="11" cy="11" r="1.4" fill="rgba(255,255,255,0.5)"/>
+</svg>`;
+
+function backBtn(id){return `<button class="btn-back" id="${id}">${MINI_WHEEL} Terug naar model</button>`;}
+
+/* ══ CSS ANIMATION ══ */
+const styleEl=document.createElement('style');
+styleEl.textContent=`@keyframes lblIn{from{opacity:0}to{opacity:1}}.wheel-label-g{cursor:pointer;transition:opacity 0.2s}.wheel-label-g .lbl-bg{transition:fill .15s,filter .2s}.wheel-label-g:hover .lbl-bg{filter:brightness(1.35)}.proj-chip{cursor:pointer;transition:opacity 0.2s}.proj-chip:hover rect{filter:brightness(1.3)}`;
+document.head.appendChild(styleEl);
+
+render();
+</script>
+</body>
+</html>
