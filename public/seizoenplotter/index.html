@@ -732,7 +732,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function getProj(id){return PROJECTS.find(p=>p.id===id);}
 
 /* ══ STATE ══ */
-let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie' };
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null };
 
 /* ══ WHEEL BUILDER ══ */
 const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
@@ -1095,9 +1095,9 @@ function renderProjectView(){
   const aLeider=p.answersLeider||['','',''];
   const doneQ=cQ.filter(Boolean).length;
 
-  // First-visit detection: sections open on first view, collapsed after
-  const firstView=!p.viewed;
-  if(firstView){p.viewed=true;saveProjects();}
+  // First-visit detection: sections open on first view (just created or never viewed)
+  const firstView=(STATE.freshProjectId===p.id)||!p.viewed;
+  if(firstView){STATE.freshProjectId=null;p.viewed=true;saveProjects();}
   const dOpen=firstView?' open':'';
 
   // prev/next navigation
@@ -1408,8 +1408,7 @@ function bindEvents(){
     const proj={id:uid(),name,phaseIdx:STATE.quickAddPhase,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
     PROJECTS.push(proj);
     saveProjects();
-    STATE.quickAddPhase=-1;
-    STATE.view='project'; STATE.activeId=proj.id;
+    STATE.freshProjectId=proj.id; STATE.quickAddPhase=-1; STATE.view='project'; STATE.activeId=proj.id;
     render();
   });
   document.getElementById('qa-name')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-qa-confirm')?.click();});
@@ -1446,7 +1445,7 @@ function bindEvents(){
     const proj={id:uid(),name:STATE.draftName,desc:STATE.draftDesc,phaseIdx:phIdx,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
     PROJECTS.push(proj);
     saveProjects();
-    STATE.view='project'; STATE.activeId=proj.id; STATE.answers=[]; STATE.wStep=0;
+    STATE.freshProjectId=proj.id; STATE.view='project'; STATE.activeId=proj.id; STATE.answers=[]; STATE.wStep=0;
     render();
   });
 
