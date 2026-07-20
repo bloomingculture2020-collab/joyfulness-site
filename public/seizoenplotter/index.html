@@ -785,20 +785,37 @@ function buildWheel(forPrint=false) {
   const ring=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#1a1815" stroke-width="1.8" opacity="0.7"/>`;
   const centerDot=`<circle cx="${cx}" cy="${cy}" r="4" fill="rgba(26,24,21,0.3)"/>`;
 
-  // Project chips inside wheel — 1 chip per phase (count badge on label shows total)
+  // Project chips inside wheel — all projects per phase, stacked radially
   let chips='';
-  const chipR=55, chipW=72, chipH=20;
+  const chipW=76, chipH=18, chipGap=3;
   Object.entries(chipsByPhase).forEach(([phIdx,projs])=>{
     const ang=ANGLES[parseInt(phIdx)];
-    const proj=projs[0]; // show most recently active project
-    const p=pt(ang,chipR);
-    const label=proj.name.length>9?proj.name.slice(0,8)+'…':proj.name;
-    const sColor = proj.phaseIdx<2?'#2d5a8e': proj.phaseIdx<4?'#1c5a2c': proj.phaseIdx<6?'#b07000':'#702000';
-    const action=forPrint?'':` data-proj-id="${proj.id}" data-fullname="${proj.name.replace(/"/g,'&quot;')}" data-cx="${p.x.toFixed(1)}" data-cy="${p.y.toFixed(1)}" data-color="${sColor}" style="cursor:pointer"`;
-    chips+=`<g class="proj-chip"${action}>
-      <rect x="${(p.x-chipW/2).toFixed(1)}" y="${(p.y-chipH/2).toFixed(1)}" width="${chipW}" height="${chipH}" rx="5" fill="${sColor}" opacity="0.88"/>
-      <text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="white" font-family="'Inter',sans-serif" font-size="8.5" font-weight="600">${esc(label)}</text>
-    </g>`;
+    const phInt=parseInt(phIdx);
+    const sColor = phInt<2?'#2d5a8e': phInt<4?'#1c5a2c': phInt<6?'#b07000':'#702000';
+    const maxShow=3;
+    const shown=projs.slice(0,maxShow);
+    const extraCount=projs.length-maxShow;
+    const totalItems=shown.length+(extraCount>0?1:0);
+    const centerR=82;
+    const startR=centerR-(totalItems-1)*(chipH+chipGap)/2;
+    shown.forEach((proj,idx)=>{
+      const r=startR+idx*(chipH+chipGap);
+      const p=pt(ang,r);
+      const prefix=proj.emoji?proj.emoji+' ':'';
+      const maxNameLen=proj.emoji?6:9;
+      const shortName=proj.name.length>maxNameLen?proj.name.slice(0,maxNameLen-1)+'…':proj.name;
+      const label=prefix+shortName;
+      const action=forPrint?'':` data-proj-id="${proj.id}" data-fullname="${proj.name.replace(/"/g,'&quot;')}" data-cx="${p.x.toFixed(1)}" data-cy="${p.y.toFixed(1)}" data-color="${sColor}" style="cursor:pointer"`;
+      chips+=`<g class="proj-chip"${action}>
+        <rect x="${(p.x-chipW/2).toFixed(1)}" y="${(p.y-chipH/2).toFixed(1)}" width="${chipW}" height="${chipH}" rx="5" fill="${sColor}" opacity="0.88"/>
+        <text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="white" font-family="'Inter',sans-serif" font-size="8.5" font-weight="600">${esc(label)}</text>
+      </g>`;
+    });
+    if(extraCount>0){
+      const r=startR+shown.length*(chipH+chipGap);
+      const p=pt(ang,r);
+      chips+=`<text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="rgba(255,255,255,0.55)" font-family="'Inter',sans-serif" font-size="7.5">+${extraCount} meer</text>`;
+    }
   });
 
   // Phase labels (with optional count badge)
