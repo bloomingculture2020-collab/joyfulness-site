@@ -110,6 +110,48 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
   text-transform: uppercase; color: var(--text-soft); }
 .project-card-name { font-family: 'Playfair Display', serif; font-size: 1.05rem;
   color: var(--green-dark); font-weight: 700; margin: 0.15rem 0 0.1rem; }
+
+.project-card-desc { font-size: 0.78rem; color: var(--text-soft); font-style: italic;
+  margin-top: 0.1rem; line-height: 1.4; }
+.card-emoji { margin-right: 0.2rem; }
+
+/* Emoji picker in detail hero */
+.proj-emoji-row { display:flex; gap:.3rem; flex-wrap:wrap; margin-bottom:.75rem; }
+.proj-emoji-btn { font-size:1.25rem; background:rgba(255,255,255,.15); border:1.5px solid rgba(255,255,255,.28);
+  border-radius:8px; width:36px; height:36px; cursor:pointer; display:flex; align-items:center;
+  justify-content:center; transition:background .15s,border-color .15s; }
+.proj-emoji-btn:hover { background:rgba(255,255,255,.32); border-color:rgba(255,255,255,.6); }
+.proj-emoji-btn.sel { background:rgba(255,255,255,.42); border-color:rgba(255,255,255,.85);
+  box-shadow:0 0 0 2px rgba(255,255,255,.35); }
+.proj-emoji-btn.none { font-size:.7rem; color:rgba(255,255,255,.6); }
+
+/* Naam-rij in detail hero */
+.proj-name-edit { display:flex; align-items:center; gap:.45rem; margin:.1rem 0 .15rem; }
+.proj-hero-emoji { font-size:1.6rem; line-height:1; flex-shrink:0; }
+.proj-name-static { font-family:'Playfair Display',serif; font-size:1.15rem; font-weight:700;
+  color:rgba(255,255,255,.95); cursor:pointer; border-bottom:1.5px dashed rgba(255,255,255,.3);
+  padding-bottom:1px; transition:border-color .15s; }
+.proj-name-static:hover { border-color:rgba(255,255,255,.75); }
+.proj-name-input-hero { background:rgba(255,255,255,.15); border:none; border-bottom:1.5px solid rgba(255,255,255,.7);
+  border-radius:0; color:#fff; font-family:'Playfair Display',serif; font-size:1.1rem;
+  font-weight:700; padding:.2rem 0; width:100%; box-sizing:border-box; outline:none; }
+
+/* Beschrijving in detail hero */
+.proj-desc-block { margin:.35rem 0 .2rem; }
+.proj-desc-static { font-size:.88rem; font-style:italic; line-height:1.55; letter-spacing:.01em;
+  color:rgba(255,255,255,.75); cursor:pointer; display:block;
+  border-bottom:1px solid transparent; transition:border-color .15s; }
+.proj-desc-static:hover { border-bottom-color:rgba(255,255,255,.35); }
+.proj-desc-add { font-size:.82rem; font-style:italic; color:rgba(255,255,255,.38); cursor:pointer;
+  display:block; transition:color .15s; }
+.proj-desc-add:hover { color:rgba(255,255,255,.65); }
+.proj-desc-input-hero { -webkit-appearance:none; appearance:none;
+  background:rgba(255,255,255,.1); border:none; border-bottom:1.5px solid rgba(255,255,255,.45);
+  border-radius:0; color:rgba(255,255,255,.92); font-family:'Inter',sans-serif; font-size:.88rem;
+  font-style:italic; line-height:1.55; letter-spacing:.01em;
+  padding:.35rem 0; width:100%; box-sizing:border-box; resize:none; outline:none; }
+.proj-desc-input-hero::placeholder { color:rgba(255,255,255,.28); font-style:italic; }
+
 .project-card-phase { font-size: 0.8rem; color: var(--text-soft); }
 .project-progress { margin-top: 0.7rem; display: flex; align-items: center; gap: 0.6rem; }
 .progress-track { flex: 1; height: 5px; background: #e7e1d4; border-radius: 3px; overflow: hidden; }
@@ -1138,6 +1180,7 @@ function renderProjectView(){
         <button type="button" class="proj-emoji-btn none${p.emoji==='—'?' sel':''}" data-emoji="—">✕</button>
       </div>
       <div class="proj-name-edit">
+        ${p.emoji?`<span class="proj-hero-emoji" id="proj-hero-emoji">${p.emoji}</span>`:'<span class="proj-hero-emoji" id="proj-hero-emoji" style="display:none"></span>'}
         <span class="proj-name-static" id="proj-name-display">${esc(p.name)}</span>
       </div>
       <div class="proj-desc-block">
@@ -1286,11 +1329,16 @@ function bindEvents(){
       const e=btn.dataset.emoji;
       p.emoji=(e==='—')?'':e;
       saveProjects();
-      // Update sel class in place — no full render needed
+      // Update sel class + hero emoji in place — no full render needed
       document.querySelectorAll('.proj-emoji-btn').forEach(b=>{
         const match=b.dataset.emoji===(p.emoji||'—');
         b.classList.toggle('sel', match);
       });
+      const heroEmoji=document.getElementById('proj-hero-emoji');
+      if(heroEmoji){
+        if(p.emoji){ heroEmoji.textContent=p.emoji; heroEmoji.style.display=''; }
+        else{ heroEmoji.textContent=''; heroEmoji.style.display='none'; }
+      }
     });
   });
 
@@ -1678,6 +1726,7 @@ function openWheelModal(){
       txt.textContent=name;
       const tW=Math.max(name.length*6.8+20,80);
       const above=cy>240;
+      bg.setAttribute('fill', chip.dataset.color||'#1c3e20');
       bg.setAttribute('x',(cx-tW/2).toFixed(1));
       bg.setAttribute('y',above?(cy-44).toFixed(1):(cy+14).toFixed(1));
       bg.setAttribute('width',tW.toFixed(1));
