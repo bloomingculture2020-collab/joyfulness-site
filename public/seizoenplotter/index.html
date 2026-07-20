@@ -16,19 +16,39 @@ html { scroll-behavior: smooth; }
 body { background: #fff; color: var(--text); font-family: 'Inter', sans-serif;
   font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
 
-/* ── HEADER ── */
-.site-header { display: flex; align-items: center; gap: 1rem;
-  padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);
-  max-width: var(--max); margin: 0 auto; }
-.logo { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 700;
-  color: var(--green-dark); text-decoration: none; }
-.logo span { color: var(--green); }
-.header-nav { margin-left: auto; display: flex; gap: 1.75rem; }
-.header-nav a { font-size: 0.82rem; font-weight: 600; color: var(--text);
-  text-decoration: none; letter-spacing: 0.02em;
+/* ── HEADER (identiek aan joyfulness.company) ── */
+@font-face { font-family:'Libertad'; src:url('/fonts/Libertad-Regular.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap; }
+@font-face { font-family:'LibertadBold'; src:url('/fonts/Libertad-ExtraBold.otf') format('opentype'); font-weight:400; font-style:normal; font-display:swap; }
+header.site {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  padding: 2.4rem 1.75rem 1.2rem; max-width: var(--max); margin: 0 auto;
+  position: relative; }
+.logo-link { display: flex; align-items: center; flex-shrink: 0; text-decoration: none; }
+.site-logo { height: 80px; width: auto; display: block; }
+@media (max-width: 760px) { .site-logo { height: 60px; } }
+.site-nav { margin-left: auto; display: flex; align-items: center; gap: 1.8rem; }
+.site-nav a {
+  font-family: 'Libertad', sans-serif; font-weight: 600; font-size: 0.82rem;
+  letter-spacing: 0.02em; color: var(--text); text-decoration: none;
   border-bottom: 1px solid transparent; padding-bottom: 2px;
   transition: color 0.15s, border-color 0.15s; }
-.header-nav a:hover, .header-nav a.active { color: var(--green-dark); border-color: var(--green); }
+.site-nav a:hover, .site-nav a.active { color: var(--green-dark); border-color: var(--green); }
+.nav-toggle {
+  display: none; margin-left: auto; flex-direction: column; justify-content: center;
+  gap: 5px; background: none; border: none; cursor: pointer; padding: 4px 0; width: 28px; }
+.nav-toggle span {
+  display: block; height: 2px; width: 100%; background: var(--text);
+  border-radius: 2px; transition: transform 0.22s, opacity 0.22s; }
+header.site.nav-open .nav-toggle span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+header.site.nav-open .nav-toggle span:nth-child(2) { opacity: 0; }
+header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+@media (max-width: 760px) {
+  .nav-toggle { display: flex; }
+  .site-nav {
+    display: none; width: 100%; flex-direction: column; align-items: flex-start;
+    gap: 0; margin-left: 0; padding: 0.4rem 0 0.8rem; border-top: 1px solid var(--border); }
+  .site-nav a { padding: 0.7rem 0; font-size: 0.95rem; width: 100%; border-bottom: none; }
+  header.site.nav-open .site-nav { display: flex; } }
 
 /* ── PAGE HEADER ── */
 .page-header { background: #fff; padding: 2.5rem 2rem 2rem; text-align: center;
@@ -307,7 +327,7 @@ details.result-sec .result-text { padding: 0 2rem 1.4rem; margin: 0; }
 
 /* ── PRINT STYLES ── */
 @media print {
-  .no-print, .site-header, .site-footer, .plotter-wrap, .page-header { display: none !important; }
+  .no-print, header.site, .site-footer, .plotter-wrap, .page-header { display: none !important; }
   #print-wrap { display: block !important; }
   body { background: white; font-family: 'Inter', sans-serif;
     -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -389,18 +409,24 @@ details.result-sec .result-text { padding: 0 2rem 1.4rem; margin: 0; }
   .result-cols { grid-template-columns: 1fr; }
   .result-sec { padding: 1.2rem 1.3rem; }
   .result-hero { padding: 1.75rem 1.4rem 1.5rem; }
-  .header-nav { display: none; }
+  /* site-nav handled by hamburger above */
 }
 </style>
 </head>
 <body>
 
-<header class="site-header no-print">
-  <a href="https://www.joyfulness.company/" class="logo">Joyfulness <span>Coöperatie</span></a>
-  <nav class="header-nav">
+<header class="site no-print" id="site-header">
+  <a href="https://www.joyfulness.company/" class="logo-link">
+    <img src="/images/logo-horizontaal.png" alt="Joyfulness Coöperatie" class="site-logo" />
+  </a>
+  <button class="nav-toggle" aria-label="Menu openen" aria-expanded="false" aria-controls="site-nav">
+    <span></span><span></span><span></span>
+  </button>
+  <nav class="site-nav" id="site-nav">
     <a href="https://www.joyfulness.company/blog/">Blog</a>
     <a href="/seizoenplotter/" class="active">Seizoenplotter</a>
     <a href="https://www.joyfulness.company/quickscan-verticale-leiderschapsontwikkeling/">Quickscan Leiderschap</a>
+    <a href="https://www.joyfulness.company/quickscan-organische-groei/">Quickscan Organische Groei</a>
     <a href="https://www.joyfulness.company/#contact">Contact</a>
   </nav>
 </header>
@@ -1354,5 +1380,19 @@ document.head.appendChild(styleEl);
 
 render();
 </script>
+
+  <script>
+    // Hamburger menu
+    const siteHeader = document.getElementById('site-header');
+    const navToggle = siteHeader?.querySelector('.nav-toggle');
+    navToggle?.addEventListener('click', () => {
+      const open = siteHeader.classList.toggle('nav-open');
+      navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    // Sluit menu bij klik op nav-link
+    siteHeader?.querySelectorAll('.site-nav a').forEach(a => {
+      a.addEventListener('click', () => siteHeader.classList.remove('nav-open'));
+    });
+  </script>
 </body>
 </html>
