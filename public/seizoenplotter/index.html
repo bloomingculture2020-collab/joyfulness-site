@@ -1123,19 +1123,19 @@ function renderProjectView(){
       <h2 class="result-phase-name">${ph.name}</h2>
       <p class="result-subtitle">${ph.subtitle}</p>
 <div class="proj-emoji-row no-print">
-        <button class="proj-emoji-btn${p.emoji==='🌱'?' sel':''}" data-emoji="🌱">🌱</button>
-        <button class="proj-emoji-btn${p.emoji==='🌿'?' sel':''}" data-emoji="🌿">🌿</button>
-        <button class="proj-emoji-btn${p.emoji==='🌸'?' sel':''}" data-emoji="🌸">🌸</button>
-        <button class="proj-emoji-btn${p.emoji==='🌞'?' sel':''}" data-emoji="🌞">🌞</button>
-        <button class="proj-emoji-btn${p.emoji==='🍂'?' sel':''}" data-emoji="🍂">🍂</button>
-        <button class="proj-emoji-btn${p.emoji==='🍃'?' sel':''}" data-emoji="🍃">🍃</button>
-        <button class="proj-emoji-btn${p.emoji==='💡'?' sel':''}" data-emoji="💡">💡</button>
-        <button class="proj-emoji-btn${p.emoji==='🔥'?' sel':''}" data-emoji="🔥">🔥</button>
-        <button class="proj-emoji-btn${p.emoji==='🎯'?' sel':''}" data-emoji="🎯">🎯</button>
-        <button class="proj-emoji-btn${p.emoji==='🌊'?' sel':''}" data-emoji="🌊">🌊</button>
-        <button class="proj-emoji-btn${p.emoji==='⚡'?' sel':''}" data-emoji="⚡">⚡</button>
-        <button class="proj-emoji-btn${p.emoji==='🏔'?' sel':''}" data-emoji="🏔">🏔</button>
-        <button class="proj-emoji-btn none${p.emoji==='—'?' sel':''}" data-emoji="—">✕</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🌱'?' sel':''}" data-emoji="🌱">🌱</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🌿'?' sel':''}" data-emoji="🌿">🌿</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🌸'?' sel':''}" data-emoji="🌸">🌸</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🌞'?' sel':''}" data-emoji="🌞">🌞</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🍂'?' sel':''}" data-emoji="🍂">🍂</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🍃'?' sel':''}" data-emoji="🍃">🍃</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='💡'?' sel':''}" data-emoji="💡">💡</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🔥'?' sel':''}" data-emoji="🔥">🔥</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🎯'?' sel':''}" data-emoji="🎯">🎯</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🌊'?' sel':''}" data-emoji="🌊">🌊</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='⚡'?' sel':''}" data-emoji="⚡">⚡</button>
+        <button type="button" class="proj-emoji-btn${p.emoji==='🏔'?' sel':''}" data-emoji="🏔">🏔</button>
+        <button type="button" class="proj-emoji-btn none${p.emoji==='—'?' sel':''}" data-emoji="—">✕</button>
       </div>
       <div class="proj-name-edit">
         <span class="proj-name-static" id="proj-name-display">${esc(p.name)}</span>
@@ -1285,7 +1285,12 @@ function bindEvents(){
       const p=getProj(STATE.activeId); if(!p) return;
       const e=btn.dataset.emoji;
       p.emoji=(e==='—')?'':e;
-      saveProjects(); render();
+      saveProjects();
+      // Update sel class in place — no full render needed
+      document.querySelectorAll('.proj-emoji-btn').forEach(b=>{
+        const match=b.dataset.emoji===(p.emoji||'—');
+        b.classList.toggle('sel', match);
+      });
     });
   });
 
