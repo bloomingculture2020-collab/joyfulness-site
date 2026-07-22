@@ -125,6 +125,27 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
   border-top:1px solid var(--border); margin-top:.5rem; }
 .season-group-header:first-child { border-top:none; margin-top:0; }
 
+.btn-archive { background:rgba(255,255,255,.12); border:1.5px solid rgba(255,255,255,.3);
+  border-radius:6px; color:rgba(255,255,255,.7); font-family:'Inter',sans-serif;
+  font-size:.78rem; font-weight:600; padding:.3rem .75rem; cursor:pointer;
+  transition:all .15s; }
+.btn-archive:hover { background:rgba(255,255,255,.22); color:white; }
+.card-archive-btn { position:absolute; top:.6rem; right:.6rem; background:none; border:none;
+  cursor:pointer; color:#c0b8af; font-size:.88rem; padding:.2rem .35rem; border-radius:4px;
+  transition:color .15s,background .15s; line-height:1; }
+.card-archive-btn:hover { color:#7a6f68; background:#f0ece6; }
+.archived-section { margin-top:1.5rem; }
+.archived-toggle { background:none; border:none; cursor:pointer; font-family:'Inter',sans-serif;
+  font-size:.78rem; color:var(--text-soft); font-weight:600; letter-spacing:.05em;
+  padding:.3rem 0; display:flex; align-items:center; gap:.4rem; }
+.archived-toggle:hover { color:var(--text); }
+.project-card.archived-card { opacity:.55; filter:grayscale(.4); border-left-color:#b5aca0 !important; }
+.project-card.archived-card:hover { opacity:.75; }
+.project-card { position:relative; }
+.btn-unarchive { font-size:.75rem; color:var(--green); font-weight:600; background:none;
+  border:none; cursor:pointer; padding:.1rem 0; font-family:'Inter',sans-serif; }
+.btn-unarchive:hover { text-decoration:underline; }
+
 .project-card-desc { font-size: 0.78rem; color: var(--text-soft); font-style: italic;
   margin-top: 0.1rem; line-height: 1.4; }
 .card-emoji { margin-right: 0.2rem; }
@@ -796,7 +817,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function getProj(id){return PROJECTS.find(p=>p.id===id);}
 
 /* ══ STATE ══ */
-let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null, sortBy:'datum' };
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null, sortBy:'datum', archiveOpen:false };
 
 /* ══ WHEEL BUILDER ══ */
 const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
@@ -1017,14 +1038,18 @@ function renderModelView(){
   const hasProj=PROJECTS.length>0;
   const qPhase=STATE.quickAddPhase;
 
-  function makeCard(p){
+  function makeCard(p, isArchived=false){
     const ph=PHASES[p.phaseIdx];
     const doneD=(p.checkedD||[]).filter(Boolean).length;
     const doneK=(p.checkedK||[]).filter(Boolean).length;
     const doneOrg=(p.answersOrg||[]).filter(a=>a&&a.trim()).length;
     const doneLeider=(p.answersLeider||[]).filter(a=>a&&a.trim()).length;
     const totalDone=doneD+doneK+doneOrg+doneLeider;
-    return `<div class="project-card season-${ph.season}" data-card-id="${p.id}">
+    const archiveBtn=isArchived
+      ? `<button class="card-archive-btn btn-unarchive-card" data-id="${p.id}" title="Herstel project">↩</button>`
+      : `<button class="card-archive-btn btn-archive-card" data-id="${p.id}" title="Archiveer project">📦</button>`;
+    return `<div class="project-card${isArchived?' archived-card':''} season-${ph.season}" data-card-id="${p.id}">
+      ${archiveBtn}
       <div class="project-card-top"><div>
         <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
         <div class="project-card-name">${p.emoji?`<span class="card-emoji">${p.emoji}</span>`:""}${esc(p.name)}</div>
@@ -1040,18 +1065,29 @@ function renderModelView(){
   if(!hasProj){
     projectCards=`<p class="projects-empty">Nog geen projecten. Voeg hieronder je eerste project toe.</p>`;
   } else if(STATE.sortBy==='alfabet'){
-    projectCards=[...PROJECTS].sort((a,b)=>a.name.localeCompare(b.name,'nl')).map(makeCard).join('');
+    projectCards=[...PROJECTS].filter(p=>!p.archived).sort((a,b)=>a.name.localeCompare(b.name,'nl')).map(p=>makeCard(p)).join('');
   } else if(STATE.sortBy==='seizoen'){
     const seasonOrder=['winter','lente','zomer','herfst'];
     const seasonLabels={winter:'Winter',lente:'Lente',zomer:'Zomer',herfst:'Herfst'};
     projectCards=seasonOrder.map(s=>{
-      const group=PROJECTS.filter(p=>PHASES[p.phaseIdx].season===s);
+      const group=PROJECTS.filter(p=>PHASES[p.phaseIdx].season===s&&!p.archived);
       if(!group.length) return '';
       return `<div class="season-group-header">${seasonLabels[s]}</div>${group.map(makeCard).join('')}`;
     }).join('');
   } else {
     // datum (volgorde van toevoegen)
-    projectCards=PROJECTS.map(makeCard).join('');
+    projectCards=PROJECTS.filter(p=>!p.archived).map(p=>makeCard(p)).join('');
+  }
+  // Archief-sectie onderaan
+  const archivedProjs=PROJECTS.filter(p=>p.archived);
+  if(archivedProjs.length){
+    const archOpen=STATE.archiveOpen;
+    projectCards+=`<div class="archived-section">
+      <button class="archived-toggle no-print" id="btn-toggle-archive">
+        ${archOpen?'▾':'▸'} ${archivedProjs.length} gearchiveerd
+      </button>
+      ${archOpen?archivedProjs.map(p=>makeCard(p,true)).join(''):''}
+    </div>`;
   }
 
   const iconClick=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`;
@@ -1239,6 +1275,7 @@ function renderProjectView(){
           : `<span class="proj-desc-add" id="proj-desc-display">+ beschrijving toevoegen</span>`}
       </div>
       <button class="btn-phase-change no-print" id="btn-phase-change">↕ Verplaats naar andere fase</button>
+      <button class="btn-archive no-print" id="btn-archive-proj">${p.archived?"↩ Herstel project":"📦 Archiveer"}</button>
     </div>
 
     <div class="result-body">
@@ -1332,6 +1369,27 @@ function bindEvents(){
 
   // Model: wizard start
   document.getElementById('btn-wizard')?.addEventListener('click',()=>{STATE.view='wizard';STATE.wStep=0;STATE.answers=[];STATE.draftName='';STATE.draftDesc='';render();});
+
+  // Archiveer kaart
+  document.querySelectorAll('.btn-archive-card').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const p=getProj(btn.dataset.id); if(!p) return;
+      p.archived=true; saveProjects(); render();
+    });
+  });
+  // Herstel gearchiveerde kaart
+  document.querySelectorAll('.btn-unarchive-card').forEach(btn=>{
+    btn.addEventListener('click',(e)=>{
+      e.stopPropagation();
+      const p=getProj(btn.dataset.id); if(!p) return;
+      p.archived=false; saveProjects(); render();
+    });
+  });
+  // Toggle archief-sectie
+  document.getElementById('btn-toggle-archive')?.addEventListener('click',()=>{
+    STATE.archiveOpen=!STATE.archiveOpen; render();
+  });
 
   // Model: sort buttons
   document.querySelectorAll('.sort-btn[data-sort]').forEach(btn=>{
@@ -1427,6 +1485,10 @@ function bindEvents(){
 
   // Project: phase change
   document.getElementById('btn-phase-change')?.addEventListener('click',()=>openPhasePicker());
+  document.getElementById('btn-archive-proj')?.addEventListener('click',()=>{
+    const p=getProj(STATE.activeId); if(!p) return;
+    p.archived=!p.archived; saveProjects(); STATE.view='model'; render();
+  });
 
   // Model: phase label click (quick add)
   document.querySelectorAll('.wheel-label-g').forEach(g=>{
