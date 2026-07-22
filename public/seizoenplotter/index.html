@@ -1053,7 +1053,8 @@ function renderModelView(){
         ${cardWizard}
       </div>
       ${hasProj?`<div class="start-actions">
-        <button class="btn-export no-print" id="btn-pdf">↓ Download als PDF</button>
+        <button class="btn-export no-print" id="btn-pdf">↓ PDF</button>
+        <button class="btn-export no-print" id="btn-png">↓ PNG</button>
         <span class="save-indicator" id="save-ind"></span>
       </div>`:''}
     </div>
@@ -1291,6 +1292,7 @@ function bindEvents(){
 
   // Model: PDF export
   document.getElementById('btn-pdf')?.addEventListener('click',printPDF);
+  document.getElementById('btn-png')?.addEventListener('click',downloadWheelPNG);
   // Auth views
   document.getElementById('btn-login-google')?.addEventListener('click',signInGoogle);
   document.getElementById('btn-login-guest')?.addEventListener('click',()=>{STATE.view='model';render();});
@@ -1552,6 +1554,42 @@ function bindEvents(){
 }
 
 /* ══ PRINT / PDF ══ */
+function downloadWheelPNG(){
+  const btn=document.getElementById('btn-png');
+  if(btn){btn.textContent='Bezig…';btn.disabled=true;}
+  // Bouw SVG met solide kleuren (print-modus)
+  let svgStr=buildWheel(true)
+    .replace(/font-family='Playfair Display,Georgia,serif'/g,"font-family='Georgia,serif'")
+    .replace(/font-family="'Playfair Display',serif"/g,"font-family='Georgia,serif'")
+    .replace(/font-family="'Inter',sans-serif"/g,"font-family='Arial,sans-serif'");
+  // Voeg witte achtergrond toe
+  svgStr=svgStr.replace('<svg ','<svg style="background:white" ');
+  const scale=2.5, W=480*scale, H=480*scale;
+  const blob=new Blob([svgStr],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const img=new Image();
+  img.onload=()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=W; canvas.height=H;
+    const ctx=canvas.getContext('2d');
+    ctx.scale(scale,scale);
+    ctx.drawImage(img,0,0,480,480);
+    URL.revokeObjectURL(url);
+    const a=document.createElement('a');
+    a.download='seizoenplotter-wiel.png';
+    a.href=canvas.toDataURL('image/png');
+    a.click();
+    if(btn){btn.textContent='↓ PNG';btn.disabled=false;}
+  };
+  img.onerror=()=>{
+    URL.revokeObjectURL(url);
+    if(btn){btn.textContent='↓ PNG';btn.disabled=false;}
+    alert('PNG exporteren mislukt. Probeer het opnieuw.');
+  };
+  img.src=url;
+}
+
+
 function printPDF(){
   const wrap=document.getElementById('print-wrap');
   const dateStr=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
