@@ -712,8 +712,16 @@ async function createOrg(name,type){
   if(!_sb||!AUTH.user) return null;
   const {data,error}=await _sb.from('organizations')
     .insert({user_id:AUTH.user.id,name,type}).select().single();
-  if(!error&&data){ AUTH.orgs.push(data); AUTH.currentOrg=data;
-    localStorage.setItem('jf_last_org',data.id); }
+  if(!error&&data){
+    AUTH.orgs.push(data); AUTH.currentOrg=data;
+    localStorage.setItem('jf_last_org',data.id);
+    // Notificatie naar beheerder (fire-and-forget)
+    _sb.functions.invoke('notify-new-user',{body:{
+      userEmail:AUTH.user.email,
+      orgName:name,
+      orgType:type,
+    }}).catch(()=>{});
+  }
   return data;
 }
 
