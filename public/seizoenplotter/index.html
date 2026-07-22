@@ -147,6 +147,24 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
   border:none; cursor:pointer; padding:.1rem 0; font-family:'Inter',sans-serif; }
 .btn-unarchive:hover { text-decoration:underline; }
 
+.shared-banner { background:var(--green); color:white; text-align:center;
+  padding:.55rem 1rem; font-size:.8rem; font-family:'Inter',sans-serif; font-weight:600;
+  letter-spacing:.05em; }
+.shared-banner a { color:rgba(255,255,255,.85); text-decoration:underline; }
+.shared-view-wrap { max-width:960px; margin:0 auto; padding:2rem 1.5rem 5rem;
+  display:grid; grid-template-columns:480px 1fr; gap:2.5rem; align-items:start; }
+.shared-proj-list { display:flex; flex-direction:column; gap:.85rem; }
+.shared-proj-card { background:white; border-radius:8px; border:1px solid var(--border);
+  padding:.9rem 1.1rem; border-left:4px solid transparent; }
+.shared-proj-card.season-winter { border-left-color:#3a6a90; }
+.shared-proj-card.season-lente  { border-left-color:#2F6933; }
+.shared-proj-card.season-zomer  { border-left-color:#c07800; }
+.shared-proj-card.season-herfst { border-left-color:#9a3000; }
+.shared-proj-name { font-family:'Playfair Display',serif; font-size:1rem;
+  font-weight:700; color:var(--green-dark); margin:.15rem 0 0; }
+.shared-footer { margin-top:2rem; font-size:.8rem; color:var(--text-soft);
+  font-style:italic; text-align:center; }
+
 .project-card-desc { font-size: 0.78rem; color: var(--text-soft); font-style: italic;
   margin-top: 0.1rem; line-height: 1.4; }
 .card-emoji { margin-right: 0.2rem; }
@@ -818,7 +836,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function getProj(id){return PROJECTS.find(p=>p.id===id);}
 
 /* ══ STATE ══ */
-let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null, sortBy:'datum', archiveOpen:false };
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null, sortBy:'datum', archiveOpen:false, sharedProjects:[], sharedOrgName:'' };
 
 /* ══ WHEEL BUILDER ══ */
 const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
@@ -1020,9 +1038,35 @@ function guestNoticeHTML(){
   </div>`;
 }
 
+function renderSharedView(projects, orgName){
+  const wheel = buildWheel(false);
+  const cards = projects.map(p=>{
+    const ph = PHASES[p.phaseIdx];
+    return `<div class="shared-proj-card season-${ph.season}">
+      <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
+      <div class="shared-proj-name">${p.emoji?`<span class="card-emoji">${p.emoji}</span>`:''}${esc(p.name)}</div>
+      ${p.desc?`<div class="project-card-desc">${esc(p.desc)}</div>`:''}
+    </div>`;
+  }).join('');
+  return `
+    <div class="shared-banner">Gedeelde weergave · <a href="/seizoenplotter/">Maak jouw eigen seizoenplotter →</a></div>
+    <div class="shared-view-wrap">
+      <div>
+        <div style="position:relative">${wheel}</div>
+      </div>
+      <div>
+        <h3 class="projects-col-title">${esc(orgName||'Projecten')}</h3>
+        <div class="shared-proj-list">${cards||'<p class="projects-empty">Geen projecten gedeeld.</p>'}</div>
+        <p class="shared-footer">Gemaakt met de <a href="/seizoenplotter/">Joyfulness Seizoenplotter</a></p>
+      </div>
+    </div>`;
+}
+
+
 function render(){
   const root=document.getElementById('quiz-root');
   if(!root) return;
+  if(STATE.view==='shared') { document.body.innerHTML=renderSharedView(STATE.sharedProjects,STATE.sharedOrgName); return; }
   if(STATE.view==='login')  root.innerHTML=renderLoginView();
   else if(STATE.view==='neworg') root.innerHTML=renderNewOrgView();
   else if(STATE.view==='model')  root.innerHTML=guestNoticeHTML()+renderModelView();
@@ -1127,6 +1171,7 @@ function renderModelView(){
       ${hasProj?`<div class="start-actions">
         <button class="btn-export no-print" id="btn-pdf">↓ PDF</button>
         <button class="btn-export no-print" id="btn-png">↓ PNG</button>
+        <button class="btn-export no-print" id="btn-share">⎋ Deel link</button>
         <span class="save-indicator" id="save-ind"></span>
       </div>`:''}
     </div>
@@ -1390,6 +1435,22 @@ function bindEvents(){
   // Toggle archief-sectie
   document.getElementById('btn-toggle-archive')?.addEventListener('click',()=>{
     STATE.archiveOpen=!STATE.archiveOpen; render();
+  });
+
+  // Model: deel link
+  document.getElementById('btn-share')?.addEventListener('click',()=>{
+    const shareData = {
+      org: AUTH.currentOrg?.name || 'Projecten',
+      projects: PROJECTS.filter(p=>!p.archived).map(p=>({
+        name:p.name, desc:p.desc||'', phaseIdx:p.phaseIdx, emoji:p.emoji||''
+      }))
+    };
+    const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(shareData))));
+    const url = window.location.origin + window.location.pathname + '?view=' + encoded;
+    navigator.clipboard.writeText(url).then(()=>{
+      const btn = document.getElementById('btn-share');
+      if(btn){ btn.textContent='✓ Gekopieerd!'; setTimeout(()=>btn.textContent='⎋ Deel link', 2000); }
+    }).catch(()=>{ prompt('Kopieer deze link:', url); });
   });
 
   // Model: sort buttons
@@ -1938,6 +1999,17 @@ document.head.appendChild(styleEl);
 
 /* ══ INIT ══ */
 async function initAuth(){
+  // Gedeelde view via ?view= parameter
+  const viewParam = new URLSearchParams(window.location.search).get('view');
+  if(viewParam){
+    try{
+      const data = JSON.parse(decodeURIComponent(escape(atob(viewParam))));
+      PROJECTS = data.projects.map(p=>({...p, id:Math.random().toString(36).slice(2),
+        checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','','']}));
+      STATE.view='shared'; STATE.sharedProjects=data.projects; STATE.sharedOrgName=data.org;
+      render(); return;
+    }catch(e){ console.warn('Ongeldige share-link'); }
+  }
   if(!_sb){ render(); renderHeaderAuth(); return; }
   // Check bestaande sessie
   const {data:{session}}=await _sb.auth.getSession();
