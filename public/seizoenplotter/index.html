@@ -1098,25 +1098,34 @@ const TOUR_STEPS = [
     title: 'Elk project beweegt door seizoenen',
     text: 'Net als in de natuur kent elk project een ritme van zaaien, groeien, oogsten en rusten. De Seizoenplotter maakt dat ritme zichtbaar.',
     visual: () => {
-      const W=200,H=200,cx=100,cy=100,R=70;
-      const seasons=[{fill:'#7aa8cc',label:'WINTER'},{fill:'#60aa70',label:'LENTE'},{fill:'#f0b028',label:'ZOMER'},{fill:'#c05a18',label:'HERFST'}];
-      const rects=`<rect x="0" y="0" width="100" height="100" fill="${seasons[0].fill}" rx="0"/>
-        <rect x="100" y="0" width="100" height="100" fill="${seasons[1].fill}"/>
-        <rect x="100" y="100" width="100" height="100" fill="${seasons[2].fill}"/>
-        <rect x="0" y="100" width="100" height="100" fill="${seasons[3].fill}"/>`;
-      const labels=`<text x="50" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">WINTER</text>
-        <text x="150" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">LENTE</text>
-        <text x="150" y="192" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">ZOMER</text>
-        <text x="50" y="192" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">HERFST</text>`;
-      const ring=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>`;
-      const dot=`<circle cx="${cx}" cy="${cy}" r="5" fill="rgba(255,255,255,.5)"/>`;
-      const spokes=[0,45,90,135,180,225,270,315].map(a=>{
-        const rad=(a-90)*Math.PI/180;
-        return `<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(rad)).toFixed(1)}" y2="${(cy+R*Math.sin(rad)).toFixed(1)}" stroke="rgba(255,255,255,.25)" stroke-width="1"/>`;
+      const cx=100,cy=100,R=100,Ri=70;
+      const phAngles=[315,0,45,90,135,180,225,270];
+      const phColors=['#8ab8d8','#5a90b8','#72bb82','#3a7a4a','#f5c040','#c89010','#d07038','#9a3808'];
+      const half=22.5*Math.PI/180;
+      const toR=d=>(d-90)*Math.PI/180;
+      const wedges=phAngles.map((a,i)=>{
+        const c=toR(a),a1=c-half,a2=c+half;
+        const x1=(cx+R*Math.cos(a1)).toFixed(2),y1=(cy+R*Math.sin(a1)).toFixed(2);
+        const x2=(cx+R*Math.cos(a2)).toFixed(2),y2=(cy+R*Math.sin(a2)).toFixed(2);
+        return `<path d="M${cx},${cy} L${x1},${y1} A${R},${R} 0 0,1 ${x2},${y2} Z" fill="${phColors[i]}"/>`;
       }).join('');
-      return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:200px;border-radius:50%;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:tourWheelIn .6s ease forwards">
+      const spokes=phAngles.map(a=>{
+        const c=toR(a)-half;
+        return `<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(c)).toFixed(1)}" y2="${(cy+R*Math.sin(c)).toFixed(1)}" stroke="rgba(255,255,255,.45)" stroke-width="1"/>`;
+      }).join('');
+      const ring=`<circle cx="${cx}" cy="${cy}" r="${Ri}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>`;
+      const dot=`<circle cx="${cx}" cy="${cy}" r="5" fill="rgba(255,255,255,.5)"/>`;
+      const labels=`<text x="33" y="28" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
+        <text x="167" y="28" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="700" fill="white" letter-spacing="1" opacity=".95">LENTE</text>
+        <text x="167" y="178" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="700" fill="white" letter-spacing="1" opacity=".95">ZOMER</text>
+        <text x="33" y="178" text-anchor="middle" font-family="Georgia,serif" font-size="7.5" font-weight="700" fill="white" letter-spacing="1" opacity=".95">HERFST</text>`;
+      return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:200px;border-radius:50%;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:tourWheelIn .6s ease forwards">
         <clipPath id="tc"><circle cx="${cx}" cy="${cy}" r="${cx}"/></clipPath>
-        <g clip-path="url(#tc)">${rects}</g>${spokes}${ring}${dot}${labels}
+        <g clip-path="url(#tc)">${wedges}</g>
+        ${spokes}${ring}${dot}${labels}
+        <g clip-path="url(#tc)" transform="translate(${cx},${cy})">
+          <path d="M0,0 L-92.39,-38.27 A100,100 0 0,1 -38.27,-92.39 Z" fill="rgba(255,255,255,.28)" style="animation:tourPhaseSelect 8s steps(8,end) .65s infinite"/>
+        </g>
       </svg>`;
     }
   },
@@ -1157,7 +1166,7 @@ const TOUR_STEPS = [
           <circle cx="100" cy="100" r="5" fill="rgba(255,255,255,.5)"/>
           <g style="animation:tourChipPop .5s cubic-bezier(0.34,1.56,0.64,1) .4s both;transform-box:fill-box;transform-origin:center">
             <rect x="62" y="52" width="76" height="18" rx="5" fill="#9a3000" opacity=".9"/>
-            <text x="100" y="65" text-anchor="middle" dominant-baseline="central" fill="white" font-family="Arial,sans-serif" font-size="8.5" font-weight="600">Mijn project</text>
+            <text x="100" y="61" text-anchor="middle" dominant-baseline="central" fill="white" font-family="'Inter',sans-serif" font-size="8.5" font-weight="600">Mijn project</text>
           </g>
         </svg>
       </div>`;
@@ -2158,6 +2167,7 @@ styleEl.textContent=`@keyframes lblIn{from{opacity:0}to{opacity:1}}`
   +`@keyframes tourChipPop{0%{opacity:0;transform:scale(0)}65%{transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}`
   +`@keyframes chipIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}`
   +`@keyframes chipPop{0%{opacity:0;transform:scale(0.3)}65%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:scale(1)}}`
+  +`@keyframes tourPhaseSelect{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}`
   +`.wheel-label-g{cursor:pointer;transition:opacity 0.2s}.wheel-label-g .lbl-bg{transition:fill .15s,filter .2s}.wheel-label-g:hover .lbl-bg{filter:brightness(1.35)}`
   +`.proj-chip{cursor:pointer;transform-box:fill-box;transform-origin:center}.proj-chip:hover rect{filter:brightness(1.3)}`;
 document.head.appendChild(styleEl);
