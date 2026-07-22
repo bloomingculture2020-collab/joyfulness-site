@@ -130,10 +130,11 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
   font-size:.78rem; font-weight:600; padding:.3rem .75rem; cursor:pointer;
   transition:all .15s; }
 .btn-archive:hover { background:rgba(255,255,255,.22); color:white; }
-.card-archive-btn { position:absolute; top:.6rem; right:.6rem; background:none; border:none;
-  cursor:pointer; color:#c0b8af; font-size:.88rem; padding:.2rem .35rem; border-radius:4px;
-  transition:color .15s,background .15s; line-height:1; }
-.card-archive-btn:hover { color:#7a6f68; background:#f0ece6; }
+.card-archive-btn { position:absolute; top:.65rem; right:.75rem; background:none; border:none;
+  cursor:pointer; color:#ccc5bc; font-size:.7rem; font-family:'Inter',sans-serif; font-weight:700;
+  letter-spacing:.04em; padding:.15rem .3rem; border-radius:3px;
+  transition:color .15s,background .15s; line-height:1; text-transform:uppercase; }
+.card-archive-btn:hover { color:#8a7f76; background:#ede9e3; }
 .archived-section { margin-top:1.5rem; }
 .archived-toggle { background:none; border:none; cursor:pointer; font-family:'Inter',sans-serif;
   font-size:.78rem; color:var(--text-soft); font-weight:600; letter-spacing:.05em;
@@ -1047,7 +1048,7 @@ function renderModelView(){
     const totalDone=doneD+doneK+doneOrg+doneLeider;
     const archiveBtn=isArchived
       ? `<button class="card-archive-btn btn-unarchive-card" data-id="${p.id}" title="Herstel project">↩</button>`
-      : `<button class="card-archive-btn btn-archive-card" data-id="${p.id}" title="Archiveer project">📦</button>`;
+      : `<button class="card-archive-btn btn-archive-card" data-id="${p.id}" title="Archiveer project">↓</button>`;
     return `<div class="project-card${isArchived?' archived-card':''} season-${ph.season}" data-card-id="${p.id}">
       ${archiveBtn}
       <div class="project-card-top"><div>
@@ -1275,7 +1276,7 @@ function renderProjectView(){
           : `<span class="proj-desc-add" id="proj-desc-display">+ beschrijving toevoegen</span>`}
       </div>
       <button class="btn-phase-change no-print" id="btn-phase-change">↕ Verplaats naar andere fase</button>
-      <button class="btn-archive no-print" id="btn-archive-proj">${p.archived?"↩ Herstel project":"📦 Archiveer"}</button>
+      <button class="btn-archive no-print" id="btn-archive-proj">${p.archived?"↩ Herstel":"↓ Archiveer"}</button>
     </div>
 
     <div class="result-body">
