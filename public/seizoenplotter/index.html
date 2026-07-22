@@ -111,6 +111,20 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
 .project-card-name { font-family: 'Playfair Display', serif; font-size: 1.05rem;
   color: var(--green-dark); font-weight: 700; margin: 0.15rem 0 0.1rem; }
 
+
+.sort-bar { display:flex; align-items:center; gap:.5rem; margin-bottom:.75rem; }
+.sort-bar-label { font-size:.72rem; font-weight:600; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--text-soft); flex-shrink:0; }
+.sort-btn { font-family:'Inter',sans-serif; font-size:.78rem; font-weight:600;
+  background:none; border:1.5px solid var(--border); border-radius:20px;
+  padding:.2rem .7rem; color:var(--text-soft); cursor:pointer; transition:all .15s; }
+.sort-btn:hover { border-color:var(--green); color:var(--green-dark); }
+.sort-btn.active { background:var(--green); border-color:var(--green); color:white; }
+.season-group-header { font-size:.7rem; font-weight:700; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--text-soft); padding:.5rem 0 .35rem;
+  border-top:1px solid var(--border); margin-top:.5rem; }
+.season-group-header:first-child { border-top:none; margin-top:0; }
+
 .project-card-desc { font-size: 0.78rem; color: var(--text-soft); font-style: italic;
   margin-top: 0.1rem; line-height: 1.4; }
 .card-emoji { margin-right: 0.2rem; }
@@ -782,7 +796,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function getProj(id){return PROJECTS.find(p=>p.id===id);}
 
 /* ══ STATE ══ */
-let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null };
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null, sortBy:'datum' };
 
 /* ══ WHEEL BUILDER ══ */
 const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
@@ -1003,29 +1017,42 @@ function renderModelView(){
   const hasProj=PROJECTS.length>0;
   const qPhase=STATE.quickAddPhase;
 
-  const projectCards=hasProj
-    ? PROJECTS.map(p=>{
-        const ph=PHASES[p.phaseIdx];
-        const doneD=(p.checkedD||[]).filter(Boolean).length;
-        const doneK=(p.checkedK||[]).filter(Boolean).length;
-        const doneOrg=(p.answersOrg||[]).filter(a=>a&&a.trim()).length;
-        const doneLeider=(p.answersLeider||[]).filter(a=>a&&a.trim()).length;
-        const totalDone=doneD+doneK+doneOrg+doneLeider;
-        return `<div class="project-card season-${ph.season}" data-card-id="${p.id}">
-          <div class="project-card-top">
-            <div>
-              <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
-              <div class="project-card-name">${p.emoji?`<span class="card-emoji">${p.emoji}</span>`:""}${esc(p.name)}</div>
-              ${p.desc?`<div class="project-card-desc">${esc(p.desc)}</div>`:''}
-            </div>
-          </div>
-          <div class="project-progress">
-            <div class="progress-track"><div class="progress-fill" style="width:${Math.round(totalDone/12*100)}%"></div></div>
-            <span class="progress-lbl">${totalDone}/12 afgerond</span>
-          </div>
-        </div>`;
-      }).join('')
-    : `<p class="projects-empty">Nog geen projecten. Voeg hieronder je eerste project toe.</p>`;
+  function makeCard(p){
+    const ph=PHASES[p.phaseIdx];
+    const doneD=(p.checkedD||[]).filter(Boolean).length;
+    const doneK=(p.checkedK||[]).filter(Boolean).length;
+    const doneOrg=(p.answersOrg||[]).filter(a=>a&&a.trim()).length;
+    const doneLeider=(p.answersLeider||[]).filter(a=>a&&a.trim()).length;
+    const totalDone=doneD+doneK+doneOrg+doneLeider;
+    return `<div class="project-card season-${ph.season}" data-card-id="${p.id}">
+      <div class="project-card-top"><div>
+        <div class="project-season-badge">${ph.seasonLabel} · ${ph.name}</div>
+        <div class="project-card-name">${p.emoji?`<span class="card-emoji">${p.emoji}</span>`:""}${esc(p.name)}</div>
+        ${p.desc?`<div class="project-card-desc">${esc(p.desc)}</div>`:''}
+      </div></div>
+      <div class="project-progress">
+        <div class="progress-track"><div class="progress-fill" style="width:${Math.round(totalDone/12*100)}%"></div></div>
+        <span class="progress-lbl">${totalDone}/12 afgerond</span>
+      </div>
+    </div>`;
+  }
+  let projectCards='';
+  if(!hasProj){
+    projectCards=`<p class="projects-empty">Nog geen projecten. Voeg hieronder je eerste project toe.</p>`;
+  } else if(STATE.sortBy==='alfabet'){
+    projectCards=[...PROJECTS].sort((a,b)=>a.name.localeCompare(b.name,'nl')).map(makeCard).join('');
+  } else if(STATE.sortBy==='seizoen'){
+    const seasonOrder=['winter','lente','zomer','herfst'];
+    const seasonLabels={winter:'Winter',lente:'Lente',zomer:'Zomer',herfst:'Herfst'};
+    projectCards=seasonOrder.map(s=>{
+      const group=PROJECTS.filter(p=>PHASES[p.phaseIdx].season===s);
+      if(!group.length) return '';
+      return `<div class="season-group-header">${seasonLabels[s]}</div>${group.map(makeCard).join('')}`;
+    }).join('');
+  } else {
+    // datum (volgorde van toevoegen)
+    projectCards=PROJECTS.map(makeCard).join('');
+  }
 
   const iconClick=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="3" fill="currentColor"/><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`;
   const iconSearch=`<svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="6.5" cy="6.5" r="4.5" stroke="currentColor" stroke-width="1.6"/><line x1="10" y1="10" x2="14" y2="14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>`;
@@ -1067,7 +1094,15 @@ function renderModelView(){
       </div>`:''}
     </div>
     <div class="projects-col">
-      <h3 class="projects-col-title">Geplotte projecten</h3>
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;margin-bottom:.1rem">
+        <h3 class="projects-col-title" style="margin:0">Geplotte projecten</h3>
+        ${hasProj?`<div class="sort-bar">
+          <span class="sort-bar-label">Sorteer</span>
+          <button class="sort-btn no-print${STATE.sortBy==='datum'?' active':''}" data-sort="datum">Datum</button>
+          <button class="sort-btn no-print${STATE.sortBy==='alfabet'?' active':''}" data-sort="alfabet">A–Z</button>
+          <button class="sort-btn no-print${STATE.sortBy==='seizoen'?' active':''}" data-sort="seizoen">Seizoen</button>
+        </div>`:''}
+      </div>
       ${projectCards}
     </div>
   </div>`;
@@ -1297,6 +1332,11 @@ function bindEvents(){
 
   // Model: wizard start
   document.getElementById('btn-wizard')?.addEventListener('click',()=>{STATE.view='wizard';STATE.wStep=0;STATE.answers=[];STATE.draftName='';STATE.draftDesc='';render();});
+
+  // Model: sort buttons
+  document.querySelectorAll('.sort-btn[data-sort]').forEach(btn=>{
+    btn.addEventListener('click',()=>{ STATE.sortBy=btn.dataset.sort; render(); });
+  });
 
   // Model: PDF export
   document.getElementById('btn-pdf')?.addEventListener('click',printPDF);
