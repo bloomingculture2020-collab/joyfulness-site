@@ -165,6 +165,35 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
 .shared-footer { margin-top:2rem; font-size:.8rem; color:var(--text-soft);
   font-style:italic; text-align:center; }
 
+/* ── INTRO TOUR ── */
+.tour-overlay { position:fixed; inset:0; z-index:3000; display:flex; align-items:center;
+  justify-content:center; padding:1.5rem;
+  background:rgba(20,15,8,.72); backdrop-filter:blur(4px); }
+.tour-card { background:#faf7f2; border-radius:18px; max-width:560px; width:100%;
+  box-shadow:0 24px 80px rgba(0,0,0,.35); overflow:hidden; position:relative; }
+.tour-visual { height:220px; display:flex; align-items:center; justify-content:center;
+  position:relative; overflow:hidden; }
+.tour-body { padding:1.75rem 2rem 1.5rem; }
+.tour-kicker { font-size:.68rem; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--green); margin:0 0 .5rem; }
+.tour-title { font-family:'Playfair Display',serif; font-size:1.55rem; font-weight:700;
+  color:var(--green-dark); margin:0 0 .65rem; line-height:1.25; }
+.tour-text { font-size:.92rem; color:var(--text-soft); line-height:1.65; margin:0; }
+.tour-footer { display:flex; align-items:center; justify-content:space-between;
+  padding:.9rem 2rem 1.25rem; border-top:1px solid var(--border); }
+.tour-dots { display:flex; gap:.45rem; }
+.tour-dot { width:7px; height:7px; border-radius:50%; background:var(--border);
+  transition:background .2s; }
+.tour-dot.active { background:var(--green); }
+.tour-actions { display:flex; gap:.6rem; align-items:center; }
+.tour-skip { font-size:.8rem; color:var(--text-soft); background:none; border:none;
+  cursor:pointer; font-family:'Inter',sans-serif; padding:.3rem .1rem; }
+.tour-skip:hover { color:var(--text); }
+.tour-next { background:var(--green); color:white; border:none; border-radius:8px;
+  padding:.55rem 1.3rem; font-family:'Inter',sans-serif; font-size:.88rem; font-weight:600;
+  cursor:pointer; transition:background .15s; }
+.tour-next:hover { background:var(--green-dark); }
+
 .project-card-desc { font-size: 0.78rem; color: var(--text-soft); font-style: italic;
   margin-top: 0.1rem; line-height: 1.4; }
 .card-emoji { margin-right: 0.2rem; }
@@ -1060,6 +1089,139 @@ function renderSharedView(projects, orgName){
         <p class="shared-footer">Gemaakt met de <a href="/seizoenplotter/">Joyfulness Seizoenplotter</a></p>
       </div>
     </div>`;
+}
+
+
+const TOUR_STEPS = [
+  {
+    kicker: 'De Natuurlijke Cyclus',
+    title: 'Elk project beweegt door seizoenen',
+    text: 'Net als in de natuur kent elk project een ritme van zaaien, groeien, oogsten en rusten. De Seizoenplotter maakt dat ritme zichtbaar.',
+    visual: () => {
+      const W=200,H=200,cx=100,cy=100,R=70;
+      const seasons=[{fill:'#7aa8cc',label:'WINTER'},{fill:'#60aa70',label:'LENTE'},{fill:'#f0b028',label:'ZOMER'},{fill:'#c05a18',label:'HERFST'}];
+      const rects=`<rect x="0" y="0" width="100" height="100" fill="${seasons[0].fill}" rx="0"/>
+        <rect x="100" y="0" width="100" height="100" fill="${seasons[1].fill}"/>
+        <rect x="100" y="100" width="100" height="100" fill="${seasons[2].fill}"/>
+        <rect x="0" y="100" width="100" height="100" fill="${seasons[3].fill}"/>`;
+      const labels=`<text x="50" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">WINTER</text>
+        <text x="150" y="22" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">LENTE</text>
+        <text x="150" y="192" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">ZOMER</text>
+        <text x="50" y="192" text-anchor="middle" font-family="Georgia,serif" font-size="8" font-weight="700" fill="white" letter-spacing="1" opacity=".9">HERFST</text>`;
+      const ring=`<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>`;
+      const dot=`<circle cx="${cx}" cy="${cy}" r="5" fill="rgba(255,255,255,.5)"/>`;
+      const spokes=[0,45,90,135,180,225,270,315].map(a=>{
+        const rad=(a-90)*Math.PI/180;
+        return `<line x1="${cx}" y1="${cy}" x2="${(cx+R*Math.cos(rad)).toFixed(1)}" y2="${(cy+R*Math.sin(rad)).toFixed(1)}" stroke="rgba(255,255,255,.25)" stroke-width="1"/>`;
+      }).join('');
+      return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:200px;border-radius:50%;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:tourWheelIn .6s ease forwards">
+        <clipPath id="tc"><circle cx="${cx}" cy="${cy}" r="${cx}"/></clipPath>
+        <g clip-path="url(#tc)">${rects}</g>${spokes}${ring}${dot}${labels}
+      </svg>`;
+    }
+  },
+  {
+    kicker: 'Stap 1 van 3',
+    title: '8 fasen, elk met eigen energie',
+    text: 'Elk seizoen bestaat uit 2 subfasen — van Afstemmen en Richten in de Winter tot Oogsten en Reflecteren in de Herfst.',
+    visual: () => {
+      const phases=[
+        {name:'Afstemmen',s:'winter'},{name:'Richten',s:'winter'},
+        {name:'Verbeelden',s:'lente'},{name:'Organiseren',s:'lente'},
+        {name:'Experimenteren',s:'zomer'},{name:'Groeien',s:'zomer'},
+        {name:'Oogsten',s:'herfst'},{name:'Reflecteren',s:'herfst'}
+      ];
+      const colors={winter:'#5a8aae',lente:'#2F6933',zomer:'#b07000',herfst:'#9a3000'};
+      const items=phases.map((p,i)=>`
+        <div style="display:flex;align-items:center;gap:.5rem;animation:tourFadeUp .35s ease ${(i*0.06).toFixed(2)}s both">
+          <div style="width:10px;height:10px;border-radius:50%;background:${colors[p.s]};flex-shrink:0"></div>
+          <span style="font-family:'Inter',sans-serif;font-size:.8rem;color:#3a2e22">${p.name}</span>
+        </div>`).join('');
+      return `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.4rem .8rem;padding:1.5rem 2rem">${items}</div>`;
+    }
+  },
+  {
+    kicker: 'Stap 2 van 3',
+    title: 'Plot je projecten op het wiel',
+    text: 'Klik op een fase in het wiel of beantwoord 3 korte vragen. Je project verschijnt als chip op het wiel — zo zie je in één oogopslag waar alles staat.',
+    visual: () => {
+      return `<div style="position:relative;width:200px;height:200px">
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:200px;border-radius:50%;box-shadow:0 4px 24px rgba(0,0,0,.2)">
+          <rect x="0" y="0" width="100" height="100" fill="#7aa8cc"/>
+          <rect x="100" y="0" width="100" height="100" fill="#60aa70"/>
+          <rect x="100" y="100" width="100" height="100" fill="#f0b028"/>
+          <rect x="0" y="100" width="100" height="100" fill="#c05a18"/>
+          <circle cx="100" cy="100" r="70" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="1.5"/>
+          <line x1="100" y1="30" x2="100" y2="170" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+          <line x1="30" y1="100" x2="170" y2="100" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+          <circle cx="100" cy="100" r="5" fill="rgba(255,255,255,.5)"/>
+          <g style="animation:tourChipPop .5s cubic-bezier(0.34,1.56,0.64,1) .4s both;transform-box:fill-box;transform-origin:center">
+            <rect x="62" y="52" width="76" height="18" rx="5" fill="#9a3000" opacity=".9"/>
+            <text x="100" y="65" text-anchor="middle" dominant-baseline="central" fill="white" font-family="Arial,sans-serif" font-size="8.5" font-weight="600">Mijn project</text>
+          </g>
+        </svg>
+      </div>`;
+    }
+  },
+  {
+    kicker: 'Klaar om te beginnen',
+    title: 'Zet jouw eerste project op het wiel',
+    text: 'Klik op een faselabel in het wiel als je de fase al kent, of beantwoord 3 vragen om hem te ontdekken. Je kunt altijd aanpassen.',
+    visual: () => {
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:1rem;padding:1rem">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;animation:tourWheelIn .5s ease forwards">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none"><circle cx="16" cy="16" r="13" stroke="white" stroke-width="1.8"/><line x1="16" y1="3" x2="16" y2="29" stroke="white" stroke-width="1.5" opacity=".4"/><line x1="3" y1="16" x2="29" y2="16" stroke="white" stroke-width="1.5" opacity=".4"/><circle cx="16" cy="16" r="3" fill="white"/></svg>
+        </div>
+        <p style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--green-dark);text-align:center;margin:0;font-weight:600">Succes met je projecten!</p>
+      </div>`;
+    }
+  }
+];
+
+let _tourStep = 0;
+
+function showTour(){
+  if(localStorage.getItem('jf_tour_done')) return;
+  _tourStep = 0;
+  _renderTour();
+}
+
+function _renderTour(){
+  const existing = document.getElementById('tour-overlay');
+  if(existing) existing.remove();
+  const step = TOUR_STEPS[_tourStep];
+  const total = TOUR_STEPS.length;
+  const dots = TOUR_STEPS.map((_,i)=>`<div class="tour-dot${i===_tourStep?' active':''}"></div>`).join('');
+  const isLast = _tourStep === total-1;
+  const div = document.createElement('div');
+  div.id = 'tour-overlay';
+  div.className = 'tour-overlay';
+  div.innerHTML = `<div class="tour-card">
+    <div class="tour-visual">${step.visual()}</div>
+    <div class="tour-body">
+      <p class="tour-kicker">${step.kicker}</p>
+      <h2 class="tour-title">${step.title}</h2>
+      <p class="tour-text">${step.text}</p>
+    </div>
+    <div class="tour-footer">
+      <div class="tour-dots">${dots}</div>
+      <div class="tour-actions">
+        ${!isLast?'<button class="tour-skip" id="tour-skip">Overslaan</button>':''}
+        <button class="tour-next" id="tour-next">${isLast?'Aan de slag →':'Volgende →'}</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.appendChild(div);
+  document.getElementById('tour-next').addEventListener('click',()=>{
+    if(isLast){ _closeTour(); } else { _tourStep++; _renderTour(); }
+  });
+  document.getElementById('tour-skip')?.addEventListener('click', _closeTour);
+}
+
+function _closeTour(){
+  localStorage.setItem('jf_tour_done','1');
+  const el = document.getElementById('tour-overlay');
+  if(el) el.style.opacity='0', setTimeout(()=>el.remove(), 250);
 }
 
 
@@ -1991,6 +2153,9 @@ function backBtn(id){return `<button class="btn-back" id="${id}">${MINI_WHEEL} T
 /* ══ CSS ANIMATION ══ */
 const styleEl=document.createElement('style');
 styleEl.textContent=`@keyframes lblIn{from{opacity:0}to{opacity:1}}`
+  +`@keyframes tourWheelIn{from{opacity:0;transform:scale(.8) rotate(-15deg)}to{opacity:1;transform:scale(1) rotate(0)}}`
+  +`@keyframes tourFadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}`
+  +`@keyframes tourChipPop{0%{opacity:0;transform:scale(0)}65%{transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}`
   +`@keyframes chipIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}`
   +`@keyframes chipPop{0%{opacity:0;transform:scale(0.3)}65%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:scale(1)}}`
   +`.wheel-label-g{cursor:pointer;transition:opacity 0.2s}.wheel-label-g .lbl-bg{transition:fill .15s,filter .2s}.wheel-label-g:hover .lbl-bg{filter:brightness(1.35)}`
@@ -2040,6 +2205,7 @@ async function initAuth(){
   });
   renderHeaderAuth();
   render();
+  if(!viewParam) setTimeout(showTour, 600);
 }
 initAuth();
 </script>
