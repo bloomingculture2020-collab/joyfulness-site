@@ -774,7 +774,7 @@ function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2
 function getProj(id){return PROJECTS.find(p=>p.id===id);}
 
 /* ══ STATE ══ */
-let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null };
+let STATE = { view:'model', wStep:0, answers:[], draftName:'', draftDesc:'', draftPhaseIdx:-1, activeId:null, quickAddPhase:-1, newOrgType:'organisatie', freshProjectId:null, newChipId:null };
 
 /* ══ WHEEL BUILDER ══ */
 const ANGLES = [315, 0, 45, 90, 135, 180, 225, 270];
@@ -847,7 +847,12 @@ function buildWheel(forPrint=false) {
       const maxNameLen=proj.emoji?6:9;
       const shortName=proj.name.length>maxNameLen?proj.name.slice(0,maxNameLen-1)+'…':proj.name;
       const label=prefix+shortName;
-      const action=forPrint?'':` data-proj-id="${proj.id}" data-fullname="${proj.name.replace(/"/g,'&quot;')}" data-cx="${p.x.toFixed(1)}" data-cy="${p.y.toFixed(1)}" data-color="${sColor}" style="cursor:pointer"`;
+      const isNew=!forPrint&&proj.id===STATE.newChipId;
+      const chipDelay=(phInt*0.055+idx*0.04).toFixed(2);
+      const chipAnim=forPrint?'':isNew
+        ?`opacity:0;animation:chipPop 0.55s cubic-bezier(0.34,1.56,0.64,1) ${chipDelay}s forwards`
+        :`opacity:0;animation:chipIn 0.35s ease ${chipDelay}s forwards`;
+      const action=forPrint?'':` data-proj-id="${proj.id}" data-fullname="${proj.name.replace(/"/g,'&quot;')}" data-cx="${p.x.toFixed(1)}" data-cy="${p.y.toFixed(1)}" data-color="${sColor}" style="cursor:pointer;${chipAnim}"`;
       chips+=`<g class="proj-chip"${action}>
         <rect x="${(p.x-chipW/2).toFixed(1)}" y="${(p.y-chipH/2).toFixed(1)}" width="${chipW}" height="${chipH}" rx="5" fill="${sColor}" opacity="0.88"/>
         <text x="${p.x.toFixed(1)}" y="${p.y.toFixed(1)}" text-anchor="middle" dominant-baseline="central" fill="white" font-family="'Inter',sans-serif" font-size="8.5" font-weight="600">${esc(label)}</text>
@@ -986,6 +991,7 @@ function render(){
 /* ── MODEL VIEW ── */
 function renderModelView(){
   const wheel=buildWheel();
+  if(STATE.newChipId) setTimeout(()=>{STATE.newChipId=null;},800);
   const hasProj=PROJECTS.length>0;
   const qPhase=STATE.quickAddPhase;
 
@@ -1456,7 +1462,7 @@ function bindEvents(){
     const proj={id:uid(),name,phaseIdx:STATE.quickAddPhase,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
     PROJECTS.push(proj);
     saveProjects();
-    STATE.freshProjectId=proj.id; STATE.quickAddPhase=-1; STATE.view='project'; STATE.activeId=proj.id;
+    STATE.freshProjectId=proj.id; STATE.newChipId=proj.id; STATE.quickAddPhase=-1; STATE.view='project'; STATE.activeId=proj.id;
     render();
   });
   document.getElementById('qa-name')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-qa-confirm')?.click();});
@@ -1493,7 +1499,7 @@ function bindEvents(){
     const proj={id:uid(),name:STATE.draftName,desc:STATE.draftDesc,phaseIdx:phIdx,checkedQ:[],checkedD:[],checkedK:[],answersOrg:['','',''],answersLeider:['','',''],addedAt:Date.now()};
     PROJECTS.push(proj);
     saveProjects();
-    STATE.freshProjectId=proj.id; STATE.view='project'; STATE.activeId=proj.id; STATE.answers=[]; STATE.wStep=0;
+    STATE.freshProjectId=proj.id; STATE.newChipId=proj.id; STATE.view='project'; STATE.activeId=proj.id; STATE.answers=[]; STATE.wStep=0;
     render();
   });
 
@@ -1774,7 +1780,11 @@ function backBtn(id){return `<button class="btn-back" id="${id}">${MINI_WHEEL} T
 
 /* ══ CSS ANIMATION ══ */
 const styleEl=document.createElement('style');
-styleEl.textContent=`@keyframes lblIn{from{opacity:0}to{opacity:1}}.wheel-label-g{cursor:pointer;transition:opacity 0.2s}.wheel-label-g .lbl-bg{transition:fill .15s,filter .2s}.wheel-label-g:hover .lbl-bg{filter:brightness(1.35)}.proj-chip{cursor:pointer;transition:opacity 0.2s}.proj-chip:hover rect{filter:brightness(1.3)}`;
+styleEl.textContent=`@keyframes lblIn{from{opacity:0}to{opacity:1}}`
+  +`@keyframes chipIn{from{opacity:0;transform:scale(0.7)}to{opacity:1;transform:scale(1)}}`
+  +`@keyframes chipPop{0%{opacity:0;transform:scale(0.3)}65%{opacity:1;transform:scale(1.18)}100%{opacity:1;transform:scale(1)}}`
+  +`.wheel-label-g{cursor:pointer;transition:opacity 0.2s}.wheel-label-g .lbl-bg{transition:fill .15s,filter .2s}.wheel-label-g:hover .lbl-bg{filter:brightness(1.35)}`
+  +`.proj-chip{cursor:pointer;transform-box:fill-box;transform-origin:center}.proj-chip:hover rect{filter:brightness(1.3)}`;
 document.head.appendChild(styleEl);
 
 /* ══ INIT ══ */
