@@ -130,10 +130,11 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
   font-size:.78rem; font-weight:600; padding:.3rem .75rem; cursor:pointer;
   transition:all .15s; }
 .btn-archive:hover { background:rgba(255,255,255,.22); color:white; }
-.card-archive-btn { position:absolute; top:.65rem; right:.75rem; background:none; border:none;
+.card-archive-btn { background:none; border:none;
   cursor:pointer; color:#ccc5bc; font-size:.7rem; font-family:'Inter',sans-serif; font-weight:700;
   letter-spacing:.04em; padding:.15rem .3rem; border-radius:3px;
   transition:color .15s,background .15s; line-height:1; text-transform:uppercase; }
+.project-card > .card-archive-btn { position:absolute; top:.65rem; right:.75rem; }
 .card-archive-btn:hover { color:#8a7f76; background:#ede9e3; }
 .archived-section { margin-top:1.5rem; }
 .archived-toggle { background:none; border:none; cursor:pointer; font-family:'Inter',sans-serif;
@@ -1137,7 +1138,7 @@ const TOUR_STEPS = [
       }).join('');
       const ring=`<circle cx="${cx}" cy="${cy}" r="${Ri}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>`;
       const dot=`<circle cx="${cx}" cy="${cy}" r="5" fill="rgba(255,255,255,.5)"/>`;
-      const labels=`<text x="50" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
+      const labels=`<text x="100" y="26" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
         <text x="172" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">LENTE</text>
         <text x="130" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">ZOMER</text>
         <text x="28" y="130" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">HERFST</text>`;
