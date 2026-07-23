@@ -1115,7 +1115,7 @@ const TOUR_STEPS = [
       }).join('');
       const ring=`<circle cx="${cx}" cy="${cy}" r="${Ri}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>`;
       const dot=`<circle cx="${cx}" cy="${cy}" r="5" fill="rgba(255,255,255,.5)"/>`;
-      const labels=`<text x="70" y="28" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
+      const labels=`<text x="50" y="42" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
         <text x="172" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">LENTE</text>
         <text x="130" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">ZOMER</text>
         <text x="28" y="130" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">HERFST</text>`;
@@ -1123,8 +1123,8 @@ const TOUR_STEPS = [
         <clipPath id="tc"><circle cx="${cx}" cy="${cy}" r="${cx}"/></clipPath>
         <g clip-path="url(#tc)">${wedges}</g>
         ${spokes}${ring}${dot}${labels}
-        <g clip-path="url(#tc)" transform="translate(${cx},${cy})">
-          <path d="M0,0 L-92.39,-38.27 A100,100 0 0,1 -38.27,-92.39 Z" fill="rgba(255,255,255,.42)" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linejoin="round" style="animation:tourPhaseSelect 8s steps(8,end) .65s infinite"/>
+        <g clip-path="url(#tc)">
+          <path d="M100,100 L7.61,61.73 A100,100 0 0,1 61.73,7.61 Z" fill="rgba(255,255,255,.42)" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linejoin="round" style="transform-origin:100px 100px;animation:tourPhaseSelect 8s steps(8,end) .65s infinite"/>
         </g>
       </svg>`;
     }
