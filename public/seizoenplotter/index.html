@@ -1122,7 +1122,7 @@ const TOUR_STEPS = [
     text: 'Net als in de natuur kent elk project een ritme van zaaien, groeien, oogsten en rusten. De Seizoenplotter maakt dat ritme zichtbaar en brengt je in diepere afstemming met jouw huidige subfase.',
     visual: () => {
       const cx=100,cy=100,R=100,Ri=70;
-      const phAngles=[315,0,45,90,135,180,225,270];
+      const phAngles=[292.5,337.5,22.5,67.5,112.5,157.5,202.5,247.5];
       const phColors=['#8ab8d8','#5a90b8','#72bb82','#3a7a4a','#f5c040','#c89010','#d07038','#9a3808'];
       const half=22.5*Math.PI/180;
       const toR=d=>(d-90)*Math.PI/180;
@@ -1138,16 +1138,16 @@ const TOUR_STEPS = [
       }).join('');
       const ring=`<circle cx="${cx}" cy="${cy}" r="${Ri}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1.5"/>`;
       const dot=`<circle cx="${cx}" cy="${cy}" r="5" fill="rgba(255,255,255,.5)"/>`;
-      const labels=`<text x="70" y="28" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
-        <text x="172" y="70" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">LENTE</text>
-        <text x="130" y="172" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">ZOMER</text>
-        <text x="28" y="130" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">HERFST</text>`;
+      const labels=`<text x="45" y="45" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">WINTER</text>
+        <text x="155" y="45" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">LENTE</text>
+        <text x="155" y="158" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">ZOMER</text>
+        <text x="45" y="158" text-anchor="middle" font-family="Georgia,serif" font-size="7" font-weight="700" fill="white" letter-spacing="1" opacity=".95">HERFST</text>`;
       return `<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:200px;height:200px;border-radius:50%;box-shadow:0 4px 24px rgba(0,0,0,.2);animation:tourWheelIn .6s ease forwards">
         <clipPath id="tc"><circle cx="${cx}" cy="${cy}" r="${cx}"/></clipPath>
         <g clip-path="url(#tc)">${wedges}</g>
         ${spokes}${ring}${dot}${labels}
         <g clip-path="url(#tc)">
-          <path d="M100,100 L7.61,61.73 A100,100 0 0,1 61.73,7.61 Z" fill="rgba(255,255,255,.42)" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linejoin="round" style="transform-origin:100px 100px;animation:tourPhaseSelect 8s steps(8,end) .65s infinite"/>
+          <path d="M100,100 L0.00,100.00 A100,100 0 0,1 29.29,29.29 Z" fill="rgba(255,255,255,.42)" stroke="rgba(255,255,255,.7)" stroke-width="1.5" stroke-linejoin="round" style="transform-origin:100px 100px;animation:tourPhaseSelect 8s steps(8,end) .65s infinite"/>
         </g>
       </svg>`;
     }
