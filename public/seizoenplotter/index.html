@@ -151,7 +151,9 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
 [data-tooltip]::after { content:attr(data-tooltip); position:absolute; bottom:calc(100% + 5px); right:50%; transform:translateX(50%); background:#2d2a26; color:white; font-size:.68rem; font-family:'Inter',sans-serif; padding:.25rem .55rem; border-radius:5px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s; z-index:100; }
 [data-tooltip]:hover::after { opacity:1; }
 /* Card delete button for archived */
-.card-delete-btn { right:2.35rem !important; color:#c05a18 !important; }
+.card-archived-btns { position:absolute; top:.5rem; right:.6rem; display:flex; gap:.15rem; align-items:center; }
+.card-archived-btns .card-archive-btn { position:static; }
+.card-delete-btn { color:#c05a18 !important; }
 .card-delete-btn:hover { color:#9a3000 !important; background:#f4e8e2 !important; }
 /* Confirm dialog overlay */
 .jf-confirm-overlay { position:fixed; inset:0; z-index:9000; background:rgba(40,36,30,.45); display:flex; align-items:center; justify-content:center; }
@@ -1284,7 +1286,10 @@ function renderModelView(){
     const doneLeider=(p.answersLeider||[]).filter(a=>a&&a.trim()).length;
     const totalDone=doneD+doneK+doneOrg+doneLeider;
     const archiveBtn=isArchived
-      ? `<button class="card-archive-btn btn-unarchive-card" data-id="${p.id}" data-tooltip="Herstel project">↩</button><button class="card-archive-btn card-delete-btn" data-id="${p.id}" data-tooltip="Definitief verwijderen">✕</button>`
+      ? `<div class="card-archived-btns">
+          <button class="card-archive-btn btn-unarchive-card" data-id="${p.id}" data-tooltip="Herstel project">↩</button>
+          <button class="card-archive-btn card-delete-btn" data-id="${p.id}" data-tooltip="Definitief verwijderen">✕</button>
+        </div>`
       : `<button class="card-archive-btn btn-archive-card" data-id="${p.id}" data-tooltip="Archiveren">↓</button>`;
     return `<div class="project-card${isArchived?' archived-card':''} season-${ph.season}" data-card-id="${p.id}">
       ${archiveBtn}
