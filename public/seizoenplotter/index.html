@@ -894,11 +894,11 @@ function buildWheel(forPrint=false) {
 
   // Count projects per phase
   const counts={};
-  PROJECTS.forEach(p=>{counts[p.phaseIdx]=(counts[p.phaseIdx]||0)+1;});
+  PROJECTS.filter(p=>!p.archived).forEach(p=>{counts[p.phaseIdx]=(counts[p.phaseIdx]||0)+1;});
 
   // Project chips per phase (positioned closer to center)
   const chipsByPhase={};
-  PROJECTS.forEach(p=>{if(!chipsByPhase[p.phaseIdx])chipsByPhase[p.phaseIdx]=[];chipsByPhase[p.phaseIdx].push(p);});
+  PROJECTS.filter(p=>!p.archived).forEach(p=>{if(!chipsByPhase[p.phaseIdx])chipsByPhase[p.phaseIdx]=[];chipsByPhase[p.phaseIdx].push(p);});
 
   // For print: solid colors (gradients don't reliably print via browser)
   const defs=forPrint?'':
