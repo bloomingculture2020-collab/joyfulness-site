@@ -146,6 +146,23 @@ header.site.nav-open .nav-toggle span:nth-child(3) { transform: translateY(-7px)
 .btn-unarchive { font-size:.75rem; color:var(--green); font-weight:600; background:none;
   border:none; cursor:pointer; padding:.1rem 0; font-family:'Inter',sans-serif; }
 .btn-unarchive:hover { text-decoration:underline; }
+/* Custom tooltip */
+[data-tooltip] { position:relative; }
+[data-tooltip]::after { content:attr(data-tooltip); position:absolute; bottom:calc(100% + 5px); right:50%; transform:translateX(50%); background:#2d2a26; color:white; font-size:.68rem; font-family:'Inter',sans-serif; padding:.25rem .55rem; border-radius:5px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s; z-index:100; }
+[data-tooltip]:hover::after { opacity:1; }
+/* Card delete button for archived */
+.card-delete-btn { right:2.35rem !important; color:#c05a18 !important; }
+.card-delete-btn:hover { color:#9a3000 !important; background:#f4e8e2 !important; }
+/* Confirm dialog overlay */
+.jf-confirm-overlay { position:fixed; inset:0; z-index:9000; background:rgba(40,36,30,.45); display:flex; align-items:center; justify-content:center; }
+.jf-confirm-box { background:#faf7f2; border-radius:14px; padding:1.75rem 2rem 1.5rem; max-width:360px; width:90%; box-shadow:0 8px 40px rgba(0,0,0,.18); }
+.jf-confirm-title { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:#2d2a26; margin:0 0 .5rem; }
+.jf-confirm-msg { font-size:.88rem; color:var(--text-soft); line-height:1.55; margin:0 0 1.4rem; }
+.jf-confirm-actions { display:flex; gap:.6rem; justify-content:flex-end; }
+.jf-confirm-cancel { background:none; border:1.5px solid var(--border); border-radius:7px; padding:.5rem 1rem; font-size:.85rem; cursor:pointer; color:var(--text-soft); font-family:'Inter',sans-serif; }
+.jf-confirm-cancel:hover { background:#ede9e3; }
+.jf-confirm-ok { background:#c05a18; color:white; border:none; border-radius:7px; padding:.5rem 1.1rem; font-size:.85rem; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif; }
+.jf-confirm-ok:hover { background:#9a3000; }
 
 .shared-banner { background:var(--green); color:white; text-align:center;
   padding:.55rem 1rem; font-size:.8rem; font-family:'Inter',sans-serif; font-weight:600;
@@ -1262,8 +1279,8 @@ function renderModelView(){
     const doneLeider=(p.answersLeider||[]).filter(a=>a&&a.trim()).length;
     const totalDone=doneD+doneK+doneOrg+doneLeider;
     const archiveBtn=isArchived
-      ? `<button class="card-archive-btn btn-unarchive-card" data-id="${p.id}" title="Herstel project">↩</button>`
-      : `<button class="card-archive-btn btn-archive-card" data-id="${p.id}" title="Archiveer project">↓</button>`;
+      ? `<button class="card-archive-btn btn-unarchive-card" data-id="${p.id}" data-tooltip="Herstel project">↩</button><button class="card-archive-btn card-delete-btn" data-id="${p.id}" data-tooltip="Definitief verwijderen">✕</button>`
+      : `<button class="card-archive-btn btn-archive-card" data-id="${p.id}" data-tooltip="Archiveren">↓</button>`;
     return `<div class="project-card${isArchived?' archived-card':''} season-${ph.season}" data-card-id="${p.id}">
       ${archiveBtn}
       <div class="project-card-top"><div>
@@ -1889,11 +1906,46 @@ function bindEvents(){
 
   // Project: delete
   document.getElementById('btn-delete')?.addEventListener('click',()=>{
-    if(!confirm(`Project "${getProj(STATE.activeId)?.name}" verwijderen?`)) return;
-    PROJECTS=PROJECTS.filter(p=>p.id!==STATE.activeId);
-    saveProjects();
-    STATE.view='model'; STATE.activeId=null; render();
+    const p=getProj(STATE.activeId);
+    showConfirm(`"${p?.name}" verwijderen?`,'Dit kan niet ongedaan gemaakt worden.',()=>{
+      PROJECTS=PROJECTS.filter(p=>p.id!==STATE.activeId);
+      saveProjects();
+      STATE.view='model'; STATE.activeId=null; render();
+    });
   });
+  // Definitief verwijderen vanuit archief
+  document.querySelectorAll('.card-delete-btn').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      const p=getProj(btn.dataset.id);
+      showConfirm(`"${p?.name}" definitief verwijderen?`,'Dit project wordt permanent verwijderd en kan niet worden hersteld.',()=>{
+        PROJECTS=PROJECTS.filter(pr=>pr.id!==btn.dataset.id);
+        saveProjects(); render();
+      });
+    });
+  });
+}
+
+/* ── CONFIRM DIALOG ── */
+function showConfirm(title, msg, onOk){
+  const existing=document.getElementById('jf-confirm');
+  if(existing) existing.remove();
+  const div=document.createElement('div');
+  div.id='jf-confirm';
+  div.className='jf-confirm-overlay';
+  div.innerHTML=`<div class="jf-confirm-box">
+    <p class="jf-confirm-title">${title}</p>
+    <p class="jf-confirm-msg">${msg}</p>
+    <div class="jf-confirm-actions">
+      <button class="jf-confirm-cancel">Annuleren</button>
+      <button class="jf-confirm-ok">Verwijderen</button>
+    </div>
+  </div>`;
+  document.body.appendChild(div);
+  const close=()=>div.remove();
+  div.querySelector('.jf-confirm-cancel').onclick=close;
+  div.querySelector('.jf-confirm-ok').onclick=()=>{ close(); onOk(); };
+  div.onclick=e=>{ if(e.target===div) close(); };
 }
 
 /* ══ PRINT / PDF ══ */
