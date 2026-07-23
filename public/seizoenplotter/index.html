@@ -1060,6 +1060,8 @@ function renderHeaderAuth(){
     <div class="org-dropdown-divider"></div>
     <div class="org-dropdown-item new-org" id="org-new">+ Nieuwe organisatie</div>
     <div class="org-dropdown-divider"></div>
+    <div class="org-dropdown-item" id="org-tour">❓ Intro opnieuw bekijken</div>
+    <div class="org-dropdown-divider"></div>
     <div class="org-dropdown-item signout" id="org-signout">Uitloggen</div>
   </div></div>`;
   document.getElementById('org-chip-btn')?.addEventListener('click',()=>{
@@ -1069,6 +1071,7 @@ function renderHeaderAuth(){
     el.addEventListener('click',()=>switchOrg(el.dataset.orgId));
   });
   document.getElementById('org-new')?.addEventListener('click',()=>{STATE.view='neworg';render();});
+  document.getElementById('org-tour')?.addEventListener('click',()=>{document.getElementById('org-dropdown')?.classList.remove('open');showTour(true);});
   document.getElementById('org-signout')?.addEventListener('click',signOut);
   document.addEventListener('click',(e)=>{
     if(!e.target.closest('.org-chip')) document.getElementById('org-dropdown')?.classList.remove('open');
@@ -1206,8 +1209,10 @@ const TOUR_STEPS = [
 
 let _tourStep = 0;
 
-function showTour(){
-  if(localStorage.getItem('jf_tour_done')) return;
+function showTour(force){
+  const forceTour = force || new URLSearchParams(window.location.search).get('tour')==='1';
+  if(!forceTour && localStorage.getItem('jf_tour_done')) return;
+  if(forceTour) localStorage.removeItem('jf_tour_done');
   _tourStep = 0;
   _renderTour();
 }
